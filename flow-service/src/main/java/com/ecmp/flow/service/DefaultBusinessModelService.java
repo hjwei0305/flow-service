@@ -1,54 +1,34 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
-import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.dao.jpa.BaseDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
 import com.ecmp.flow.api.*;
 import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.basic.vo.Executor;
-import com.ecmp.flow.constant.BusinessEntityAnnotaion;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
-import com.ecmp.flow.util.BusinessUtil;
 import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
-import com.ecmp.flow.vo.FlowTaskCompleteVO;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/23 22:39      谭军(tanjun)               新建
- * <p/>
- * *************************************************************************************************
- */
+
 @Service
 public class DefaultBusinessModelService extends BaseEntityService<DefaultBusinessModel> implements IDefaultBusinessModelService {
 
@@ -63,16 +43,16 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return this.defaultBusinessModelDao;
     }
 
+
     /**
-     * 条件属性说明
+     * 获取业务实体条件属性说明
      *
-     * @param businessModelCode 业务实体代码
+     * @param businessModelCode 业务实体类路径
      * @param all               是否查询全部
-     * @return
-     * @throws ClassNotFoundException
+     * @return 业务实体属性说明
      */
     @Override
-    public ResponseData properties(String businessModelCode, Boolean all) throws ClassNotFoundException {
+    public ResponseData<Map<String, String>> properties(String businessModelCode, Boolean all){
         Map<String, String> map = new HashMap<>();
         map.put("unitPrice", "单价");
         map.put("count", "数量");
@@ -85,52 +65,16 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
 
-    @Override
-    public ResponseData propertiesRemark(String businessModelCode) throws ClassNotFoundException {
-        Map<String, String> map = new HashMap<>();
-        map.put("count", "【数字】，表示订单中购买的数量");
-        map.put("unitPrice", "【数字】，表示订单中单个物体的价格");
-        map.put("customeInt", "【布尔值】：判断count是否等于1");
-        return ResponseData.operationSuccessWithData(map);
-    }
-
-
     /**
-     * 条件属性初始值
+     * 获取业务实体条件属性值
      *
-     * @param businessModelCode 业务实体代码
-     * @return
-     * @throws ClassNotFoundException
-     * @throws InvocationTargetException
-     * @throws InstantiationException
-     * @throws IllegalAccessException
-     * @throws NoSuchMethodException
-     */
-    @Override
-    public ResponseData initPropertiesAndValues(String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        Map<String, Object> map = new HashMap<>();
-        map.put("unitPrice", 0.0);
-        map.put("count", 0);
-        map.put("customeInt", true);
-        map.put("name", "中文字符串");
-        return ResponseData.operationSuccessWithData(map);
-    }
-
-    /**
-     * 条件属性值
-     *
-     * @param businessModelCode 业务实体代码
+     * @param businessModelCode 业务实体类路径
      * @param id                单据id
-     * @param all
-     * @return
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
+     * @param all               是否查询全部
+     * @return 条件属性值
      */
     @Override
-    public ResponseData propertiesAndValues(String businessModelCode, String id, Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public ResponseData<Map<String, Object>> propertiesAndValues(String businessModelCode, String id, Boolean all) {
         DefaultBusinessModel bean = defaultBusinessModelDao.findOne(id);
         Map<String, Object> map = new HashMap<>();
         map.put("unitPrice", bean.getUnitPrice());
@@ -149,26 +93,198 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
 
+
     /**
-     * 重置单据状态
+     * 获取业务实体条件属性初始值
      *
-     * @param businessModelCode 业务实体代码
-     * @param id                单据id
-     * @param status            状态
-     * @return
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws ClassNotFoundException
-     * @throws InstantiationException
+     * @param businessModelCode 业务实体类路径
+     * @return 条件属性初始值
      */
     @Override
-    public ResponseData resetState(String businessModelCode, String id, FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public ResponseData<Map<String, Object>> initPropertiesAndValues(String businessModelCode) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("unitPrice", 0.0);
+        map.put("count", 0);
+        map.put("customeInt", true);
+        map.put("name", "中文字符串");
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+
+    /**
+     * 重置业务单据状态
+     *
+     * @param businessModelCode 业务实体类路径
+     * @param id                单据id
+     * @param status            状态（init:初始化状态、inProcess：流程中、completed：流程处理完成）
+     * @return 返回结果
+     */
+    @Override
+    public ResponseData<Boolean> resetState(String businessModelCode, String id, FlowStatus status) {
         DefaultBusinessModel bean = defaultBusinessModelDao.findOne(id);
         bean.setFlowStatus(status);
         this.save(bean);
         return ResponseData.operationSuccessWithData(true);
     }
+
+
+    /**
+     * 获取条件属性的备注说明
+     *
+     * @param businessModelCode 业务实体类路径
+     * @return 条件属性备注说明
+     */
+    @Override
+    public ResponseData<Map<String, String>> propertiesRemark(String businessModelCode) {
+        Map<String, String> map = new HashMap<>();
+        map.put("count", "【数字】，表示订单中购买的数量");
+        map.put("unitPrice", "【数字】，表示订单中单个物体的价格");
+        map.put("customeInt", "【布尔值】：判断count是否等于1");
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+
+    /**
+     * 报异常的方法
+     * @param flowInvokeParams
+     * @return
+     */
+    public ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
+        return ResponseData.operationFailure("测试调用模块的报错信息是否传递！");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用的事前事件接口！");
+            defaultBusinessModelDao.save(entity);
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+        return ResponseData.operationSuccess();
+    }
+
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用了事后事件接口！");
+            defaultBusinessModelDao.save(entity);
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+        return ResponseData.operationSuccess();
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData changeProperties(FlowInvokeParams flowInvokeParams) {
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            entity.setCount(1);
+            entity.setWorkCaption(entity.getWorkCaption() + "：修改count为1（customeInt）！");
+            defaultBusinessModelDao.save(entity);
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+        return ResponseData.operationSuccess();
+    }
+
+
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ResponseData testPoolTaskSignal(FlowInvokeParams flowInvokeParams) {
+        System.out.println(flowInvokeParams.getPoolTaskCode());
+        String taskActDefId = null;
+        Map<String, Object> variables = new HashMap<String, Object>();
+        try {
+            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+            if (entity != null) {
+                taskActDefId = flowInvokeParams.getTaskActDefId();
+                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
+                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
+                    //测试跨业务实体子流程,并发多级子流程测试
+                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
+                    for (String callActivityPath : callActivtiySonPaths) {
+                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
+                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
+                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
+                        }
+                    }
+                }
+                entity.setWorkCaption("工作池任务：[ID:" + flowInvokeParams.getId() + ",actId:" + flowInvokeParams.getTaskActDefId() + "]");
+                defaultBusinessModelDao.save(entity);
+                final String fTaskActDefId = taskActDefId;
+
+
+//                new Thread(new Runnable() {//模拟异步
+//                    @Override
+//                    public void run() {
+//                        long time = 30; //默认60秒
+//                        int index = 2;//重试2次
+//                        while (index > 0) {
+//                            try {
+//                                Thread.sleep(1000 * time);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                            try {
+//                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
+//                                //工作池任务设置单个执行人
+////                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"1592D012-A330-11E7-A967-02420B99179E" ,variables);
+//                                //工作池任务设置多个执行人
+//                                SignalPoolTaskVO SignalPoolTaskVO = new SignalPoolTaskVO();
+//                                SignalPoolTaskVO.setBusinessId(flowInvokeParams.getId());
+//                                SignalPoolTaskVO.setPoolTaskActDefId(fTaskActDefId);
+//                                List<String> userIds = new ArrayList<>();
+//                                userIds.add("1592D012-A330-11E7-A967-02420B99179E");
+//                                userIds.add("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
+//                                SignalPoolTaskVO.setUserIds(userIds);
+//                                SignalPoolTaskVO.setMap(new HashMap<>());
+//                                ResponseData resultTemp = proxy.signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO);
+//                                if (resultTemp.successful()) {
+//                                    return;
+//                                } else {
+//                                    time = time * 2; //加倍
+//                                }
+//                            } catch (Exception e) {
+//                                time = time * 2; //加倍
+//                            }
+//                            index--;
+//                        }
+//                    }
+//                }).start();
+
+
+                //直接返回用户ID也可以直接进行待办添加（工作池任务添加执行人方式2）
+                //test123456/测试  20202020/test
+                Map<String,Object> map = new HashMap<>();
+                map.put("userIds","394DE15B-F6FF-11EA-8F02-0242C0A8460D,A1206710-78AA-11EA-88E0-0242C0A84603");
+                return ResponseData.operationSuccessWithData(map);
+            }
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+        return ResponseData.operationSuccess();
+    }
+
+
+
+
 
     /**
      * 数据保存操作
@@ -184,76 +300,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return super.save(entity);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String changeCreateDepict(String id, String changeText) {
-        Map<String, Object> variables = new HashMap<>();
 
-        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
-        if (entity != null) {
-            if (StringUtils.isNotEmpty(changeText)) {
-
-                try {
-                    JSONObject jsonObject = JSONObject.fromObject(changeText);
-                    List<String> callActivtiySonPaths =  jsonObject.getJSONArray("callActivtiySonPaths");
-                    if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
-                        //测试跨业务实体子流程,并发多级子流程测试
-                        List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                        for (String callActivityPath : callActivtiySonPaths) {
-                            if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                                Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                                initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-            }
-            changeText = "before";
-            entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
-            defaultBusinessModelDao.save(entity);
-        }
-        String param = JsonUtils.toJson(variables);
-        return param;
-    }
-
-    /**
-     * @param id         业务单据id
-     * @param changeText 参数文本
-     * @return
-     */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public String changeCompletedDepict(String id, String changeText) {
-        Map<String, Object> variables = new HashMap<String, Object>();
-
-        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(id);
-        if (entity != null) {
-            if (StringUtils.isNotEmpty(changeText)) {
-                try {
-                    JSONObject jsonObject = JSONObject.fromObject(changeText);
-                    List<String> callActivtiySonPaths = jsonObject.getJSONArray("callActivtiySonPaths");
-                    if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
-                        //测试跨业务实体子流程,并发多级子流程测试
-                        List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                        for (String callActivityPath : callActivtiySonPaths) {
-                            if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                                Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                                initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-
-            }
-            changeText = "after";
-            entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
-            defaultBusinessModelDao.save(entity);
-        }
-        String param = JsonUtils.toJson(variables);
-        return param;
-    }
 
     /**
      * @param flowInvokeParams 流程输入参数
@@ -287,13 +334,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     }
 
 
-    public boolean checkStartFlow(String id) {
-        return true;
-    }
 
-    public void endCall(String id) {
-        System.out.println("id=" + id);
-    }
+
 
     /**
      * 解析子流程绝对路径
@@ -325,40 +367,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             }
         }
         return resultMap;
-    }
-
-    public FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams) {
-        FlowOperateResult result = new FlowOperateResult();
-        String businessId = flowInvokeParams.getId();
-        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(businessId);
-        String changeText = "newServiceCall";
-        entity.setWorkCaption(changeText + ":" + entity.getWorkCaption());
-        defaultBusinessModelDao.save(entity);
-        int shujishu = this.getShuiJiShu(0, 10);
-        if (shujishu == 5) {
-            throw new RuntimeException("测试随机抛出错误信息:" + new Date());
-        } else if (shujishu == 4) {
-            result.setSuccess(false);
-            result.setMessage("测试随机业务异常信息:" + new Date());
-        }
-        return result;
-    }
-
-    public ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
-        return ResponseData.operationFailure("测试调用模块的报错信息是否传递！");
-    }
-
-    /**
-     * 获取指定范围的随机数
-     *
-     * @param max
-     * @param min
-     * @return
-     */
-    private static int getShuiJiShu(int min, int max) {
-        Random random = new Random();
-        int s = random.nextInt(max) % (max - min + 1) + min;
-        return s;
     }
 
 
@@ -398,44 +406,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
-        try {
-            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用的事前事件接口！");
-            defaultBusinessModelDao.save(entity);
-        } catch (Exception e) {
-            return ResponseData.operationFailure(e.getMessage());
-        }
-        return ResponseData.operationSuccess();
-    }
 
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
-        try {
-            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用了事后事件接口！");
-            defaultBusinessModelDao.save(entity);
-        } catch (Exception e) {
-            return ResponseData.operationFailure(e.getMessage());
-        }
-        return ResponseData.operationSuccess();
-    }
-
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData changeProperties(FlowInvokeParams flowInvokeParams) {
-        try {
-            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setCount(1);
-            entity.setWorkCaption(entity.getWorkCaption() + "：修改count为1（customeInt）！");
-            defaultBusinessModelDao.save(entity);
-        } catch (Exception e) {
-            return ResponseData.operationFailure(e.getMessage());
-        }
-        return ResponseData.operationSuccess();
-    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseData<FlowOperateResult> testReceiveCall(FlowInvokeParams flowInvokeParams) {
@@ -519,200 +490,6 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         return ResponseData.operationSuccess();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ResponseData testPoolTaskSignal(FlowInvokeParams flowInvokeParams) {
-        System.out.println(flowInvokeParams.getPoolTaskCode());
-        String taskActDefId = null;
-        Map<String, Object> variables = new HashMap<String, Object>();
-        try {
-            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            if (entity != null) {
-                taskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
-                    //测试跨业务实体子流程,并发多级子流程测试
-                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    for (String callActivityPath : callActivtiySonPaths) {
-                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
-                        }
-                    }
-                }
-                entity.setWorkCaption("工作池任务：[ID:" + flowInvokeParams.getId() + ",actId:" + flowInvokeParams.getTaskActDefId() + "]");
-                defaultBusinessModelDao.save(entity);
-                final String fTaskActDefId = taskActDefId;
 
-
-//                new Thread(new Runnable() {//模拟异步
-//                    @Override
-//                    public void run() {
-//                        long time = 30; //默认60秒
-//                        int index = 2;//重试2次
-//                        while (index > 0) {
-//                            try {
-//                                Thread.sleep(1000 * time);
-//                            } catch (InterruptedException e) {
-//                                e.printStackTrace();
-//                            }
-//                            try {
-//                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-//                                //工作池任务设置单个执行人
-////                                OperateResult resultTemp = proxy.signalPoolTaskByBusinessId(flowInvokeParams.getId(), fTaskActDefId,"1592D012-A330-11E7-A967-02420B99179E" ,variables);
-//                                //工作池任务设置多个执行人
-//                                SignalPoolTaskVO SignalPoolTaskVO = new SignalPoolTaskVO();
-//                                SignalPoolTaskVO.setBusinessId(flowInvokeParams.getId());
-//                                SignalPoolTaskVO.setPoolTaskActDefId(fTaskActDefId);
-//                                List<String> userIds = new ArrayList<>();
-//                                userIds.add("1592D012-A330-11E7-A967-02420B99179E");
-//                                userIds.add("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
-//                                SignalPoolTaskVO.setUserIds(userIds);
-//                                SignalPoolTaskVO.setMap(new HashMap<>());
-//                                ResponseData resultTemp = proxy.signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO);
-//                                if (resultTemp.successful()) {
-//                                    return;
-//                                } else {
-//                                    time = time * 2; //加倍
-//                                }
-//                            } catch (Exception e) {
-//                                time = time * 2; //加倍
-//                            }
-//                            index--;
-//                        }
-//                    }
-//                }).start();
-
-
-                //直接返回用户ID也可以直接进行待办添加（工作池任务添加执行人方式2）
-                //test123456/测试  20202020/test
-                return ResponseData.operationSuccessWithData("394DE15B-F6FF-11EA-8F02-0242C0A8460D,A1206710-78AA-11EA-88E0-0242C0A84603");
-            }
-        } catch (Exception e) {
-            return ResponseData.operationFailure(e.getMessage());
-        }
-        return ResponseData.operationSuccess();
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams) {
-        System.out.println(flowInvokeParams.getPoolTaskCode());
-        FlowOperateResult result = new FlowOperateResult();
-        String taskActDefId;
-        Map<String, Object> variables = new HashMap<>();
-        try {
-            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            if (entity != null) {
-                taskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
-                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
-                    //测试跨业务实体子流程,并发多级子流程测试
-                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    for (String callActivityPath : callActivtiySonPaths) {
-                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
-                        }
-                    }
-                }
-                String changeText = "PoolCallPoolCreate";
-                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText + ":" + taskActDefId);
-                defaultBusinessModelDao.save(entity);
-            }
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setMessage(e.getMessage());
-        }
-        result.setSuccess(true);
-        result.setMessage("test success!");
-        return result;
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams) {
-        FlowOperateResult result = new FlowOperateResult();
-        String taskActDefId = null;
-        Map<String, Object> variables = new HashMap<String, Object>();
-        try {
-            DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            if (entity != null) {
-                taskActDefId = flowInvokeParams.getTaskActDefId();
-                List<String> callActivtiySonPaths =  flowInvokeParams.getCallActivitySonPaths();
-                if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
-                    //测试跨业务实体子流程,并发多级子流程测试
-                    List<DefaultBusinessModel> defaultBusinessModelList = new ArrayList<>();
-                    for (String callActivityPath : callActivtiySonPaths) {
-                        if (org.apache.commons.lang.StringUtils.isNotEmpty(callActivityPath)) {
-                            Map<String, String> callActivityPathMap = initCallActivtiy(callActivityPath, true);
-                            initCallActivityBusiness(defaultBusinessModelList, callActivityPathMap, variables, entity);
-                        }
-                    }
-                }
-                String changeText = "PoolCallComplete";
-                entity.setWorkCaption(entity.getWorkCaption() + ":" + changeText);
-                defaultBusinessModelDao.save(entity);
-                final String fTaskActDefId = taskActDefId;
-                new Thread(new Runnable() {//模拟异步
-                    @Override
-                    public void run() {
-                        long time = 200; //默认200秒
-                        int index = 2;//重试20次
-                        while (index > 0) {
-                            try {
-                                Thread.sleep(1000 * time);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                IFlowInstanceService proxy = ApiClient.createProxy(IFlowInstanceService.class);
-                                FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
-                                OperateResultWithData<FlowStatus> resultTemp = proxy.completePoolTask(flowInvokeParams.getId(), fTaskActDefId, "8A6A1592-4A95-11E7-A011-960F8309DEA7", flowTaskCompleteVO);
-                                if (resultTemp.successful()) {
-                                    return;
-                                } else {
-                                    time = time * 2; //加倍
-                                }
-                            } catch (Exception e) {
-                                time = time * 4; //加倍
-                            }
-                            index--;
-                        }
-                    }
-                }).start();
-            }
-        } catch (Exception e) {
-            result.setSuccess(false);
-            result.setMessage(e.getMessage());
-        }
-        return result;
-    }
-
-    public Map<String, Object> businessPropertiesAndValues(String businessModelCode, String id) throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
-        IBusinessModelService businessModelService;
-        businessModelService = ApiClient.createProxy(IBusinessModelService.class);
-        BusinessModel businessModel = businessModelService.findByClassName(businessModelCode);
-        String daoBeanName = null;
-        if (businessModel != null) {
-            daoBeanName = getDaoBeanName(businessModelCode);
-        }
-        ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-        BaseDao appModuleDao = (BaseDao) applicationContext.getBean(daoBeanName);
-        DefaultBusinessModel content = (DefaultBusinessModel) appModuleDao.findOne(id);
-        return BusinessUtil.getPropertiesAndValues(content, null);
-    }
-
-    private String getDaoBeanName(String className) throws ClassNotFoundException {
-        BusinessEntityAnnotaion businessEntityAnnotaion = this.getBusinessEntityAnnotaion(className);
-        return businessEntityAnnotaion.daoBean();
-    }
-
-    private BusinessEntityAnnotaion getBusinessEntityAnnotaion(String className) throws ClassNotFoundException {
-        if (org.apache.commons.lang.StringUtils.isNotEmpty(className)) {
-            Class sourceClass = Class.forName(className);
-            BusinessEntityAnnotaion businessEntityAnnotaion = (BusinessEntityAnnotaion) sourceClass.getAnnotation(BusinessEntityAnnotaion.class);
-            return businessEntityAnnotaion;
-        } else {
-            throw new RuntimeException("className is null!");
-        }
-    }
 
 }

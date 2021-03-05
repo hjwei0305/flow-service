@@ -5,14 +5,12 @@ import com.ecmp.core.api.IFindByPageService;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.entity.DefaultBusinessModel;
 import com.ecmp.flow.vo.FlowInvokeParams;
-import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 
@@ -24,125 +22,162 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
 
 
     /**
-     * 获取条件POJO属性说明
+     * 获取业务实体条件属性说明
      *
-     * @param businessModelCode 业务实体代码
+     * @param businessModelCode 业务实体类路径
      * @param all               是否查询全部
-     * @return POJO属性说明Map
-     * @throws ClassNotFoundException 类找不到异常
+     * @return 条件属性说明
      */
     @GET
     @Path("properties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体代码获取条件POJO属性说明", notes = "测试")
-    ResponseData properties(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("all") Boolean all) throws ClassNotFoundException;
+    @ApiOperation(value = "获取业务实体条件属性说明", notes = "获取业务实体条件属性说明")
+    ResponseData<Map<String, String>> properties(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("all") Boolean all);
+
+
+    /**
+     * 获取业务实体条件属性值
+     *
+     * @param businessModelCode 业务实体类路径
+     * @param id                单据id
+     * @param all               是否查询全部
+     * @return 条件属性值
+     */
+    @GET
+    @Path("propertiesAndValues")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取业务实体条件属性值", notes = "获取业务实体条件属性值")
+    ResponseData<Map<String, Object>> propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("all") Boolean all);
+
+
+    /**
+     * 获取业务实体条件属性初始值
+     *
+     * @param businessModelCode 业务实体类路径
+     * @return 条件属性初始值
+     */
+    @GET
+    @Path("initPropertiesAndValues")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取业务实体条件属性初始值", notes = "获取业务实体条件属性初始值")
+    ResponseData<Map<String, Object>> initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode);
+
+
+    /**
+     * 重置业务单据状态
+     *
+     * @param businessModelCode 业务实体类路径
+     * @param id                单据id
+     * @param status            状态（init:初始化状态、inProcess：流程中、completed：流程处理完成）
+     * @return 返回结果
+     */
+    @POST
+    @Path("resetState")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "重置业务单据状态", notes = "重置业务单据状态")
+    ResponseData<Boolean> resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("status") FlowStatus status);
 
 
     /**
      * 获取条件属性的备注说明
      *
-     * @param businessModelCode 业务实体代码
-     * @throws ClassNotFoundException 类找不到异常
+     * @param businessModelCode 业务实体类路径
+     * @return 条件属性备注说明
      */
     @GET
     @Path("propertiesRemark")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取条件属性的备注说明", notes = "获取条件属性的备注说明")
-    ResponseData propertiesRemark(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException;
+    ResponseData<Map<String, String>> propertiesRemark(@QueryParam("businessModelCode") String businessModelCode);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
-     * 获取条件POJO属性初始化值键值对
+     * 流程事前事件测试
      *
-     * @param businessModelCode 业务实体代码
-     * @return POJO属性说明Map
-     * @throws ClassNotFoundException    类找不到异常
-     * @throws InvocationTargetException 目标类解析异常
-     * @throws InstantiationException    实例异常
-     * @throws IllegalAccessException    访问异常
-     * @throws NoSuchMethodException     没有方法异常
+     * @param flowInvokeParams
+     * @return
      */
-    @GET
-    @Path("initPropertiesAndValues")
+    @POST
+    @Path("changeCreateDepictNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体代码获取条件POJO属性初始化值键值对", notes = "测试")
-    ResponseData initPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException;
+    @ApiOperation(value = "流程事前事件测试", notes = "流程事前事件测试")
+    ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
 
 
     /**
-     * 获取条件POJO属性键值对
+     * 流程事后事件测试
      *
-     * @param businessModelCode 业务实体代码
-     * @param id                单据id
-     * @return POJO属性说明Map
-     * @throws ClassNotFoundException    类找不到异常
-     * @throws InvocationTargetException 目标类解析异常
-     * @throws InstantiationException    实例异常
-     * @throws IllegalAccessException    访问异常
-     * @throws NoSuchMethodException     没有方法异常
+     * @param flowInvokeParams
+     * @return
      */
-    @GET
-    @Path("propertiesAndValues")
+    @POST
+    @Path("changeCompletedDepictNew")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体代码,业务ID获取条件POJO属性键值对", notes = "测试")
-    ResponseData propertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id, @QueryParam("all") Boolean all) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    @ApiOperation(value = "流程事后事件测试", notes = "流程事后事件测试")
+    ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
+
+
 
 
     /**
-     * 重置单据状态
+     * 改变属性
      *
-     * @param businessModelCode 业务实体代码
-     * @param id                单据id
-     * @param status            状态
-     * @return 返回结果
-     * @throws ClassNotFoundException    类找不到异常
-     * @throws InvocationTargetException 目标类解析异常
-     * @throws InstantiationException    实例异常
-     * @throws IllegalAccessException    访问异常
-     * @throws NoSuchMethodException     没有方法异常
+     * @param flowInvokeParams
+     * @return
      */
     @POST
-    @Path("resetState")
+    @Path("changeProperties")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务实体代码及单据ID重置业务单据流程状态", notes = "测试")
-    ResponseData resetState(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id,
-                            @QueryParam("status") FlowStatus status) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException;
+    @ApiOperation(value = "改变属性", notes = "改变属性")
+    ResponseData changeProperties(FlowInvokeParams flowInvokeParams);
 
 
     /**
-     * 测试事前
+     * 报异常的方法
+     * @param flowInvokeParams
+     * @return
      */
     @POST
-    @Path("changeCreateDepict")
+    @Path("newServiceCallFailure")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试事件", notes = "测试事件")
-    String changeCreateDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
+    @ApiOperation(value = "报异常的方法", notes = "报异常的方法")
+    ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams);
+
 
     /**
-     * 测试事后
+     * 工作池任务测试
+     *
+     * @param flowInvokeParams
+     * @return
      */
     @POST
-    @Path("changeCompletedDepict")
+    @Path("testPoolTaskSignal")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试事件", notes = "测试事件")
-    String changeCompletedDepict(@QueryParam("id") String id, @QueryParam("paramJson") String paramJson);
-
-    /**
-     * 测试自定义执行人选择
-     */
-    @POST
-    @Path("getPersonToExecutorConfig")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试自定义执行人选择", notes = "测试自定义执行人选择")
-    ResponseData getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
+    @ApiOperation(value = "工作池任务测试", notes = "工作池任务测试")
+    ResponseData testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
 
 
     /**
@@ -165,112 +200,15 @@ public interface IDefaultBusinessModelService extends IBaseEntityService<Default
     @ApiOperation(value = "接收任务（触发）", notes = "接收任务（触发）")
     ResponseData testReceiveCallNew(FlowInvokeParams flowInvokeParams);
 
-
-    @GET
-    @Path("checkStartFlow")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试checkStartFlow", notes = "测试checkStartFlow")
-    boolean checkStartFlow(@QueryParam("id") String id);
-
-    @POST
-    @Path("endCall")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试endCall", notes = "endCall")
-    void endCall(@QueryParam("id") String id);
-
-    @POST
-    @Path("newServiceCall")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试endCall", notes = "endCall")
-    FlowOperateResult newServiceCall(FlowInvokeParams flowInvokeParams);
-
-
-    @POST
-    @Path("newServiceCallFailure")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试异常服务", notes = "failureCall")
-    ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams);
-
     /**
-     * 流程事前事件测试
-     *
-     * @param flowInvokeParams
-     * @return
+     * 测试自定义执行人选择
      */
     @POST
-    @Path("changeCreateDepictNew")
+    @Path("getPersonToExecutorConfig")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试changeCreateDepictNew", notes = "changeCreateDepictNew")
-    ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams);
-
-    /**
-     * 流程事后事件测试
-     *
-     * @param flowInvokeParams
-     * @return
-     */
-    @POST
-    @Path("changeCompletedDepictNew")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试changeCompletedDepictNew", notes = "changeCompletedDepictNew")
-    ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams);
-
-
-    /**
-     * 改变属性
-     *
-     * @param flowInvokeParams
-     * @return
-     */
-    @POST
-    @Path("changeProperties")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "changeProperties", notes = "changeProperties")
-    ResponseData changeProperties(FlowInvokeParams flowInvokeParams);
-
-
-    @GET
-    @Path("testPJoin")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "testPJoin", notes = "testPJoin")
-    Map<String, Object> businessPropertiesAndValues(@QueryParam("businessModelCode") String businessModelCode, @QueryParam("id") String id) throws Exception;
-
-    @POST
-    @Path("testPoolTaskComplete")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试testPoolTaskComplete", notes = "testPoolTaskComplete")
-    FlowOperateResult testPoolTaskComplete(FlowInvokeParams flowInvokeParams);
-
-    /**
-     * 工作池任务测试
-     *
-     * @param flowInvokeParams
-     * @return
-     */
-    @POST
-    @Path("testPoolTaskSignal")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "测试testPoolTaskSignal", notes = "testPoolTaskSignal")
-    ResponseData testPoolTaskSignal(FlowInvokeParams flowInvokeParams);
-
-
-    @POST
-    @Path("testPoolTaskCreatePool")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "testPoolTaskCreatePool", notes = "testPoolTaskCreatePool")
-    FlowOperateResult testPoolTaskCreatePool(FlowInvokeParams flowInvokeParams);
-
+    @ApiOperation(value = "测试自定义执行人选择", notes = "测试自定义执行人选择")
+    ResponseData getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams);
 
 
 }
