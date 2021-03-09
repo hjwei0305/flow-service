@@ -244,7 +244,7 @@ public class MessageSendThread implements Runnable {
             if (!result.successful()) {
                 LogUtil.error(messageLog + "-调用报错,返回错误信息【" + JsonUtils.toJson(result) + "】");
             }else{
-                LogUtil.debug(messageLog + "-调用成功!");
+                LogUtil.bizLog(messageLog + "-调用成功!");
             }
         } catch (Exception e) {
             LogUtil.error(messageLog + "内部报错!", e);
