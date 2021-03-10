@@ -107,7 +107,7 @@ public class MessageSendThread implements Runnable {
                             } else if ("DINGDING".equalsIgnoreCase(type.toString())) { //钉钉【执行人】
                                 typeNotify = NotifyType.DingTalk;
                             } else if ("MESSAGE".equalsIgnoreCase(type.toString())) { //站内信【执行人】
-                                typeNotify = NotifyType.SEI_MESSAGE;
+                                typeNotify = NotifyType.SEI_REMIND;
                             }
                             this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "执行人");
                         }
@@ -132,7 +132,7 @@ public class MessageSendThread implements Runnable {
                             } else if ("DINGDING".equalsIgnoreCase(type.toString())) { //钉钉【发起人】
                                 typeNotify = NotifyType.DingTalk;
                             } else if ("MESSAGE".equalsIgnoreCase(type.toString())) { //站内信【发起人】
-                                typeNotify = NotifyType.SEI_MESSAGE;
+                                typeNotify = NotifyType.SEI_REMIND;
                             }
                             this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "发起人");
                         }
@@ -174,7 +174,7 @@ public class MessageSendThread implements Runnable {
                             } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉【指定岗位】
                                 typeNotify = NotifyType.DingTalk;
                             } else if ("MESSAGE".equalsIgnoreCase(type.toString())) {//站内信【指定岗位】
-                                typeNotify = NotifyType.SEI_MESSAGE;
+                                typeNotify = NotifyType.SEI_REMIND;
                             }
                             this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "指定岗位");
                         }
@@ -212,7 +212,7 @@ public class MessageSendThread implements Runnable {
         message.setReceiverIds(receiverIds); //接收用户ID清单
 
         //设置内容模板或消息内容
-        if (notifyType.equals(NotifyType.EMAIL) || notifyType.equals(NotifyType.SEI_MESSAGE)) { //邮件和站内信设置消息模板
+        if (notifyType.equals(NotifyType.EMAIL) || notifyType.equals(NotifyType.SEI_REMIND)) { //邮件和站内信设置消息模板
             if (StringUtils.isEmpty(contentTemplateCode)) {
                 message.setContent(content); //消息内容
             } else {
