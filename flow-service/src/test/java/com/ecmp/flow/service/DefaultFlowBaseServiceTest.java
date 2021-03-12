@@ -1,10 +1,8 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.flow.vo.CompleteTaskVo;
 import com.ecmp.flow.vo.SolidifyStartFlowVo;
 import com.ecmp.flow.vo.StartFlowVo;
-import com.ecmp.notify.api.INotifyService;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import org.junit.Test;
@@ -85,14 +83,14 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
     @Test
     public void complete() {
         CompleteTaskVo completeTaskVo  =new CompleteTaskVo();
-//        completeTaskVo.setApproved("true");
-        completeTaskVo.setBusinessId("EBFCC795-7638-11EB-B716-0242C0A84620");
+        completeTaskVo.setApproved("true");
+        completeTaskVo.setBusinessId("3B7D9209-814A-11EB-AA6F-0242C0A84620");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
         completeTaskVo.setManualSelected(false);
         completeTaskVo.setOpinion("测试");
-        completeTaskVo.setTaskId("CB2A7938-7805-11EB-97C4-0242C0A84620");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"ServiceTask_46\",\"flowTaskType\":\"serviceTask\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"ServiceTask_46_ServiceTask\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setTaskId("9A3E28D8-8233-11EB-A8AF-0242C0A84620");
+//        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_56\",\"flowTaskType\":\"common\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_56_Normal\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
         ResponseData res=null;
         try{
             res =  defaultFlowBaseService.completeTask(completeTaskVo);
@@ -101,7 +99,7 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
         }
 
         try{
-            Thread.sleep(1000*60);  //20秒  因为有异步事件需要执行
+            Thread.sleep(1000 * 60 * 5);  //20秒  因为有异步事件需要执行
         }catch (Exception e){
         }
         System.out.println(JsonUtils.toJson(res));

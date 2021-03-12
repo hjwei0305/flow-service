@@ -87,15 +87,12 @@ public class MessageSendThread implements Runnable {
         if (notify != null) {
             JSONObject currentNotify = notify.getJSONObject(eventType);
             if (currentNotify != null) {//只有执行前才能发给执行人
-                JSONArray selectType = null;
+                JSONArray selectType;
+
+                //--------------------------------------------通知执行人
                 if ("before".equalsIgnoreCase(eventType)) {
-                    JSONObject notifyExecutor = null;
-                    try {
-                        notifyExecutor = currentNotify.getJSONObject("notifyExecutor"); //发送给执行人
-                        selectType = notifyExecutor.getJSONArray("type");
-                    } catch (Exception e) {
-                        LogUtil.error(e.getMessage(), e);
-                    }
+                    JSONObject notifyExecutor = currentNotify.getJSONObject("notifyExecutor");
+                    selectType = notifyExecutor.getJSONArray("type");
                     if (!CollectionUtils.isEmpty(selectType)) {
                         String content = notifyExecutor.getString("content");
                         List<String> receiverIds = getReceiverIds(currentNode, taskEntity);
@@ -118,9 +115,12 @@ public class MessageSendThread implements Runnable {
                 String multiInstance = (String) taskEntity.getActivity().getProperty("multiInstance");
                 Boolean isMmultiInstance = StringUtils.isNotEmpty(multiInstance);
                 if (!isMmultiInstance || taskEntity.getTransition() != null) {
-                    JSONObject notifyStarter = currentNotify.getJSONObject("notifyStarter"); //发送流程发起人
+
+                    //--------------------------------------------通知流程发起人
+                    JSONObject notifyStarter = currentNotify.getJSONObject("notifyStarter");
                     selectType = notifyStarter.getJSONArray("type");
-                    if (!CollectionUtils.isEmpty(selectType)) {
+                    boolean whetherSendStart = this.getWhetherSend(notifyStarter, isMmultiInstance);
+                    if (!CollectionUtils.isEmpty(selectType) && whetherSendStart) {
                         String content = notifyStarter.getString("content");
                         List<String> receiverIds = new ArrayList<>();
                         receiverIds.add(startUserId);
@@ -139,9 +139,11 @@ public class MessageSendThread implements Runnable {
                     }
 
 
-                    JSONObject notifyPosition = currentNotify.getJSONObject("notifyPosition");//发送给选定的岗位
+                    //--------------------------------------------通知选定的岗位
+                    JSONObject notifyPosition = currentNotify.getJSONObject("notifyPosition");
                     selectType = notifyPosition.getJSONArray("type");
-                    if (!CollectionUtils.isEmpty(selectType)) {
+                    boolean whetherSendPosition = this.getWhetherSend(notifyPosition, isMmultiInstance);
+                    if (!CollectionUtils.isEmpty(selectType) && whetherSendPosition) {
                         String content = notifyPosition.getString("content");
                         JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
                         List<String> receiverIds = new ArrayList<>();
@@ -179,11 +181,39 @@ public class MessageSendThread implements Runnable {
                             this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "指定岗位");
                         }
                     }
+
+
                 }
             }
         }
     }
 
+
+    /**
+     * 判断是否需要发送（通知条件是否满足）
+     *
+     * @param notifyInfo
+     * @return
+     */
+    private boolean getWhetherSend(JSONObject notifyInfo, Boolean isMmultiInstance) {
+        if (notifyInfo.has("condition")) {
+            String condition = notifyInfo.getString("condition");
+            if (StringUtils.isNotEmpty(condition) && !condition.equals("ALL")) {
+                String approved;
+                if (isMmultiInstance) {
+                    approved = (String) execution.getVariable("approveResult");
+                } else {
+                    approved = (String) execution.getVariable("approved");
+                }
+                if (condition.equals("AGREE")) { //审批同意才通知
+                    return Boolean.parseBoolean(approved);
+                } else {
+                    return !Boolean.parseBoolean(approved);
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * @param flowDefVersion 流程版本
