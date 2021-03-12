@@ -201,9 +201,9 @@ public class MessageSendThread implements Runnable {
             if (StringUtils.isNotEmpty(condition) && !condition.equals("ALL")) {
                 String approved;
                 if (isMmultiInstance) {
-                    approved = (String) execution.getVariable("approveResult");
+                    approved = execution.getVariable("approveResult") + "";
                 } else {
-                    approved = (String) execution.getVariable("approved");
+                    approved = execution.getVariable("approved") + "";
                 }
                 if (condition.equals("AGREE")) { //审批同意才通知
                     return Boolean.parseBoolean(approved);

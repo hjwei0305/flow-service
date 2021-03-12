@@ -88,9 +88,9 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
         completeTaskVo.setManualSelected(false);
-        completeTaskVo.setOpinion("测试");
-        completeTaskVo.setTaskId("9A3E28D8-8233-11EB-A8AF-0242C0A84620");
-//        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_56\",\"flowTaskType\":\"common\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_56_Normal\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setOpinion("1111");
+        completeTaskVo.setTaskId("A5EFF991-82D3-11EB-BE59-0242C0A84620");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_54\",\"flowTaskType\":\"approve\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_54_Approve\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false,\"allowJumpBack\":false}]");
         ResponseData res=null;
         try{
             res =  defaultFlowBaseService.completeTask(completeTaskVo);
