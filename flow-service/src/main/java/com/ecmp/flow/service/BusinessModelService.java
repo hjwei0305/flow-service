@@ -77,6 +77,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         Boolean taskBoo = true;  //是否为待办
         Boolean canMobile = true; //移动端是否可以审批
         Boolean canCancel = false; //如果是已办，是否可以撤回
+        Integer trustState = null; //是否是被委托的任务
         String historyId = "";//撤回需要的历史ID
         String flowTaskId = "";//待办ID
         List<DisagreeReason> disagreeReasonList = null;
@@ -90,6 +91,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     isFlowtask = true;
                     flowTaskId = flowTask.getId();
                     canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
+                    trustState = flowTask.getTrustState();
                     //添加不同意原因
                     String defJson = flowTask.getTaskJsonDef();
                     JSONObject defObj = JSONObject.fromObject(defJson);
@@ -154,6 +156,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 Map<String, Object> properties = (Map<String, Object>) responseData.getData();
                 properties.put("flowTaskIsInit", taskBoo); //添加是否是待办参数，true为待办
                 properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
+                properties.put("trustState", trustState);//被委托的的任务为2，提交方法不一样
                 if (!taskBoo) {
                     properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
                     properties.put("historyId", historyId);//撤回需要的历史ID
@@ -177,6 +180,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         Boolean canMobile = true; //移动端是否可以查看
         Boolean canCancel = false; //如果是已办，是否可以撤回
         Boolean carbonCopyOrReport = false; //是否是抄送和呈报节点
+        Integer trustState = null; //是否是被委托的任务
         String historyId = "";//撤回需要的历史ID
         List<DisagreeReason> disagreeReasonList = null;
         if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
@@ -196,6 +200,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 }
             } else {
                 canMobile = flowTask.getCanMobile() == null ? false : flowTask.getCanMobile();
+                trustState = flowTask.getTrustState();
                 //添加不同意原因
                 String defJson = flowTask.getTaskJsonDef();
                 JSONObject defObj = JSONObject.fromObject(defJson);
@@ -255,6 +260,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 Map<String, Object> properties = (Map<String, Object>) responseData.getData();
                 properties.put("flowTaskIsInit", taskBoo); //添加是否是待办参数，true为待办
                 properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
+                properties.put("trustState", trustState);//被委托的的任务为2，提交方法不一样
                 properties.put("carbonCopyOrReport", carbonCopyOrReport);//是否抄送和呈报节点
                 if (!taskBoo) {
                     properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
