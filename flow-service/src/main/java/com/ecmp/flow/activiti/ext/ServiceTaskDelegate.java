@@ -64,6 +64,11 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
 
+        String actProcessInstanceId = delegateTask.getProcessInstanceId();
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
+        List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
+        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+
         try {
             ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
             String actTaskDefKey = delegateTask.getCurrentActivityId();
@@ -89,10 +94,6 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     flowHistory.setDepict("服务任务【自动执行】");//服务任务【自动执行】
                     flowHistory.setFlowTaskName(flowTaskName);
                     flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());
-                    String actProcessInstanceId = delegateTask.getProcessInstanceId();
-                    List<TaskEntity> taskList = taskEntity.getTasks();
-                    System.out.println(taskList);
-                    FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                     flowHistory.setFlowInstance(flowInstance);
 
                     flowHistory.setOwnerAccount(Constants.ADMIN);
@@ -117,7 +118,8 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     String param = JsonUtils.toJson(tempV);
 
                     FlowOperateResult flowOperateResult = null;
-                    String callMessage = null;
+                    String callMessage;
+
                     try {
                         flowOperateResult = ServiceCallUtil.callService(serviceTaskId, serviceTaskName, flowTaskName, businessId, param);
                         callMessage = flowOperateResult.getMessage();
@@ -125,33 +127,8 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                         callMessage = e.getMessage();
                     }
                     if ((flowOperateResult == null || !flowOperateResult.isSuccess())) {
-                        List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
-                        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
-
-                        if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList) ) { //如果是开始节点，手动回滚
-                            new Thread() {
-                                public void run() {
-                                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                    Boolean result = false;
-                                    int index = 5;
-                                    while (!result && index > 0) {
-                                        try {
-                                            Thread.sleep(1000 * (6 - index));
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                        try {
-                                            result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
-                                        } catch (Exception e) {
-                                            LogUtil.error(e.getMessage(), e);
-                                        }
-                                        index--;
-                                    }
-                                }
-                            }.start();
-                        }
                         throw new FlowException(callMessage);//抛出异常
-                    }else{
+                    } else {
                         //可能有动态改变属性的情况（页面上没有控制的地方，这里统一重新设置业务模块的参数）
                         BusinessModel businessModel = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel();
                         Map<String, Object> variables = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, false);
@@ -184,12 +161,35 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     throw new FlowException("服务任务未配置服务事件！");
                 }
             }
-
-
         } catch (Exception e) {
+
+            if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList)) { //如果是开始节点，手动回滚
+                new Thread() {
+                    public void run() {
+                        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                        Boolean result = false;
+                        int index = 5;
+                        while (!result && index > 0) {
+                            try {
+                                Thread.sleep(1000 * (6 - index));
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                            } catch (Exception e) {
+                                LogUtil.error(e.getMessage(), e);
+                            }
+                            index--;
+                        }
+                    }
+                }.start();
+            }
+
             if (e.getClass() != FlowException.class) {
                 LogUtil.error(e.getMessage(), e);
             }
+
             throw e;
         }
     }
