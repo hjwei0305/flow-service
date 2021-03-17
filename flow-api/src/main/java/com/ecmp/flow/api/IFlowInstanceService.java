@@ -603,4 +603,18 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData taskFailTheCompensation(@QueryParam("instanceId") String instanceId);
 
 
+    /**
+     * 检查并获取流程中可以跳转节点信息
+     *
+     * @param instanceId 流程实例id
+     * @return 可以跳转的节点信息集合
+     */
+    @GET
+    @Path("checkAndGetCanJumpNodeInfos")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "检查并获取流程中可以跳转节点信息", notes = "检查并获取流程中可以跳转节点信息")
+    ResponseData<List<FlowNodeVO>> checkAndGetCanJumpNodeInfos(@QueryParam("instanceId") String instanceId);
+
+
 }

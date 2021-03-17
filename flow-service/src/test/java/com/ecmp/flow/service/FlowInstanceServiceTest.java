@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.flow.entity.FlowTask;
+import com.ecmp.flow.vo.FlowNodeVO;
 import com.ecmp.flow.vo.SignalPoolTaskVO;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
@@ -25,6 +26,12 @@ import java.util.Map;
 public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
+
+    @Test
+    public void checkAndGetCanJumpNodeInfos() {
+        ResponseData<List<FlowNodeVO>> FlowNodeVOList = service.checkAndGetCanJumpNodeInfos("25E78D95-8636-11EB-8A4B-0242C0A84413");
+        System.out.println(JsonUtils.toJson(FlowNodeVOList));
+    }
 
     @Test
     public void signalByBusinessId() {

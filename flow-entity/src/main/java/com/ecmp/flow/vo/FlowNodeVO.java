@@ -40,6 +40,15 @@ public class FlowNodeVO implements Serializable {
      */
     private String busType;
 
+    public FlowNodeVO() {
+    }
+
+    public FlowNodeVO(String id, String name, String nodeType) {
+        this.id = id;
+        this.name = name;
+        this.nodeType = nodeType;
+    }
+
 
     public String getId() {
         return id;

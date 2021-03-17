@@ -14,6 +14,7 @@ import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
+import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.DateUtils;
@@ -29,6 +30,7 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
+import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1931,6 +1933,124 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         } finally {
             //启动的时候设置的检查参数
             redisTemplate.delete("taskCompensation_" + instanceId);
+        }
+    }
+
+
+    @Override
+    public ResponseData<List<FlowNodeVO>> checkAndGetCanJumpNodeInfos(String instanceId) {
+        if (StringUtils.isNotEmpty(instanceId)) {
+            FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
+            if (flowInstance != null) {
+                if (!flowInstance.isEnded()) {
+                    ResponseData responseData = this.checkCurrentFlowWhetherCanJump(flowInstance);
+                    if (responseData.successful()) {
+                        String currentNodeId = (String) responseData.getData();
+                        FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+                        String flowDefJson = flowDefVersion.getDefJson();
+                        JSONObject defObj = JSONObject.fromObject(flowDefJson);
+                        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                        net.sf.json.JSONObject nodeObj = definition.getProcess().getNodes();
+                        List<FlowNodeVO> canJumpNodeList = new ArrayList<>();
+                        nodeObj.keySet().forEach(key -> {
+                            JSONObject currentObj = JSONObject.fromObject(nodeObj.get(key));
+                            String nodeType = (String) currentObj.get("nodeType");
+                            if ("Normal".equalsIgnoreCase(nodeType)
+                                    || "SingleSign".equalsIgnoreCase(nodeType)
+                                    || "CounterSign".equalsIgnoreCase(nodeType)
+                                    || "Approve".equalsIgnoreCase(nodeType)
+                                    || "SerialTask".equalsIgnoreCase(nodeType)
+                                    || "ParallelTask".equalsIgnoreCase(nodeType)) {
+                                String id = (String) currentObj.get("id");
+                                if (!currentNodeId.equals(id)) {
+                                    String name = (String) currentObj.get("name");
+                                    canJumpNodeList.add(new FlowNodeVO(id, name, nodeType));
+                                }
+                            }
+                        });
+                        return ResponseData.operationSuccessWithData(canJumpNodeList);
+                    } else {
+                        return ResponseData.operationFailure(responseData.getMessage());
+                    }
+                } else {
+                    return ResponseData.operationFailure("获取跳转节点信息失败：流程实例已结束！");
+                }
+            } else {
+                return ResponseData.operationFailure("获取跳转节点信息失败：获取不到流程实例！");
+            }
+        } else {
+            return ResponseData.operationFailure("获取跳转节点信息失败：参数不能为空！");
+        }
+    }
+
+
+    /**
+     * 检查当前流程是否支持跳转
+     *
+     * @param flowInstance
+     * @return
+     */
+    public ResponseData checkCurrentFlowWhetherCanJump(FlowInstance flowInstance) {
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
+            if (flowTaskList.size() == 1) {
+                FlowTask flowTask = flowTaskList.get(0);
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                String nodeType = (String) defObj.get("nodeType");
+                if ("Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)
+                        || "Approve".equalsIgnoreCase(nodeType) || "ParallelTask".equalsIgnoreCase(nodeType)
+                        || "PoolTask".equalsIgnoreCase(nodeType)) {
+                    //（普通、单签、审批、并行、工作池）任务（只有或最后一个执行人）都可以直接跳过
+                    return ResponseData.operationSuccessWithData(flowTask.getActTaskDefKey());
+                } else if ("CounterSign".equalsIgnoreCase(nodeType) || "SerialTask".equalsIgnoreCase(nodeType)) {
+                    //（会签、串行）任务
+                    if ("CounterSign".equalsIgnoreCase(nodeType)) {
+                        //会签执行策略（true为串行 false为并行）
+                        boolean isSequential = defObj.getJSONObject("nodeConfig").getJSONObject("normal").getBoolean("isSequential");
+                        if (!isSequential) { //并行会签
+                            return ResponseData.operationSuccessWithData(flowTask.getActTaskDefKey());
+                        }
+                    }
+                    //如果是串行会签或者串行任务、需要判断是否为最后一个执行人
+                    HistoricTaskInstance currTask = historyService
+                            .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult();
+                    String executionId = currTask.getExecutionId();
+                    Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+                    //总循环次数
+                    Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
+                    //完成的次数
+                    Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
+                    //串行最后一个执行人
+                    if (completeCounter + 1 == instanceOfNumbers) {
+                        return ResponseData.operationSuccessWithData(flowTask.getActTaskDefKey());
+                    } else {
+                        return ResponseData.operationFailure("获取跳转节点信息失败：当前是串行任务，非最后一个执行人！");
+                    }
+                } else {
+                    return ResponseData.operationFailure("获取跳转节点信息失败：单任务类型验证失败！");
+                }
+            } else {
+                FlowTask noSameTask = flowTaskList.stream().filter(task -> !flowTaskList.get(0).getActTaskDefKey().equals(task.getActTaskDefKey())).findFirst().orElse(null);
+                if (noSameTask == null) {
+                    FlowTask flowTask = flowTaskList.get(0);
+                    String defJson = flowTask.getTaskJsonDef();
+                    JSONObject defObj = JSONObject.fromObject(defJson);
+                    String nodeType = (String) defObj.get("nodeType");
+                    if ("SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
+                        return ResponseData.operationSuccessWithData(flowTask.getActTaskDefKey());
+                    } else if ("CounterSign".equalsIgnoreCase(nodeType) || "ParallelTask".equalsIgnoreCase(nodeType)) {
+                        //会签并行CounterSign或者并行任务ParallelTask
+                        return ResponseData.operationFailure("获取跳转节点信息失败：当前是并行任务，非最后一个执行人！");
+                    } else {
+                        return ResponseData.operationFailure("获取跳转节点信息失败：多任务类型验证失败！");
+                    }
+                } else {
+                    return ResponseData.operationFailure("获取跳转节点信息失败：流程存在不同的任务，可能处于并行网关中，不能进行跳转！");
+                }
+            }
+        } else {
+            return ResponseData.operationFailure("获取跳转节点信息失败：流程待办不存在，请先进行待办补偿！");
         }
     }
 
