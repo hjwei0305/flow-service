@@ -1960,7 +1960,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                                     || "CounterSign".equalsIgnoreCase(nodeType)
                                     || "Approve".equalsIgnoreCase(nodeType)
                                     || "SerialTask".equalsIgnoreCase(nodeType)
-                                    || "ParallelTask".equalsIgnoreCase(nodeType)) {
+                                    || "ParallelTask".equalsIgnoreCase(nodeType)
+                                    || "PoolTask".equalsIgnoreCase(nodeType)) {
                                 String id = (String) currentObj.get("id");
                                 if (!currentNodeId.equals(id)) {
                                     String name = (String) currentObj.get("name");
