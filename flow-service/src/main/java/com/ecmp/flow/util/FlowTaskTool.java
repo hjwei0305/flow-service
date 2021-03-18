@@ -2638,4 +2638,27 @@ public class FlowTaskTool {
     }
 
 
+
+
+    /**
+     * 目标节点基础信息
+     */
+    public NodeInfo getNodeInfoByTarget(FlowTask flowTask, String targetNodeId, FlowDefVersion flowDefVersion) {
+        String currentDefJson = flowTask.getTaskJsonDef();
+        JSONObject currentDefObj = JSONObject.fromObject(currentDefJson);
+        String currentNodeType = currentDefObj.get("nodeType") + "";
+
+        String actProcessDefinitionId = flowDefVersion.getActDefId();
+        ProcessDefinitionEntity actDefinition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
+                .getDeployedProcessDefinition(actProcessDefinitionId);
+
+        PvmActivity lastActivity = this.getActivitNode(actDefinition, targetNodeId);
+        NodeInfo tempNodeInfo = new NodeInfo();
+        tempNodeInfo.setCurrentTaskType(currentNodeType);
+        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, lastActivity);
+        tempNodeInfo.setName(tempNodeInfo.getName());
+        return tempNodeInfo;
+    }
+
+
 }

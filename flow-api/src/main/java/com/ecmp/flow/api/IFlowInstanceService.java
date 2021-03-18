@@ -617,4 +617,21 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     ResponseData<List<FlowNodeVO>> checkAndGetCanJumpNodeInfos(@QueryParam("instanceId") String instanceId);
 
 
+
+    /**
+     * 获取跳转目标节点信息
+     *
+     * @param instanceId   流程实例ID
+     * @param targetNodeId 目标节点ID
+     * @return 目标节点信息
+     */
+    @GET
+    @Path("getTargetNodeInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取跳转目标节点信息", notes = "获取跳转目标节点信息")
+    ResponseData<TargetNodeInfoVo> getTargetNodeInfo(@QueryParam("instanceId") String instanceId, @QueryParam("targetNodeId") String targetNodeId);
+
+
+
 }

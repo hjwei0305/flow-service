@@ -15,6 +15,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
+import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.DateUtils;
@@ -28,11 +29,13 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.activiti.engine.impl.persistence.entity.VariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,6 +111,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Autowired
     private FlowTaskTool flowTaskTool;
+
+    @Autowired
+    private FlowExecutorConfigDao flowExecutorConfigDao;
 
 
     /**
@@ -2053,6 +2059,242 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         } else {
             return ResponseData.operationFailure("获取跳转节点信息失败：流程待办不存在，请先进行待办补偿！");
         }
+    }
+
+
+
+
+    @Override
+    public ResponseData<TargetNodeInfoVo> getTargetNodeInfo(String instanceId, String targetNodeId) {
+        if (StringUtils.isNotEmpty(instanceId)) {
+            FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
+            if (flowInstance != null) {
+                if (!flowInstance.isEnded()) {
+                    List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+                    if (!CollectionUtils.isEmpty(flowTaskList)) {
+                        FlowTask flowTask = flowTaskList.get(0);
+                        //得到目标节点信息
+                        TargetNodeInfoVo targetNodeInfoVo;
+                        try {
+                            targetNodeInfoVo = this.findTargetNodeInfo(flowInstance, flowTask, targetNodeId);
+                        } catch (Exception e) {
+                            LogUtil.error("获取目标节点信息错误，详情请查看日志！", e);
+                            return ResponseData.operationFailure("获取目标节点信息错误，详情请查看日志！");
+                        }
+                        return ResponseData.operationSuccessWithData(targetNodeInfoVo);
+                    } else {
+                        return ResponseData.operationFailure("获取目标节点信息失败：流程待办不存在，可能已经被处理！");
+                    }
+                } else {
+                    return ResponseData.operationFailure("获取目标节点信息失败：流程实例已结束！");
+                }
+            } else {
+                return ResponseData.operationFailure("获取目标节点信息失败：获取不到流程实例！");
+            }
+        } else {
+            return ResponseData.operationFailure("获取目标节点信息失败：参数不能为空！");
+        }
+    }
+
+
+    public TargetNodeInfoVo findTargetNodeInfo(FlowInstance flowInstance, FlowTask flowTask, String targetNodeId) {
+        //得到目标节点基础信息
+        NodeInfo nodeInfo = flowTaskTool.getNodeInfoByTarget(flowTask, targetNodeId, flowInstance.getFlowDefVersion());
+
+        String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
+        JSONObject defObj = JSONObject.fromObject(flowDefJson);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        //是否是固化流程
+        boolean solidifyFlow = BooleanUtils.isTrue(flowInstance.getFlowDefVersion().getSolidifyFlow());
+
+        String flowTaskDefJson = flowTask.getTaskJsonDef();
+        JSONObject flowTaskDefObj = JSONObject.fromObject(flowTaskDefJson);
+        String currentNodeType = flowTaskDefObj.get("nodeType") + "";
+        JSONObject normalInfo = flowTaskDefObj.getJSONObject("nodeConfig").getJSONObject("normal");
+        Boolean currentSingleTaskAuto = false;
+        if (normalInfo != null && normalInfo.has("singleTaskNoChoose") && normalInfo.get("singleTaskNoChoose") != null) {
+            currentSingleTaskAuto = normalInfo.getBoolean("singleTaskNoChoose");
+        }
+
+        nodeInfo.setCurrentTaskType(currentNodeType);
+        nodeInfo.setCurrentSingleTaskAuto(currentSingleTaskAuto);
+
+        JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(nodeInfo.getId());
+
+        try {
+            JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+            Boolean allowChooseInstancy = normal.getBoolean("allowChooseInstancy");
+            nodeInfo.setAllowChooseInstancy(allowChooseInstancy);
+        } catch (Exception e) {
+        }
+
+        JSONObject executor = null;
+        net.sf.json.JSONArray executorList = null;//针对两个条件以上的情况
+        if (currentNode.getJSONObject(Constants.NODE_CONFIG).has(Constants.EXECUTOR)) {
+            try {
+                executor = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.EXECUTOR);
+            } catch (Exception e) {
+                try {
+                    executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                } catch (Exception e2) {
+                }
+                if (executorList != null && executorList.size() == 1) {
+                    executor = executorList.getJSONObject(0);
+                }
+            }
+        }
+
+        UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
+        if (StringUtils.isEmpty(nodeInfo.getUserVarName())) {
+            if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
+            } else if ("SingleSign".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                nodeInfo.setUserVarName(userTaskTemp.getId() + "_SingleSign");
+                nodeInfo.setUiType("checkbox");
+            } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
+            } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType()) || "ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType()) || "SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
+                nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
+                nodeInfo.setUiType("checkbox");
+            }
+        }
+
+
+        if (!solidifyFlow) {
+            if (!CollectionUtils.isEmpty(executor)) {
+                String userType = (String) executor.get("userType");
+                String ids = (String) executor.get("ids");
+                List<Executor> employees = null;
+                nodeInfo.setUiUserType(userType);
+                if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
+                    while (flowInstance.getParent() != null) { //以父流程的启动人为准
+                        flowInstance = flowInstance.getParent();
+                    }
+                    String startUserId;
+                    HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(flowInstance.getActInstanceId()).singleResult();
+                    if (historicProcessInstance == null) {//当第一个任务为服务任务的时候存在为空的情况发生
+                        startUserId = ContextUtil.getUserId();
+                    } else {
+                        startUserId = historicProcessInstance.getStartUserId();
+                    }
+                    //根据用户的id列表获取执行人
+                    employees = flowCommonUtil.getBasicUserExecutors(Arrays.asList(startUserId));
+                } else {
+                    String selfDefId = (String) executor.get("selfDefId");
+                    if (StringUtils.isNotEmpty(ids) || StringUtils.isNotEmpty(selfDefId)) {
+                        if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+                            FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                            String path = flowExecutorConfig.getUrl();
+                            AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                            String appModuleCode = appModule.getApiBaseAddress();
+                            String businessId = flowTask.getFlowInstance().getBusinessId();
+                            String param = flowExecutorConfig.getParam();
+                            FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                            flowInvokeParams.setId(businessId);
+                            flowInvokeParams.setJsonParam(param);
+                            String nodeCode;
+                            try {
+                                JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                                nodeCode = normal.getString("nodeCode");
+                                if (StringUtils.isNotEmpty(nodeCode)) {
+                                    Map<String, String> map = new HashMap<>();
+                                    map.put("nodeCode", nodeCode);
+                                    flowInvokeParams.setParams(map);
+                                }
+                            } catch (Exception e) {
+                            }
+                            employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
+                        } else {
+                            //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
+                            String currentOrgId = flowTaskService.getOrgIdByFlowTask(flowTask);
+                            employees = flowTaskTool.getExecutors(userType, ids, currentOrgId);
+                        }
+                    }
+                }
+                if (employees != null && !employees.isEmpty()) {
+                    Set<Executor> employeeSet = new HashSet<>(employees);
+                    nodeInfo.setExecutorSet(employeeSet);
+                }
+            } else if (executorList != null && executorList.size() > 1) {
+                List<Executor> employees;
+                String selfDefId = null;
+                List<String> orgDimensionCodes = null;//组织维度代码集合
+                List<String> positionIds = null;//岗位代码集合
+                List<String> orgIds = null; //组织机构id集合
+                List<String> positionTypesIds = null;//岗位类别id集合
+                for (Object executorObject : executorList.toArray()) {
+                    JSONObject executorTemp = (JSONObject) executorObject;
+                    String userType = executorTemp.get("userType") + "";
+                    String ids = executorTemp.get("ids") + "";
+                    List<String> tempList = null;
+                    if (StringUtils.isNotEmpty(ids)) {
+                        String[] idsShuZhu = ids.split(",");
+                        tempList = Arrays.asList(idsShuZhu);
+                    }
+                    if ("SelfDefinition".equalsIgnoreCase(userType)) {//通过业务ID获取自定义用户
+                        selfDefId = executorTemp.get("selfDefOfOrgAndSelId") + "";
+                    } else if ("Position".equalsIgnoreCase(userType)) {
+                        positionIds = tempList;
+                    } else if ("OrganizationDimension".equalsIgnoreCase(userType)) {
+                        orgDimensionCodes = tempList;
+                    } else if ("PositionType".equalsIgnoreCase(userType)) {
+                        positionTypesIds = tempList;
+                    } else if ("Org".equalsIgnoreCase(userType)) {
+                        orgIds = tempList;
+                    }
+                }
+                // 取得当前任务
+                String currentOrgId = flowTaskService.getOrgIdByFlowTask(flowTask);
+                if (StringUtils.isNotEmpty(selfDefId) && !Constants.NULL_S.equalsIgnoreCase(selfDefId)) {
+                    FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(selfDefId);
+                    String path = flowExecutorConfig.getUrl();
+                    AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                    String appModuleCode = appModule.getApiBaseAddress();
+                    String param = flowExecutorConfig.getParam();
+                    FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                    flowInvokeParams.setId(flowTask.getFlowInstance().getBusinessId());
+
+                    flowInvokeParams.setOrgId(currentOrgId);
+                    flowInvokeParams.setPositionIds(positionIds);
+                    flowInvokeParams.setPositionTypeIds(positionTypesIds);
+                    flowInvokeParams.setOrganizationIds(orgIds);
+                    flowInvokeParams.setOrgDimensionCodes(orgDimensionCodes);
+
+                    flowInvokeParams.setJsonParam(param);
+                    try {
+                        JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                        String nodeCode = normal.getString("nodeCode");
+                        if (StringUtils.isNotEmpty(nodeCode)) {
+                            Map<String, String> map = new HashMap<>();
+                            map.put("nodeCode", nodeCode);
+                            flowInvokeParams.setParams(map);
+                        }
+                    } catch (Exception e) {
+                    }
+                    employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
+
+                } else {
+                    if (positionTypesIds != null && orgIds != null) {
+                        //新增根据（岗位类别+组织机构）获得执行人
+                        employees = flowCommonUtil.getExecutorsByPostCatIdsAndOrgs(positionTypesIds, orgIds);
+                    } else {
+                        //通过岗位ids、组织维度ids和组织机构id来获取执行人
+                        employees = flowCommonUtil.getExecutorsByPositionIdsAndorgDimIds(positionIds, orgDimensionCodes, currentOrgId);
+                    }
+                }
+                if (employees != null && !employees.isEmpty()) {
+                    Set<Executor> employeeSet = new HashSet<>(employees);
+                    nodeInfo.setExecutorSet(employeeSet);
+                }
+            }
+        } else {
+            if (!CollectionUtils.isEmpty(executor)) {
+                String userType = (String) executor.get("userType");
+                nodeInfo.setUiUserType(userType);
+            }
+        }
+
+        return new TargetNodeInfoVo(solidifyFlow,nodeInfo);
     }
 
 
