@@ -440,48 +440,45 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
                     remainingTime = 1800L;
                 }
-                return  ResponseData.operationFailure("流程定义正在统一发布中，请不要重复请求！剩余锁定时间：" + remainingTime + "秒！");
+                return ResponseData.operationFailure("流程定义正在统一发布中，请不要重复请求！剩余锁定时间：" + remainingTime + "秒！");
             }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
-                    StringBuffer stringBuffer = new StringBuffer();
+            try {
+                redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
+                StringBuffer stringBuffer = new StringBuffer();
+                flowDefinationList.forEach(flowDefination -> {
                     try {
-                        flowDefinationList.forEach(flowDefination -> {
-                            try {
-                                if (flowDefination.getLastDeloyVersionId() == null
-                                        && flowDefination.getLastVersionId() != null) {
-                                    FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
-                                    String def = flowDefVersion.getDefJson();
-                                    JSONObject defObj = JSONObject.fromObject(def);
-                                    Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-                                    definition.setDefJson(def);
-                                    OperateResultWithData<FlowDefVersion> result = save(definition);
-                                    if (result.successful()) {
-                                        flowDefinationService.deployById(result.getData().getFlowDefination().getId());
-                                    }
-                                }
-                            } catch (Exception e) {
-                                stringBuffer.append("[" + flowDefination.getName() + "]");
+                        if (flowDefination.getLastDeloyVersionId() == null
+                                && flowDefination.getLastVersionId() != null) {
+                            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+                            String def = flowDefVersion.getDefJson();
+                            JSONObject defObj = JSONObject.fromObject(def);
+                            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                            definition.setDefJson(def);
+                            OperateResultWithData<FlowDefVersion> result = save(definition);
+                            if (result.successful()) {
+                                flowDefinationService.deployById(result.getData().getFlowDefination().getId());
                             }
-                        });
-
-                        if (!StringUtils.isEmpty(stringBuffer.toString())) {
-                            stringBuffer.append("自动发布失败！");
-                            LogUtil.error("统一发布流程完成：" + stringBuffer.toString());
-                        } else {
-                            LogUtil.debug("统一发布流程完成！");
                         }
                     } catch (Exception e) {
-                        LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
-                    } finally {
-                        redisTemplate.delete("releaseByAllOrIds");
+                        stringBuffer.append("[" + flowDefination.getName() + "]");
+                        LogUtil.error("统一发布错误：" + flowDefination.getName(), e);
                     }
+                });
+
+                if (!StringUtils.isEmpty(stringBuffer.toString())) {
+                    stringBuffer.append("自动发布失败！");
+                    LogUtil.error("统一发布流程完成：" + stringBuffer.toString());
+                } else {
+                    LogUtil.debug("统一发布流程完成！");
                 }
-            }).start();
-            return ResponseData.operationSuccess("正在发布，详情可查看日志！");
+                return ResponseData.operationSuccess("正在发布，详情可查看日志！");
+            } catch (Exception e) {
+                LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
+                throw e;
+            } finally {
+                redisTemplate.delete("releaseByAllOrIds");
+            }
         } else {
             return ResponseData.operationFailure("没有需要发布的流程定义！");
         }
