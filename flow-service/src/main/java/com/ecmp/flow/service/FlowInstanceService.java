@@ -115,6 +115,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Autowired
     private FlowExecutorConfigDao flowExecutorConfigDao;
 
+    @Autowired
+    private FlowSolidifyExecutorService flowSolidifyExecutorService;
+
 
     /**
      * 撤销流程实例
@@ -2291,6 +2294,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (!CollectionUtils.isEmpty(executor)) {
                 String userType = (String) executor.get("userType");
                 nodeInfo.setUiUserType(userType);
+
+
+                List<NodeInfo> nodeInfoList = new ArrayList<>();
+                nodeInfoList.add(nodeInfo);
+                //设置固化执行人信息(只是前台展示使用)
+                nodeInfoList = flowSolidifyExecutorService.
+                        setNodeExecutorByBusinessId(nodeInfoList, flowTask.getFlowInstance().getBusinessId());
+                nodeInfo = nodeInfoList.get(0);
             }
         }
 
