@@ -7,12 +7,14 @@ import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.vo.OperateResultWithData;
+import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBException;
+import java.util.List;
 
 /**
  * *************************************************************************************************
@@ -36,6 +38,17 @@ import javax.xml.bind.JAXBException;
 @Path("flowDefVersion")
 @Api(value = "IFlowDefVersionService 流程定义版本服务API接口")
 public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, String> {
+
+
+    /**
+     * 发布流程流程（用于同步流程定义后统一发布）
+     * @param pushDefinationIdList(为空表示发布全部)
+     * @return
+     */
+    @POST
+    @Path("releaseByAllOrIds")
+    @ApiOperation(value = "发布所有流程版本", notes = "发布所有流程版本")
+    ResponseData  releaseByAllOrIds(List<String> pushDefinationIdList);
 
     /**
      * 保存一个实体

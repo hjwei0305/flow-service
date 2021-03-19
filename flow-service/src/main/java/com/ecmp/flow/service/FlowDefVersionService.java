@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.PageResult;
@@ -7,6 +8,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefVersionService;
+import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.FlowDefVersion;
@@ -21,10 +23,12 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
+import net.sf.json.JSONObject;
 import org.activiti.engine.ProcessEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBException;
 import java.util.Collection;
@@ -417,4 +421,42 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
     }
 
+    @Override
+    public ResponseData releaseByAllOrIds(List<String> pushDefinationIdList) {
+        List<FlowDefination> flowDefinationList;
+        if (CollectionUtils.isEmpty(pushDefinationIdList)) {
+            flowDefinationList = flowDefinationDao.findAll();
+        } else {
+            flowDefinationList = flowDefinationDao.findListByDefIds(pushDefinationIdList);
+        }
+
+        StringBuffer stringBuffer = new StringBuffer();
+        if (!CollectionUtils.isEmpty(flowDefinationList)) {
+            flowDefinationList.forEach(flowDefination -> {
+                try {
+                    if (flowDefination.getLastDeloyVersionId() != null) {
+                        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+                        String def = flowDefVersion.getDefJson();
+                        JSONObject defObj = JSONObject.fromObject(def);
+                        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                        definition.setDefJson(def);
+                        OperateResultWithData<FlowDefVersion> result = this.save(definition);
+                        if (result.successful()) {
+                            flowDefinationService.deployById(result.getData().getFlowDefination().getId());
+                        }
+                    }
+                } catch (Exception e) {
+                    stringBuffer.append("[" + flowDefination.getName() + "]");
+                }
+            });
+
+            if (!StringUtils.isEmpty(stringBuffer.toString())) {
+                stringBuffer.append("自动发布失败！");
+                return ResponseData.operationFailure(stringBuffer.toString());
+            }
+        } else {
+            return ResponseData.operationFailure("没有需要发布的流程定义！");
+        }
+        return ResponseData.operationSuccess();
+    }
 }

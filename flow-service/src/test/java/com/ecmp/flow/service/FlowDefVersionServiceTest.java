@@ -32,4 +32,10 @@ public class FlowDefVersionServiceTest extends BaseContextTestCase {
         Assert.assertNotNull(result);
         System.out.println(JsonUtils.toJson(result));
     }
+
+    @Test
+    public void releaseByAllOrIds(){
+        service.releaseByAllOrIds(null);
+    }
+
 }
