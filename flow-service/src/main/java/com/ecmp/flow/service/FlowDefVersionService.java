@@ -465,11 +465,19 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                             definition.setDefJson(def);
                             OperateResultWithData<FlowDefVersion> result = this.save(definition);
                             if (result.successful()) {
-                                flowDefinationService.deployById(result.getData().getFlowDefination().getId());
+                                LogUtil.bizLog("保存流程版本成功！");
+                                String actId = flowDefinationService.deployById(flowDefination.getId());
+                                if (!StringUtils.isEmpty(actId)) {
+                                    LogUtil.bizLog("发布流程版本成功！");
+                                }else{
+                                    LogUtil.bizLog("发布流程版本失败！");
+                                }
+                            }else{
+                                LogUtil.bizLog("保存流程版本失败！");
                             }
                         }
                     } catch (Exception e) {
-                        LogUtil.bizLog("统一发布错误：" + flowDefination.getName(), e);
+                        LogUtil.bizLog("统一发布错误：" + flowDefination.getName() + ":" + e.getMessage());
                     }
                 });
                 return ResponseData.operationSuccess("发布完成，详情请查看日志！");
