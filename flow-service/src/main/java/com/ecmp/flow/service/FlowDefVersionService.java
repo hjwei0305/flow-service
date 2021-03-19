@@ -454,7 +454,6 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 
             try {
                 redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
-                StringBuffer stringBuffer = new StringBuffer();
                 flowDefinationList.forEach(flowDefination -> {
                     try {
                         if (flowDefination.getLastDeloyVersionId() == null && flowDefination.getLastVersionId() != null) {
@@ -470,17 +469,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                             }
                         }
                     } catch (Exception e) {
-                        stringBuffer.append("[" + flowDefination.getName() + "]");
-                        LogUtil.error("统一发布错误：" + flowDefination.getName(), e);
+                        LogUtil.bizLog("统一发布错误：" + flowDefination.getName(), e);
                     }
                 });
-
-                if (!StringUtils.isEmpty(stringBuffer.toString())) {
-                    stringBuffer.append("自动发布失败！");
-                    LogUtil.error("统一发布流程完成：" + stringBuffer.toString());
-                } else {
-                    LogUtil.bizLog("统一发布流程完成！");
-                }
                 return ResponseData.operationSuccess("发布完成，详情请查看日志！");
             } catch (Exception e) {
                 LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
