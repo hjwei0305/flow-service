@@ -430,33 +430,41 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
             flowDefinationList = flowDefinationDao.findListByDefIds(pushDefinationIdList);
         }
 
-        StringBuffer stringBuffer = new StringBuffer();
         if (!CollectionUtils.isEmpty(flowDefinationList)) {
-            flowDefinationList.forEach(flowDefination -> {
-                try {
-                    if (flowDefination.getLastDeloyVersionId() != null) {
-                        FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
-                        String def = flowDefVersion.getDefJson();
-                        JSONObject defObj = JSONObject.fromObject(def);
-                        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-                        definition.setDefJson(def);
-                        OperateResultWithData<FlowDefVersion> result = this.save(definition);
-                        if (result.successful()) {
-                            flowDefinationService.deployById(result.getData().getFlowDefination().getId());
+            new Thread(new Runnable() {//检测待办是否自动执行
+                @Override
+                public void run() {
+                    StringBuffer stringBuffer = new StringBuffer();
+                    flowDefinationList.forEach(flowDefination -> {
+                        try {
+                            if (flowDefination.getLastDeloyVersionId() == null
+                                    && flowDefination.getLastVersionId() != null) {
+                                FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+                                String def = flowDefVersion.getDefJson();
+                                JSONObject defObj = JSONObject.fromObject(def);
+                                Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                                definition.setDefJson(def);
+                                OperateResultWithData<FlowDefVersion> result = save(definition);
+                                if (result.successful()) {
+                                    flowDefinationService.deployById(result.getData().getFlowDefination().getId());
+                                }
+                            }
+                        } catch (Exception e) {
+                            stringBuffer.append("[" + flowDefination.getName() + "]");
                         }
-                    }
-                } catch (Exception e) {
-                    stringBuffer.append("[" + flowDefination.getName() + "]");
-                }
-            });
+                    });
 
-            if (!StringUtils.isEmpty(stringBuffer.toString())) {
-                stringBuffer.append("自动发布失败！");
-                return ResponseData.operationFailure(stringBuffer.toString());
-            }
+                    if (!StringUtils.isEmpty(stringBuffer.toString())) {
+                        stringBuffer.append("自动发布失败！");
+                        LogUtil.error("统一发布流程完成："+stringBuffer.toString());
+                    }else{
+                        LogUtil.debug("统一发布流程完成！");
+                    }
+                }
+            }).start();
+            return  ResponseData.operationSuccess("正在发布，详情可查看日志！");
         } else {
             return ResponseData.operationFailure("没有需要发布的流程定义！");
         }
-        return ResponseData.operationSuccess();
     }
 }
