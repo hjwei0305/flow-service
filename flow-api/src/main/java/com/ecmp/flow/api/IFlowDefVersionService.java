@@ -50,7 +50,7 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过流程定义ID集合发布流程", notes = "通过流程定义ID集合发布流程")
-    ResponseData  releaseByAllOrIds(String pushDefinationIdList);
+    ResponseData  releaseByAllOrIds(List<String> pushDefinationIdList);
 
     /**
      * 保存一个实体

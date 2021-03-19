@@ -425,13 +425,12 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
     }
 
     @Override
-    public ResponseData releaseByAllOrIds(String pushDefinationIdList) {
+    public ResponseData releaseByAllOrIds(List<String> pushDefinationIdList) {
         List<FlowDefination> flowDefinationList;
-        if (StringUtils.isEmpty(pushDefinationIdList)) {
+        if (CollectionUtils.isEmpty(pushDefinationIdList)) {
             flowDefinationList = flowDefinationDao.findAll();
         } else {
-            List<String> list = Arrays.asList(pushDefinationIdList);
-            flowDefinationList = flowDefinationDao.findListByDefIds(list);
+            flowDefinationList = flowDefinationDao.findListByDefIds(pushDefinationIdList);
         }
         if (!CollectionUtils.isEmpty(flowDefinationList)) {
             Boolean setValue = redisTemplate.opsForValue().setIfAbsent("releaseByAllOrIds", "AK");
