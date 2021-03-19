@@ -431,7 +431,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
 
         if (!CollectionUtils.isEmpty(flowDefinationList)) {
-            new Thread(new Runnable() {//检测待办是否自动执行
+            new Thread(new Runnable() {
                 @Override
                 public void run() {
                     StringBuffer stringBuffer = new StringBuffer();
