@@ -41,13 +41,13 @@ public interface IFlowDefVersionService extends IBaseService<FlowDefVersion, Str
 
 
     /**
-     * 发布流程流程（用于同步流程定义后统一发布）
-     * @param pushDefinationIdList(为空表示发布全部)
+     * 通过流程定义ID集合发布流程（用于同步流程后统一发布）
+     * @param pushDefinationIdList  流程定义ID集合(为空表示发布全部)
      * @return
      */
     @POST
     @Path("releaseByAllOrIds")
-    @ApiOperation(value = "发布所有流程版本", notes = "发布所有流程版本")
+    @ApiOperation(value = "通过流程定义ID集合发布流程", notes = "通过流程定义ID集合发布流程")
     ResponseData  releaseByAllOrIds(List<String> pushDefinationIdList);
 
     /**
