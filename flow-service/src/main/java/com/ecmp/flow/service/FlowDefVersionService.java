@@ -29,6 +29,7 @@ import org.activiti.engine.ProcessEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBException;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -425,14 +427,21 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
     }
 
     @Override
+    @Transactional
     public ResponseData releaseByAllOrIds(List<String> pushDefinationIdList) {
         List<FlowDefination> flowDefinationList;
         if (CollectionUtils.isEmpty(pushDefinationIdList)) {
+            LogUtil.bizLog("统一发布全部未发布的流程定义！");
             flowDefinationList = flowDefinationDao.findAll();
+            if (!CollectionUtils.isEmpty(flowDefinationList)) {
+                flowDefinationList = flowDefinationList.stream().filter(a -> a.getLastDeloyVersionId() == null).collect(Collectors.toList());
+            }
         } else {
+            LogUtil.bizLog("统一发布ID集合的流程定义！");
             flowDefinationList = flowDefinationDao.findListByDefIds(pushDefinationIdList);
         }
         if (!CollectionUtils.isEmpty(flowDefinationList)) {
+            LogUtil.bizLog("统一发布流程定义:个数" + flowDefinationList.size());
             Boolean setValue = redisTemplate.opsForValue().setIfAbsent("releaseByAllOrIds", "AK");
             if (!setValue) {
                 Long remainingTime = redisTemplate.getExpire("releaseByAllOrIds", TimeUnit.SECONDS);
@@ -448,14 +457,14 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 StringBuffer stringBuffer = new StringBuffer();
                 flowDefinationList.forEach(flowDefination -> {
                     try {
-                        if (flowDefination.getLastDeloyVersionId() == null
-                                && flowDefination.getLastVersionId() != null) {
+                        if (flowDefination.getLastDeloyVersionId() == null && flowDefination.getLastVersionId() != null) {
+                            LogUtil.bizLog("正在发布：【" + flowDefination.getName() + "】");
                             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
                             String def = flowDefVersion.getDefJson();
                             JSONObject defObj = JSONObject.fromObject(def);
                             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
                             definition.setDefJson(def);
-                            OperateResultWithData<FlowDefVersion> result = save(definition);
+                            OperateResultWithData<FlowDefVersion> result = this.save(definition);
                             if (result.successful()) {
                                 flowDefinationService.deployById(result.getData().getFlowDefination().getId());
                             }
@@ -470,9 +479,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     stringBuffer.append("自动发布失败！");
                     LogUtil.error("统一发布流程完成：" + stringBuffer.toString());
                 } else {
-                    LogUtil.debug("统一发布流程完成！");
+                    LogUtil.bizLog("统一发布流程完成！");
                 }
-                return ResponseData.operationSuccess("正在发布，详情可查看日志！");
+                return ResponseData.operationSuccess("发布完成，详情请查看日志！");
             } catch (Exception e) {
                 LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
                 throw e;
