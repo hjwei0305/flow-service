@@ -18,6 +18,7 @@ import com.ecmp.flow.entity.FlowType;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.XmlUtil;
+import com.ecmp.flow.vo.SaveEntityVo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.Process;
 import com.ecmp.log.util.LogUtil;
@@ -82,7 +83,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
     private ProcessEngine processEngine;
 
     @Autowired
-    private AppModuleDao appModuleDao;
+    private FlowDesignService flowDesignService;
 
     /**
      * 新增修改操作
@@ -460,24 +461,18 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                             LogUtil.bizLog("正在发布：【" + flowDefination.getName() + "】");
                             FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
                             String def = flowDefVersion.getDefJson();
-                            JSONObject defObj = JSONObject.fromObject(def);
-                            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-                            definition.setDefJson(def);
-                            OperateResultWithData<FlowDefVersion> result = this.save(definition);
-                            if (result.successful()) {
-                                LogUtil.bizLog("保存流程版本成功！");
-                                String actId = flowDefinationService.deployById(flowDefination.getId());
-                                if (!StringUtils.isEmpty(actId)) {
-                                    LogUtil.bizLog("发布流程版本成功！");
-                                }else{
-                                    LogUtil.bizLog("发布流程版本失败！");
-                                }
-                            }else{
-                                LogUtil.bizLog("保存流程版本失败！");
+                            SaveEntityVo saveEntityVo = new SaveEntityVo();
+                            saveEntityVo.setDef(def);
+                            saveEntityVo.setDeploy(true);
+                            ResponseData responseData = flowDesignService.save(saveEntityVo);
+                            if (responseData.successful()) {
+                                LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本成功！");
+                            } else {
+                                LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本失败：" + responseData.getMessage());
                             }
                         }
                     } catch (Exception e) {
-                        LogUtil.bizLog("统一发布错误：" + flowDefination.getName() + ":" + e.getMessage());
+                        LogUtil.bizLog("【" + flowDefination.getName() + "】统一发布错误：" + e.getMessage());
                     }
                 });
                 return ResponseData.operationSuccess("发布完成，详情请查看日志！");
