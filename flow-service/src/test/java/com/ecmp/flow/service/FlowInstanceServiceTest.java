@@ -2,6 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowNodeVO;
+import com.ecmp.flow.vo.JumpTaskVo;
 import com.ecmp.flow.vo.SignalPoolTaskVO;
 import com.ecmp.flow.vo.TargetNodeInfoVo;
 import com.ecmp.util.JsonUtils;
@@ -28,6 +29,19 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
 
+
+    @Test
+    public void jumpToTargetNode() {
+        JumpTaskVo jumpTaskVo = new JumpTaskVo();
+        jumpTaskVo.setInstanceId("25E78D95-8636-11EB-8A4B-0242C0A84413");
+        jumpTaskVo.setTargetNodeId("UserTask_198");
+        jumpTaskVo.setCurrentNodeAfterEvent(true);
+        jumpTaskVo.setTargetNodeBeforeEvent(true);
+        jumpTaskVo.setJumpDepict("测试跳转");
+        jumpTaskVo.setTaskList("[{\"nodeId\":\"UserTask_198\",\"flowTaskType\":\"CounterSign\",\"userIds\":\"1592D012-A330-11E7-A967-02420B99179E\",\"userVarName\":\"UserTask_198_List_CounterSign\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false,\"allowJumpBack\":false}]");
+        ResponseData responseData = service.jumpToTargetNode(jumpTaskVo);
+        System.out.println(JsonUtils.toJson(responseData));
+    }
 
     @Test
     public void getTargetNodeInfo() {

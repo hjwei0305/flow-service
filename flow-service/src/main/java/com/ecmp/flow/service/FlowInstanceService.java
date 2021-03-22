@@ -23,6 +23,7 @@ import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
 import com.ecmp.vo.SessionUser;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
@@ -2065,8 +2066,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-
-
     @Override
     public ResponseData<TargetNodeInfoVo> getTargetNodeInfo(String instanceId, String targetNodeId) {
         if (StringUtils.isNotEmpty(instanceId)) {
@@ -2305,8 +2304,149 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
         }
 
-        return new TargetNodeInfoVo(solidifyFlow,nodeInfo);
+        return new TargetNodeInfoVo(solidifyFlow, nodeInfo);
     }
 
+
+    @Override
+    public ResponseData jumpToTargetNode(JumpTaskVo jumpTaskVo) {
+        String businessId;
+        String approved = null;
+        String instanceId = jumpTaskVo.getInstanceId();
+        FlowTask currentTask;
+        if (StringUtils.isNotEmpty(instanceId)) {
+            FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
+            if (flowInstance != null) {
+                List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+                if (!CollectionUtils.isEmpty(flowTaskList)) {
+                    currentTask = flowTaskList.get(0);
+                    businessId = flowInstance.getBusinessId();
+                    String defJson = flowTaskList.get(0).getTaskJsonDef();
+                    JSONObject defObj = JSONObject.fromObject(defJson);
+                    String nodeType = (String) defObj.get("nodeType");
+                    if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType)) {
+                        approved = "true";
+                    }
+                } else {
+                    return ResponseData.operationFailure("跳转节点失败：流程待办不存在，可能已经被处理！");
+                }
+            } else {
+                return ResponseData.operationFailure("跳转节点失败：获取流程实例失败！");
+            }
+        } else {
+            return ResponseData.operationFailure("跳转节点失败：参数流程实例ID不能为空！");
+        }
+
+        //获取节点跳转的提交参数
+        ResponseData responseData = this.getJumpCompleteProperties(jumpTaskVo, businessId, approved);
+        if (responseData.successful()) {
+            Map<String, Object> properties = (Map<String, Object>) responseData.getData();
+            try {
+                String opinion = "【节点跳转】：" + jumpTaskVo.getJumpDepict();
+                return flowTaskService.jumpToTarget(currentTask, jumpTaskVo.getTargetNodeId(), properties, opinion);
+            } catch (Exception e) {
+                LogUtil.error("跳转失败:" + e.getMessage(), e);
+                return ResponseData.operationFailure("跳转失败，详情请查看日志!");
+            }
+        } else {
+            return responseData;
+        }
+    }
+
+    public ResponseData getJumpCompleteProperties(JumpTaskVo jumpTaskVo, String businessId, String approved) {
+        String taskList = jumpTaskVo.getTaskList();
+        Long loadOverTime = null;
+        Boolean mobileApprove = false;
+
+        //completeTask获取参数逻辑，保持一致（暂时先不合并获取参数部分）
+        List<FlowTaskCompleteWebVO> flowTaskCompleteList = null;
+        if (StringUtils.isNotEmpty(taskList)) {
+            JSONArray jsonArray = JSONArray.fromObject(taskList);//把String转换为json
+            flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray, FlowTaskCompleteWebVO.class);
+        }
+        Map<String, Object> v = new HashMap<>();
+        if (flowTaskCompleteList != null && !flowTaskCompleteList.isEmpty()) {
+            //如果是固化流程的提交，设置参数里面的紧急状态和执行人列表
+            FlowTaskCompleteWebVO firstBean = flowTaskCompleteList.get(0);
+            if (firstBean.getSolidifyFlow() != null && firstBean.getSolidifyFlow() && StringUtils.isEmpty(firstBean.getUserIds())) {
+                ResponseData solidifyData = flowSolidifyExecutorService.setInstancyAndIdsByTaskList(flowTaskCompleteList, businessId);
+                if (solidifyData.getSuccess() == false) {
+                    return solidifyData;
+                }
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) solidifyData.getData();
+                JSONArray jsonArray2 = JSONArray.fromObject(flowTaskCompleteList.toArray());
+                flowTaskCompleteList = (List<FlowTaskCompleteWebVO>) JSONArray.toCollection(jsonArray2, FlowTaskCompleteWebVO.class);
+                v.put("manageSolidifyFlow", true); //需要维护固化表
+            } else {
+                v.put("manageSolidifyFlow", false);
+            }
+
+            Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+            Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+            for (FlowTaskCompleteWebVO f : flowTaskCompleteList) {
+                allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
+                String flowTaskType = f.getFlowTaskType();
+                String callActivityPath = f.getCallActivityPath();
+                List<String> userList = new ArrayList<>();
+                if (StringUtils.isNotEmpty(callActivityPath)) {
+                    List<String> userVarNameList = (List) v.get(callActivityPath + "_sonProcessSelectNodeUserV");
+                    if (userVarNameList != null) {
+                        userVarNameList.add(f.getUserVarName());
+                    } else {
+                        userVarNameList = new ArrayList<>();
+                        userVarNameList.add(f.getUserVarName());
+                        v.put(callActivityPath + "_sonProcessSelectNodeUserV", userVarNameList);//选择的变量名,子流程存在选择了多个的情况
+                    }
+                    String userIds = f.getUserIds() == null ? "" : f.getUserIds();
+                    if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                        v.put(callActivityPath + "/" + f.getUserVarName(), userIds);
+                    } else {
+                        String[] idArray = userIds.split(",");
+                        v.put(callActivityPath + "/" + f.getUserVarName(), Arrays.asList(idArray));
+                    }
+                    //注意：针对子流程选择的用户信息-待后续进行扩展--------------------------
+                } else {
+                    //如果不是工作池任务，又没有选择用户的，提示错误
+                    if (!"poolTask".equalsIgnoreCase(flowTaskType) && (StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
+                        return ResponseData.operationFailure("请选择下一节点用户！");
+                    }
+
+                    if (f.getUserIds() == null) {
+                        selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
+                    } else {
+                        String userIds = f.getUserIds();
+                        String[] idArray = userIds.split(",");
+                        userList = Arrays.asList(idArray);
+                        if ("common".equalsIgnoreCase(flowTaskType) || "approve".equalsIgnoreCase(flowTaskType)) {
+                            v.put(f.getUserVarName(), userIds);
+                        } else if (!"poolTask".equalsIgnoreCase(flowTaskType)) {
+                            v.put(f.getUserVarName(), userList);
+                        }
+                    }
+                    selectedNodesUserMap.put(f.getNodeId(), userList);
+                }
+            }
+            v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+            v.put("selectedNodesUserMap", selectedNodesUserMap);
+        } else {
+            Map<String, Boolean> allowChooseInstancyMap = new HashMap<>();//选择任务的紧急处理状态
+            Map<String, List<String>> selectedNodesUserMap = new HashMap<>();//选择的用户信息
+            v.put("selectedNodesUserMap", selectedNodesUserMap);
+            v.put("allowChooseInstancyMap", allowChooseInstancyMap);
+            v.put("manageSolidifyFlow", false); //会签未完成和结束节点不需要维护固化流程执行人列表
+        }
+        if (loadOverTime != null) {
+            v.put("loadOverTime", loadOverTime);
+        }
+        v.put("mobileApprove", BooleanUtils.isTrue(mobileApprove));
+
+        v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
+
+
+        v.put("currentNodeAfterEvent", jumpTaskVo.isCurrentNodeAfterEvent());
+        v.put("targetNodeBeforeEvent", jumpTaskVo.isTargetNodeBeforeEvent());
+
+        return ResponseData.operationSuccessWithData(v);
+    }
 
 }

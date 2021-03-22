@@ -4184,5 +4184,60 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+
+    /**
+     * 节点跳转
+     *
+     * @param currentTask  当前任务
+     * @param targetNodeId  目标节点ID
+     * @param variables  提交参数
+     * @return  是否跳转成功
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData jumpToTarget(FlowTask currentTask, String targetNodeId, Map<String, Object> variables,String jumpOpinion) throws Exception {
+        // 取得当前任务
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId()).singleResult();
+        // 取得流程实例
+        ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
+        if (instance == null) {
+            return OperateResult.operationFailure("跳转失败：流程实例不存在！");
+        }
+        // 取得流程定义
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+        if (definition == null) {
+            return OperateResult.operationFailure("跳转失败：流程定义获取失败！");
+        }
+        // 取得当前任务节点的活动
+        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition).findActivity(currentTask.getActTaskDefKey());
+        ActivityImpl targetActivity = ((ProcessDefinitionImpl) definition).findActivity(targetNodeId);
+        //取活动，清除活动方向
+        List<PvmTransition> oriPvmTransitionList = new ArrayList<>();
+        List<PvmTransition> pvmTransitionList = currentActivity.getOutgoingTransitions();
+        for (PvmTransition pvmTransition : pvmTransitionList) {
+            oriPvmTransitionList.add(pvmTransition);
+        }
+        pvmTransitionList.clear();
+        //建立新方向
+        TransitionImpl newTransition = currentActivity.createOutgoingTransition();
+        //取得转向的目标
+        newTransition.setDestination(targetActivity);
+
+        //完成任务
+        this.complete(currentTask.getId(), jumpOpinion, variables);
+
+        //恢复方向
+        targetActivity.getIncomingTransitions().remove(newTransition);
+        List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
+        pvmTList.clear();
+        for (PvmTransition pvmTransition : oriPvmTransitionList) {
+            pvmTransitionList.add(pvmTransition);
+        }
+        //将状态重置
+        runtimeService.removeVariable(instance.getProcessInstanceId(), "currentNodeAfterEvent");
+        runtimeService.removeVariable(instance.getProcessInstanceId(), "targetNodeBeforeEvent");
+        return OperateResult.operationSuccess("跳转成功！");
+    }
+
+
 }
 
