@@ -453,43 +453,43 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                 return ResponseData.operationFailure("流程定义正在统一发布中，请不要重复请求！剩余锁定时间：" + remainingTime + "秒！");
             }
 
-            try {
-                redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
-                //异步统一发布数据
-                List<FlowDefination> finalFlowDefinationList = flowDefinationList;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+            //异步统一发布数据
+            List<FlowDefination> finalFlowDefinationList = flowDefinationList;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
                         finalFlowDefinationList.forEach(flowDefination -> {
-                            try {
-                                if (flowDefination.getLastDeloyVersionId() == null && flowDefination.getLastVersionId() != null) {
-                                    LogUtil.bizLog("正在发布：【" + flowDefination.getName() + "】");
-                                    FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
-                                    String def = flowDefVersion.getDefJson();
-                                    SaveEntityVo saveEntityVo = new SaveEntityVo();
-                                    saveEntityVo.setDef(def);
-                                    saveEntityVo.setDeploy(true);
-                                    saveEntityVo.setFlowDefinationId(flowDefination.getId());
+                            if (flowDefination.getLastDeloyVersionId() == null && flowDefination.getLastVersionId() != null) {
+                                LogUtil.bizLog("正在发布：【" + flowDefination.getName() + "】");
+                                FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+                                String def = flowDefVersion.getDefJson();
+                                SaveEntityVo saveEntityVo = new SaveEntityVo();
+                                saveEntityVo.setDef(def);
+                                saveEntityVo.setDeploy(true);
+                                saveEntityVo.setFlowDefinationId(flowDefination.getId());
+                                try {
                                     ResponseData responseData = flowDesignService.save(saveEntityVo);
                                     if (responseData.successful()) {
                                         LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本成功！");
                                     } else {
                                         LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本失败：" + responseData.getMessage());
                                     }
+                                } catch (Exception e) {
+                                    LogUtil.error("【" + flowDefination.getName() + "】发布流程版本错误：" + e.getMessage(), e);
                                 }
-                            } catch (Exception e) {
-                                LogUtil.error("【" + flowDefination.getName() + "】统一发布错误：" + e.getMessage(), e);
                             }
                         });
+                    } catch (Exception e) {
+                        LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
+                        throw e;
+                    } finally {
+                        redisTemplate.delete("releaseByAllOrIds");
                     }
-                }).start();
-                return ResponseData.operationSuccess("正在发布，发布详情请查看日志！");
-            } catch (Exception e) {
-                LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
-                throw e;
-            } finally {
-                redisTemplate.delete("releaseByAllOrIds");
-            }
+                }
+            }).start();
+            return ResponseData.operationSuccess("正在发布，发布详情请查看日志！");
         } else {
             return ResponseData.operationFailure("没有需要发布的流程定义！");
         }
