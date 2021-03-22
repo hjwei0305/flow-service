@@ -11,8 +11,11 @@ import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 
 /**
@@ -49,6 +52,8 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId = delegateTask.getProcessBusinessKey();
+            Map<String, Object> tempV = delegateTask.getVariables();
+            Boolean currentNodeAfterEvent = (Boolean) tempV.get("currentNodeAfterEvent");
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
@@ -78,7 +83,7 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
                         async = false;
                     }
                 }
-                if (!StringUtils.isEmpty(afterExcuteServiceId)) {
+                if (!StringUtils.isEmpty(afterExcuteServiceId) && BooleanUtils.isNotFalse(currentNodeAfterEvent)) {
                     flowListenerTool.taskEventServiceCall(delegateTask, async, flowTaskName, afterExcuteServiceId, afterExcuteService, businessId);
                 }
             }

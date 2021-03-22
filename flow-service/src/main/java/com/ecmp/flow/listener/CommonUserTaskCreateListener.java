@@ -10,10 +10,13 @@ import com.ecmp.log.util.LogUtil;
 import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 
 /**
@@ -47,6 +50,8 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId = delegateTask.getProcessBusinessKey();
+            Map<String, Object> tempV = delegateTask.getVariables();
+            Boolean targetNodeBeforeEvent = (Boolean) tempV.get("targetNodeBeforeEvent");
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
@@ -76,7 +81,7 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
                         async = false;
                     }
                 }
-                if (!StringUtils.isEmpty(beforeExcuteServiceId)) {
+                if (!StringUtils.isEmpty(beforeExcuteServiceId) && BooleanUtils.isNotFalse(targetNodeBeforeEvent)) {
                     flowListenerTool.taskEventServiceCall(delegateTask, async, flowTaskName, beforeExcuteServiceId, beforeExcuteService, businessId);
                 }
             }
