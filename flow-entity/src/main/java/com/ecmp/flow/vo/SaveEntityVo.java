@@ -16,6 +16,12 @@ public class SaveEntityVo implements Serializable {
     private Boolean deploy;
 
 
+    /**
+     * 用于数据同步后统一发布
+     */
+    private String flowDefinationId;
+
+
     public Boolean getDeploy() {
         return deploy;
     }
@@ -30,5 +36,13 @@ public class SaveEntityVo implements Serializable {
 
     public void setDef(String def) {
         this.def = def;
+    }
+
+    public String getFlowDefinationId() {
+        return flowDefinationId;
+    }
+
+    public void setFlowDefinationId(String flowDefinationId) {
+        this.flowDefinationId = flowDefinationId;
     }
 }

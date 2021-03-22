@@ -88,6 +88,10 @@ public class FlowDesignService implements IFlowDesignService {
         if (StringUtils.isNotEmpty(def) || deploy != null) {
             JSONObject defObj = JSONObject.fromObject(def);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+            if(StringUtils.isNotEmpty(entityVo.getFlowDefinationId())){
+                //仅用于数据同步后的统一发布
+                definition.setId(entityVo.getFlowDefinationId());
+            }
             String id = definition.getProcess().getId();
             String reg = "^[a-zA-Z][A-Za-z0-9]{5,79}$";
             if (!id.matches(reg)) {

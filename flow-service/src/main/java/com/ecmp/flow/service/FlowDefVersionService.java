@@ -455,27 +455,35 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
 
             try {
                 redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
-                flowDefinationList.forEach(flowDefination -> {
-                    try {
-                        if (flowDefination.getLastDeloyVersionId() == null && flowDefination.getLastVersionId() != null) {
-                            LogUtil.bizLog("正在发布：【" + flowDefination.getName() + "】");
-                            FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
-                            String def = flowDefVersion.getDefJson();
-                            SaveEntityVo saveEntityVo = new SaveEntityVo();
-                            saveEntityVo.setDef(def);
-                            saveEntityVo.setDeploy(true);
-                            ResponseData responseData = flowDesignService.save(saveEntityVo);
-                            if (responseData.successful()) {
-                                LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本成功！");
-                            } else {
-                                LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本失败：" + responseData.getMessage());
+                //异步统一发布数据
+                List<FlowDefination> finalFlowDefinationList = flowDefinationList;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finalFlowDefinationList.forEach(flowDefination -> {
+                            try {
+                                if (flowDefination.getLastDeloyVersionId() == null && flowDefination.getLastVersionId() != null) {
+                                    LogUtil.bizLog("正在发布：【" + flowDefination.getName() + "】");
+                                    FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
+                                    String def = flowDefVersion.getDefJson();
+                                    SaveEntityVo saveEntityVo = new SaveEntityVo();
+                                    saveEntityVo.setDef(def);
+                                    saveEntityVo.setDeploy(true);
+                                    saveEntityVo.setFlowDefinationId(flowDefination.getId());
+                                    ResponseData responseData = flowDesignService.save(saveEntityVo);
+                                    if (responseData.successful()) {
+                                        LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本成功！");
+                                    } else {
+                                        LogUtil.bizLog("【" + flowDefination.getName() + "】发布流程版本失败：" + responseData.getMessage());
+                                    }
+                                }
+                            } catch (Exception e) {
+                                LogUtil.error("【" + flowDefination.getName() + "】统一发布错误：" + e.getMessage(), e);
                             }
-                        }
-                    } catch (Exception e) {
-                        LogUtil.bizLog("【" + flowDefination.getName() + "】统一发布错误：" + e.getMessage());
+                        });
                     }
-                });
-                return ResponseData.operationSuccess("发布完成，详情请查看日志！");
+                }).start();
+                return ResponseData.operationSuccess("正在发布，发布详情请查看日志！");
             } catch (Exception e) {
                 LogUtil.error("统一发布流程出错:" + e.getMessage(), e);
                 throw e;
