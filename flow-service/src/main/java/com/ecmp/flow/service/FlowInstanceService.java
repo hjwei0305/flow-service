@@ -2342,7 +2342,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (responseData.successful()) {
             Map<String, Object> properties = (Map<String, Object>) responseData.getData();
             try {
-                String opinion = "【节点跳转】：" + jumpTaskVo.getJumpDepict();
+                StringBuffer jumpString = new StringBuffer("【节点跳转");
+                if (jumpTaskVo.isCurrentNodeAfterEvent()) {
+                    jumpString.append("-当前事后");
+                }
+                if (jumpTaskVo.isTargetNodeBeforeEvent()) {
+                    jumpString.append("-目标事前");
+                }
+                jumpString.append("】");
+                String opinion = jumpString.toString() + jumpTaskVo.getJumpDepict();
                 return flowTaskService.jumpToTarget(currentTask, jumpTaskVo.getTargetNodeId(), properties, opinion);
             } catch (Exception e) {
                 LogUtil.error("跳转失败:" + e.getMessage(), e);
