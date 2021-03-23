@@ -53,7 +53,7 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId = delegateTask.getProcessBusinessKey();
             Map<String, Object> tempV = delegateTask.getVariables();
-            Boolean currentNodeAfterEvent = (Boolean) tempV.get("currentNodeAfterEvent");
+            Boolean currentNodeAfterEvent = (Boolean) tempV.get(actTaskDefKey + "currentNodeAfterEvent");
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);

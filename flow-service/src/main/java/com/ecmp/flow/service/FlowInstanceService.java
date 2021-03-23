@@ -2370,16 +2370,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
 
         //获取节点跳转的提交参数
-        ResponseData responseData = this.getJumpCompleteProperties(jumpTaskVo, businessId, approved);
+        ResponseData responseData = this.getJumpCompleteProperties(currentTask, jumpTaskVo, businessId, approved);
         if (responseData.successful()) {
             Map<String, Object> properties = (Map<String, Object>) responseData.getData();
             try {
-                StringBuffer jumpString = new StringBuffer("【节点跳转");
-                if (jumpTaskVo.isCurrentNodeAfterEvent()) {
-                    jumpString.append("-当前事后");
-                }
+                StringBuilder jumpString = new StringBuilder("【");
                 if (jumpTaskVo.isTargetNodeBeforeEvent()) {
-                    jumpString.append("-目标事前");
+                    jumpString.append("-");
+                }
+                jumpString.append("节点跳转");
+                if (jumpTaskVo.isCurrentNodeAfterEvent()) {
+                    jumpString.append("-");
                 }
                 jumpString.append("】");
                 String opinion = jumpString.toString() + jumpTaskVo.getJumpDepict();
@@ -2393,7 +2394,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
-    public ResponseData getJumpCompleteProperties(JumpTaskVo jumpTaskVo, String businessId, String approved) {
+    public ResponseData getJumpCompleteProperties(FlowTask currentTask, JumpTaskVo jumpTaskVo, String businessId, String approved) {
         String taskList = jumpTaskVo.getTaskList();
         Long loadOverTime = null;
         Boolean mobileApprove = false;
@@ -2483,8 +2484,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         v.put("approved", approved);//针对会签时同意、不同意、弃权等操作
 
 
-        v.put("currentNodeAfterEvent", jumpTaskVo.isCurrentNodeAfterEvent());
-        v.put("targetNodeBeforeEvent", jumpTaskVo.isTargetNodeBeforeEvent());
+        v.put(currentTask.getActTaskDefKey() + "currentNodeAfterEvent", jumpTaskVo.isCurrentNodeAfterEvent());
+        v.put(jumpTaskVo.getTargetNodeId() + "targetNodeBeforeEvent", jumpTaskVo.isTargetNodeBeforeEvent());
 
         return ResponseData.operationSuccessWithData(v);
     }

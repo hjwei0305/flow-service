@@ -51,7 +51,7 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId = delegateTask.getProcessBusinessKey();
             Map<String, Object> tempV = delegateTask.getVariables();
-            Boolean targetNodeBeforeEvent = (Boolean) tempV.get("targetNodeBeforeEvent");
+            Boolean targetNodeBeforeEvent = (Boolean) tempV.get(actTaskDefKey + "targetNodeBeforeEvent");
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
             JSONObject defObj = JSONObject.fromObject(flowDefJson);
