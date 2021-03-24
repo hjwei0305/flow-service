@@ -2012,6 +2012,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public PageResult<FlowTask> findAllByTenant(String appModuleId, String businessModelId, String flowTypeId, Search searchConfig) {
+        if (searchConfig != null) {
+            boolean boo = SqlCommonUtil.isValid(searchConfig.getQuickSearchValue());
+            if (!boo) {
+                return null;
+            }
+        }
         SessionUser sessionUser = ContextUtil.getSessionUser();
         UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
         if (!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
@@ -2126,6 +2132,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public PageResult<FlowTask> findByPageCanBatchApprovalByBusinessModelId(String businessModelId, Search searchConfig) {
+        if (searchConfig != null) {
+            boolean boo = SqlCommonUtil.isValid(searchConfig.getQuickSearchValue());
+            if (!boo) {
+                return null;
+            }
+        }
+
         String userId = ContextUtil.getUserId();
 
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
@@ -2280,6 +2293,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData listFlowTaskWithAllCount(Search search, String modelId) {
+        if (search != null) {
+            boolean boo = SqlCommonUtil.isValid(search.getQuickSearchValue());
+            if (!boo) {
+                return ResponseData.operationFailure("获取待办失败：未通过sql注入检测！");
+            }
+        }
         try {
             FlowTaskPageResultVO<FlowTask> resVo = this.findByBusinessModelIdWithAllCount(modelId, search);
             return ResponseData.operationSuccessWithData(resVo);
@@ -2294,8 +2313,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isEmpty(userId) || "anonymous".equalsIgnoreCase(userId)) {
             throw new FlowException("会话超时，请重新登录！");
         }
-        FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<FlowTask>();
+        if (search != null) {
+            boolean boo = SqlCommonUtil.isValid(search.getQuickSearchValue());
+            if (!boo) {
+                return ResponseData.operationFailure("获取待办失败：未通过sql注入检测！");
+            }
+        }
 
+        FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<>();
 
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
         List<TaskMakeOverPower> powerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
@@ -2332,6 +2357,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         FlowTaskPageResultVO<FlowTask> resultVO = new FlowTaskPageResultVO<>();
         if (StringUtils.isEmpty(userId) || "anonymous".equalsIgnoreCase(userId)) {
             throw new FlowException("会话超时，请重新登录！");
+        }
+
+        if (searchConfig != null) {
+            boolean boo = SqlCommonUtil.isValid(searchConfig.getQuickSearchValue());
+            if (!boo) {
+                return null;
+            }
         }
 
         //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
@@ -3507,6 +3539,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      */
     @Override
     public int findCountByExecutorId(String executorId, Search searchConfig) {
+        if (searchConfig != null) {
+            boolean boo = SqlCommonUtil.isValid(searchConfig.getQuickSearchValue());
+            if (!boo) {
+                return 0;
+            }
+        }
         Long count = flowTaskDao.findCountByExecutorId(executorId, searchConfig);
         return count.intValue();
     }
@@ -4184,17 +4222,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-
     /**
      * 节点跳转
      *
      * @param currentTask  当前任务
-     * @param targetNodeId  目标节点ID
-     * @param variables  提交参数
-     * @return  是否跳转成功
+     * @param targetNodeId 目标节点ID
+     * @param variables    提交参数
+     * @return 是否跳转成功
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public ResponseData jumpToTarget(FlowTask currentTask, String targetNodeId, Map<String, Object> variables,String jumpOpinion) throws Exception {
+    public ResponseData jumpToTarget(FlowTask currentTask, String targetNodeId, Map<String, Object> variables, String jumpOpinion) throws Exception {
         // 取得当前任务
         HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId()).singleResult();
         // 取得流程实例
