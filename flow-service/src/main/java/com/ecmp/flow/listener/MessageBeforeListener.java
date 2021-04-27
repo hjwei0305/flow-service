@@ -1,6 +1,7 @@
 package com.ecmp.flow.listener;
 
 import com.ecmp.flow.dao.FlowDefVersionDao;
+import com.ecmp.flow.dao.FlowExecutorConfigDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.util.FlowCommonUtil;
@@ -50,6 +51,9 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
     private TaskService taskService;
 
     @Autowired
+    private FlowExecutorConfigDao flowExecutorConfigDao;
+
+    @Autowired
     private FlowCommonUtil flowCommonUtil;
 
     @Override
@@ -62,6 +66,7 @@ public class MessageBeforeListener implements Serializable, org.activiti.engine.
             messageSendThread.setFlowTaskDao(this.flowTaskDao);
             messageSendThread.setHistoryService(this.historyService);
             messageSendThread.setFlowHistoryDao(this.flowHistoryDao);
+            messageSendThread.setFlowExecutorConfigDao(this.flowExecutorConfigDao);
             messageSendThread.setRuntimeService(runtimeService);
             messageSendThread.setTaskService(taskService);
             messageSendThread.setFlowCommonUtil(flowCommonUtil);

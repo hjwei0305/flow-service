@@ -5,12 +5,16 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowDefVersionDao;
+import com.ecmp.flow.dao.FlowExecutorConfigDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.dao.util.PageUrlUtil;
+import com.ecmp.flow.entity.AppModule;
 import com.ecmp.flow.entity.FlowDefVersion;
+import com.ecmp.flow.entity.FlowExecutorConfig;
 import com.ecmp.flow.util.BpmnUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -51,6 +55,8 @@ public class MessageSendThread implements Runnable {
     private RuntimeService runtimeService;
 
     private TaskService taskService;
+
+    private FlowExecutorConfigDao flowExecutorConfigDao;
 
     private FlowCommonUtil flowCommonUtil;
 
@@ -144,41 +150,101 @@ public class MessageSendThread implements Runnable {
                     selectType = notifyPosition.getJSONArray("type");
                     boolean whetherSendPosition = this.getWhetherSend(notifyPosition, isMmultiInstance);
                     if (!CollectionUtils.isEmpty(selectType) && whetherSendPosition) {
-                        String content = notifyPosition.getString("content");
-                        JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
-                        List<String> receiverIds = new ArrayList<>();
-                        if (!CollectionUtils.isEmpty(notifyPositionJsonArray)) {
-                            List<String> idList = new ArrayList<>();
-                            for (int i = 0; i < notifyPositionJsonArray.size(); i++) {
-                                JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
-                                String positionId = jsonObject.getString("id");
-                                if (StringUtils.isNotEmpty(positionId)) {
-                                    idList.add(positionId);
+                        try {
+                            String content = notifyPosition.getString("content");
+                            JSONArray notifyPositionJsonArray = notifyPosition.getJSONArray("positionData");
+                            List<String> receiverIds = new ArrayList<>();
+                            if (!CollectionUtils.isEmpty(notifyPositionJsonArray)) {
+                                List<String> idList = new ArrayList<>();
+                                for (int i = 0; i < notifyPositionJsonArray.size(); i++) {
+                                    JSONObject jsonObject = notifyPositionJsonArray.getJSONObject(i);
+                                    String positionId = jsonObject.getString("id");
+                                    if (StringUtils.isNotEmpty(positionId)) {
+                                        idList.add(positionId);
+                                    }
                                 }
-                            }
-                            //通过岗位ids和单据所属组织机构id来获取执行人
-                            String orgId = (String) execution.getVariable(Constants.ORG_ID);
-                            List<Executor> employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, orgId);
-                            Set<String> linkedHashSetReceiverIds = new LinkedHashSet<>();
-                            if (!CollectionUtils.isEmpty(employees)) {
-                                for (Executor executor : employees) {
-                                    linkedHashSetReceiverIds.add(executor.getId());
+                                //通过岗位ids和单据所属组织机构id来获取执行人
+                                String orgId = (String) execution.getVariable(Constants.ORG_ID);
+                                List<Executor> employees = flowCommonUtil.getBasicExecutorsByPositionIds(idList, orgId);
+                                Set<String> linkedHashSetReceiverIds = new LinkedHashSet<>();
+                                if (!CollectionUtils.isEmpty(employees)) {
+                                    for (Executor executor : employees) {
+                                        linkedHashSetReceiverIds.add(executor.getId());
+                                    }
                                 }
+                                receiverIds.addAll(linkedHashSetReceiverIds);
                             }
-                            receiverIds.addAll(linkedHashSetReceiverIds);
-                        }
 
-                        Object[] types = selectType.toArray();
-                        for (Object type : types) {
-                            NotifyType typeNotify = null;
-                            if ("EMAIL".equalsIgnoreCase(type.toString())) { //邮件【指定岗位】
-                                typeNotify = NotifyType.EMAIL;
-                            } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉【指定岗位】
-                                typeNotify = NotifyType.DingTalk;
-                            } else if ("MESSAGE".equalsIgnoreCase(type.toString())) {//站内信【指定岗位】
-                                typeNotify = NotifyType.SEI_REMIND;
+                            Object[] types = selectType.toArray();
+                            for (Object type : types) {
+                                NotifyType typeNotify = null;
+                                if ("EMAIL".equalsIgnoreCase(type.toString())) { //邮件【指定岗位】
+                                    typeNotify = NotifyType.EMAIL;
+                                } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉【指定岗位】
+                                    typeNotify = NotifyType.DingTalk;
+                                } else if ("MESSAGE".equalsIgnoreCase(type.toString())) {//站内信【指定岗位】
+                                    typeNotify = NotifyType.SEI_REMIND;
+                                }
+                                this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "指定岗位");
                             }
-                            this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "指定岗位");
+                        } catch (Exception e) {
+                            LogUtil.error("发送通知岗位出错：" + e.getMessage(), e);
+                        }
+                    }
+
+
+                    //--------------------------------------------通知人自定义
+                    JSONObject notifySelfDefinition = currentNotify.getJSONObject("notifySelfDefinition");
+                    selectType = notifySelfDefinition.getJSONArray("type");
+                    boolean whetherSendSelfDefinition = this.getWhetherSend(notifySelfDefinition, isMmultiInstance);
+                    if (!CollectionUtils.isEmpty(selectType) && whetherSendSelfDefinition) {
+                        try {
+                            String content = notifySelfDefinition.getString("content");
+                            String notifySelfDefId = notifySelfDefinition.getString("notifySelfDefId");
+                            List<String> receiverIds = new ArrayList<>();
+                            if (StringUtils.isNotEmpty(notifySelfDefId)) {
+                                FlowExecutorConfig flowExecutorConfig = flowExecutorConfigDao.findOne(notifySelfDefId);
+                                String path = flowExecutorConfig.getUrl();
+                                String param = flowExecutorConfig.getParam();
+                                AppModule appModule = flowExecutorConfig.getBusinessModel().getAppModule();
+                                String appModuleCode = appModule.getApiBaseAddress();
+                                FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
+                                flowInvokeParams.setId(instance.getBusinessKey());
+                                flowInvokeParams.setJsonParam(param);
+                                try {
+                                    JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
+                                    String nodeCode = normal.getString("nodeCode");
+                                    if (StringUtils.isNotEmpty(nodeCode)) {
+                                        Map<String, String> map = new HashMap<>();
+                                        map.put("nodeCode", nodeCode);
+                                        flowInvokeParams.setParams(map);
+                                    }
+                                } catch (Exception e) {
+                                }
+                                List<Executor> employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
+                                List<String> idList = new ArrayList<>();
+                                if (!CollectionUtils.isEmpty(employees)) {
+                                    for (Executor executor : employees) {
+                                        idList.add(executor.getId());
+                                    }
+                                }
+                                receiverIds.addAll(idList);
+                            }
+
+                            Object[] types = selectType.toArray();
+                            for (Object type : types) {
+                                NotifyType typeNotify = null;
+                                if ("EMAIL".equalsIgnoreCase(type.toString())) { //邮件【指定岗位】
+                                    typeNotify = NotifyType.EMAIL;
+                                } else if ("DINGDING".equalsIgnoreCase(type.toString())) {//钉钉【指定岗位】
+                                    typeNotify = NotifyType.DingTalk;
+                                } else if ("MESSAGE".equalsIgnoreCase(type.toString())) {//站内信【指定岗位】
+                                    typeNotify = NotifyType.SEI_REMIND;
+                                }
+                                this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "通知人自定义");
+                            }
+                        } catch (Exception e) {
+                            LogUtil.error("发送通知人自定义出错：" + e.getMessage(), e);
                         }
                     }
 
@@ -384,5 +450,13 @@ public class MessageSendThread implements Runnable {
 
     public void setFlowCommonUtil(FlowCommonUtil flowCommonUtil) {
         this.flowCommonUtil = flowCommonUtil;
+    }
+
+    public FlowExecutorConfigDao getFlowExecutorConfigDao() {
+        return flowExecutorConfigDao;
+    }
+
+    public void setFlowExecutorConfigDao(FlowExecutorConfigDao flowExecutorConfigDao) {
+        this.flowExecutorConfigDao = flowExecutorConfigDao;
     }
 }
