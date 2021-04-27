@@ -485,7 +485,7 @@ public class Process extends BaseNode implements Serializable {
         List<ExecutionListener> executionListeners = null;
         //添加任务执行监听器，（目前只用于邮件发送）
         try {
-            String[] notifyType={"notifyExecutor","notifyStarter","notifyPosition"};
+            String[] notifyType={"notifyExecutor","notifyStarter","notifyPosition","notifySelfDefinition"};
             net.sf.json.JSONObject notify = node.getJSONObject("nodeConfig").getJSONObject("notify");
             if (notify != null && !notify.isEmpty()) {
                 JSONObject beforeNotify =  notify.getJSONObject("before");
