@@ -14,6 +14,7 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowExecutorConfig;
 import com.ecmp.flow.util.BpmnUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
@@ -59,6 +60,8 @@ public class MessageSendThread implements Runnable {
     private FlowExecutorConfigDao flowExecutorConfigDao;
 
     private FlowCommonUtil flowCommonUtil;
+
+    private FlowTaskTool flowTaskTool;
 
     public MessageSendThread() {
     }
@@ -111,6 +114,8 @@ public class MessageSendThread implements Runnable {
                                 typeNotify = NotifyType.DingTalk;
                             } else if ("MESSAGE".equalsIgnoreCase(type.toString())) { //站内信【执行人】
                                 typeNotify = NotifyType.SEI_REMIND;
+                            } else if ("VIRTUALTODO".equalsIgnoreCase(type.toString())) { //虚拟待办
+                                typeNotify = NotifyType.VirtualToDo;
                             }
                             this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "执行人");
                         }
@@ -139,6 +144,8 @@ public class MessageSendThread implements Runnable {
                                 typeNotify = NotifyType.DingTalk;
                             } else if ("MESSAGE".equalsIgnoreCase(type.toString())) { //站内信【发起人】
                                 typeNotify = NotifyType.SEI_REMIND;
+                            } else if ("VIRTUALTODO".equalsIgnoreCase(type.toString())) { //虚拟待办
+                                typeNotify = NotifyType.VirtualToDo;
                             }
                             this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "发起人");
                         }
@@ -184,6 +191,8 @@ public class MessageSendThread implements Runnable {
                                     typeNotify = NotifyType.DingTalk;
                                 } else if ("MESSAGE".equalsIgnoreCase(type.toString())) {//站内信【指定岗位】
                                     typeNotify = NotifyType.SEI_REMIND;
+                                } else if ("VIRTUALTODO".equalsIgnoreCase(type.toString())) { //虚拟待办
+                                    typeNotify = NotifyType.VirtualToDo;
                                 }
                                 this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "指定岗位");
                             }
@@ -240,6 +249,8 @@ public class MessageSendThread implements Runnable {
                                     typeNotify = NotifyType.DingTalk;
                                 } else if ("MESSAGE".equalsIgnoreCase(type.toString())) {//站内信【指定岗位】
                                     typeNotify = NotifyType.SEI_REMIND;
+                                } else if ("VIRTUALTODO".equalsIgnoreCase(type.toString())) { //虚拟待办
+                                    typeNotify = NotifyType.VirtualToDo;
                                 }
                                 this.sendMessageByType(flowDefVersion, taskName, typeNotify, receiverIds, content, "通知人自定义");
                             }
@@ -319,6 +330,13 @@ public class MessageSendThread implements Runnable {
             }
         } else if (notifyType.equals(NotifyType.DingTalk)) { //钉钉发送只设置流程定义的消息框内容
             message.setContent(content);
+        } else if (notifyType.equals(NotifyType.VirtualToDo)) { //虚拟待办：流程单独建立不用发送notify模块
+            try {
+                flowTaskTool.initVirtualTask(execution.getProcessInstanceId(),content,receiverIds);
+            } catch (Exception e) {
+                LogUtil.bizLog("创建虚拟待办通知失败：" + e.getMessage(), e);
+            }
+            return;
         }
 
         new Thread(new Runnable() {
@@ -458,5 +476,13 @@ public class MessageSendThread implements Runnable {
 
     public void setFlowExecutorConfigDao(FlowExecutorConfigDao flowExecutorConfigDao) {
         this.flowExecutorConfigDao = flowExecutorConfigDao;
+    }
+
+    public FlowTaskTool getFlowTaskTool() {
+        return flowTaskTool;
+    }
+
+    public void setFlowTaskTool(FlowTaskTool flowTaskTool) {
+        this.flowTaskTool = flowTaskTool;
     }
 }

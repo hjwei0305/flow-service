@@ -39,6 +39,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -1589,6 +1590,55 @@ public class FlowTaskTool {
 
     }
 
+
+    /**
+     * 初始化虚拟待办任务
+     */
+    public void initVirtualTask(String actInstanceId,String content, List<String> receiverIds) throws Exception {
+        FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actInstanceId);
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
+            FlowTask trueTask = flowTaskList.get(0);
+            FlowTask virtualTask = new FlowTask();
+            BeanUtils.copyProperties(trueTask, virtualTask);
+            virtualTask.setId(null);
+            virtualTask.setTaskName("虚拟待办通知"); //任务名称
+            virtualTask.setDepict(content); //描述
+            virtualTask.setPriority(0);//优先级
+            virtualTask.setCanReject(false);//是否允许驳回
+            virtualTask.setCanSuspension(false);//是否允许流程终止
+            virtualTask.setExecuteTime(null);//额定工时
+            virtualTask.setCanBatchApproval(false);//是否批量
+            virtualTask.setCanMobile(false);//能否移动端
+            virtualTask.setTrustState(null);//转办委托状态
+            virtualTask.setTrustOwnerTaskId(null);//被委托任务的ID
+            virtualTask.setAllowAddSign(false);//允许加签
+            virtualTask.setAllowSubtractSign(false);//允许减签
+            virtualTask.setTiming(0.00);//任务额定工时
+            virtualTask.setVersion(1);//0表示正常待办 1表示虚拟的待办
+            virtualTask.setActTaskDefKey("virtual");
+            List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(receiverIds);
+            for (Executor executor : executorList) {
+                virtualTask.setExecutorId(executor.getId());
+                virtualTask.setExecutorAccount(executor.getCode());
+                virtualTask.setExecutorName(executor.getName());
+                virtualTask.setExecutorOrgId(executor.getOrganizationId());
+                virtualTask.setExecutorOrgCode(executor.getOrganizationCode());
+                virtualTask.setExecutorOrgName(executor.getOrganizationName());
+                virtualTask.setOwnerId(executor.getId());
+                virtualTask.setOwnerAccount(executor.getCode());
+                virtualTask.setOwnerName(executor.getName());
+                virtualTask.setOwnerOrgId(executor.getOrganizationId());
+                virtualTask.setOwnerOrgCode(executor.getOrganizationCode());
+                virtualTask.setOwnerOrgName(executor.getOrganizationName());
+                flowTaskDao.save(virtualTask);
+            }
+        } else {
+            throw new FlowException("生产虚拟待办失败：该流程实例下无待办！");
+        }
+    }
+
+
     /**
      * 将新的流程任务初始化
      *
@@ -2636,8 +2686,6 @@ public class FlowTaskTool {
             runtimeService.setVariable(executionId, "nrOfActiveInstances", 1);
         }
     }
-
-
 
 
     /**
