@@ -76,7 +76,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
     private String businessDetailServiceUrl;
 
     /**
-     * 用做虚拟待办的标识，0代表正常的待办，1表达虚拟的待办通知
+     * 乐观锁- 版本
      */
     @Column(name = "version")
     private Integer version = 0;
@@ -178,7 +178,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * activtiti对应任务类型,如assinge、candidate
+     * activtiti对应任务类型,如assignee、candidate、virtual（虚拟待办）
      */
     @Column(name = "act_type")
     private String actType;

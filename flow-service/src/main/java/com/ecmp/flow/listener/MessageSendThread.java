@@ -332,7 +332,9 @@ public class MessageSendThread implements Runnable {
             message.setContent(content);
         } else if (notifyType.equals(NotifyType.VirtualToDo)) { //虚拟待办：流程单独建立不用发送notify模块
             try {
-                flowTaskTool.initVirtualTask(execution.getProcessInstanceId(),content,receiverIds);
+                ExecutionEntity taskEntity = (ExecutionEntity) execution;
+                String actTaskDefKey = taskEntity.getActivityId();
+                flowTaskTool.initVirtualTask(execution.getProcessInstanceId(), actTaskDefKey, content, receiverIds);
             } catch (Exception e) {
                 LogUtil.bizLog("创建虚拟待办通知失败：" + e.getMessage(), e);
             }

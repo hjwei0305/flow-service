@@ -15,7 +15,7 @@ package com.ecmp.flow.util;
 public enum TaskStatus {
 
     /**
-     * 待办、签收、撤销、完成、驳回、挂起、删除
+     * 待办、签收、撤销、完成、驳回、挂起、删除、虚拟待办（通知）
      */
     INIT("init"),
     CLAIM("claim"),
@@ -23,7 +23,8 @@ public enum TaskStatus {
     COMPLETED("completed"),
     REJECT("reject"),
     SUSPEND("suspend"),
-    DELETE("delete");
+    DELETE("delete"),
+    VIRTUAL("virtual");
 
     private String value;
 

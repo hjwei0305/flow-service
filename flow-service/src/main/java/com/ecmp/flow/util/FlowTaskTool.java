@@ -1594,17 +1594,45 @@ public class FlowTaskTool {
     /**
      * 初始化虚拟待办任务
      */
-    public void initVirtualTask(String actInstanceId,String content, List<String> receiverIds) throws Exception {
+    public void initVirtualTask(String actInstanceId, String actTaskDefKey, String content, List<String> receiverIds) throws Exception {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actInstanceId);
-        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
-        if (!CollectionUtils.isEmpty(flowTaskList)) {
-            FlowTask trueTask = flowTaskList.get(0);
+        if (flowInstance != null) {
+            FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+            String flowDefJson = flowDefVersion.getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+            net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
+
             FlowTask virtualTask = new FlowTask();
-            BeanUtils.copyProperties(trueTask, virtualTask);
-            virtualTask.setId(null);
-            virtualTask.setTaskName("虚拟待办通知"); //任务名称
-            virtualTask.setDepict(content); //描述
+
+            virtualTask.setTaskStatus(TaskStatus.VIRTUAL.toString());//待办状态
+            virtualTask.setActType("virtual"); //引擎任务类型
+            virtualTask.setActTaskId(null);//流程引擎ID（直接用虚拟单词代替）
+            virtualTask.setTaskName(currentNode.get("name") + "(虚拟)"); //任务名称
+            virtualTask.setActTaskDefKey(actTaskDefKey+"-virtual");//节点代码
+            virtualTask.setDepict(content); //描述（通知里面写的内容）
+            virtualTask.setTaskJsonDef(currentNode.toString());//当前节点json信息
+
+            JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+            String workPageUrlId = (String) normalInfo.get("id");
+            WorkPageUrl workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+            if (workPageUrl == null) {
+                String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
+                String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
+                throw new FlowException("生产虚拟待办失败：节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！");
+            }
+            virtualTask.setWorkPageUrl(workPageUrl); //处理表单页面
+
+            virtualTask.setFlowInstance(flowInstance);
+            virtualTask.setFlowName(flowInstance.getFlowName()); //流程名称
+            virtualTask.setVersion(0);
+            virtualTask.setProxyStatus(null);//代理状态
+            virtualTask.setFlowDefinitionId(flowDefVersion.getFlowDefination().getId());//流程定义ID
+            virtualTask.setActClaimTime(null);//签收时间
             virtualTask.setPriority(0);//优先级
+            virtualTask.setActDueDate(null);//流程引擎的实际触发时间
+            virtualTask.setActTaskKey(null);//流程引擎的实际任务定义KEY
+            virtualTask.setPreId(null);//记录上一个流程历史任务的id
             virtualTask.setCanReject(false);//是否允许驳回
             virtualTask.setCanSuspension(false);//是否允许流程终止
             virtualTask.setExecuteTime(null);//额定工时
@@ -1614,11 +1642,11 @@ public class FlowTaskTool {
             virtualTask.setTrustOwnerTaskId(null);//被委托任务的ID
             virtualTask.setAllowAddSign(false);//允许加签
             virtualTask.setAllowSubtractSign(false);//允许减签
+            virtualTask.setTenantCode(ContextUtil.getTenantCode());//租户
             virtualTask.setTiming(0.00);//任务额定工时
-            virtualTask.setVersion(1);//0表示正常待办 1表示虚拟的待办
-            virtualTask.setActTaskDefKey("virtual");
             List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(receiverIds);
             for (Executor executor : executorList) {
+                virtualTask.setId(null);
                 virtualTask.setExecutorId(executor.getId());
                 virtualTask.setExecutorAccount(executor.getCode());
                 virtualTask.setExecutorName(executor.getName());
@@ -1634,7 +1662,7 @@ public class FlowTaskTool {
                 flowTaskDao.save(virtualTask);
             }
         } else {
-            throw new FlowException("生产虚拟待办失败：该流程实例下无待办！");
+            throw new FlowException("生产虚拟待办失败：该流程实例不存在！");
         }
     }
 
