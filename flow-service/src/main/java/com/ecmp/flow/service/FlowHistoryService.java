@@ -390,6 +390,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             if (!boo) { //不可以显示
                 bean.setCanCancel(false);
             }
+        } else {
+            bean.setCanCancel(false);
         }
     }
 
