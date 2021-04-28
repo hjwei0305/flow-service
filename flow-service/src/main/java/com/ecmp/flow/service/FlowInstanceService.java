@@ -1926,7 +1926,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
             List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(instanceId);
             if (!CollectionUtils.isEmpty(flowTaskList)) {
-                return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
+                for(FlowTask flowTask:flowTaskList){
+                    if(flowTask.getTrustState()!=1){
+                        return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
+                    }
+                }
             }
             List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(instanceId);
             Map<String, Object> variables = runtimeService.getVariables(flowInstance.getActInstanceId());
