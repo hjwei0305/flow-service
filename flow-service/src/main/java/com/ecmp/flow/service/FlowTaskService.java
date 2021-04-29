@@ -1755,6 +1755,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setCanSuspension(flowTask.getCanSuspension());
         result.setExecutorId(flowTask.getExecutorId());
         result.setFlowInstanceCreatorId(flowTask.getFlowInstance().getCreatorId());
+
+        if(TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())){ //虚拟任务
+            result.setPrUser( "virtual[虚拟任务]");
+            result.setPreCreateTime(flowTask.getCreatedDate());
+            if(StringUtils.isNotEmpty(flowTask.getDepict())){
+                result.setPrOpinion(flowTask.getDepict());
+            }else{
+                result.setPrOpinion("虚拟任务通知");
+            }
+        }
+
         return result;
     }
 
