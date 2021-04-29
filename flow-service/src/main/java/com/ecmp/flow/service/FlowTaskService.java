@@ -1815,6 +1815,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return null;
         }
+        if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟待办不允许获取下一步信息
+            return new ArrayList<>();
+        }
         List<NodeInfo> result;
         List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(flowTask, approved, includeNodeIds);
         result = nodeInfoList;
@@ -2511,6 +2514,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else if (nodeInfoList == null) {
             return OperateResultWithData.operationFailure("任务不存在，可能已经被处理！");
         } else {
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟待办
+                return OperateResultWithData.operationFailure("虚拟待办不允许进行实际操作！");
+            }
             return OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
         }
     }
