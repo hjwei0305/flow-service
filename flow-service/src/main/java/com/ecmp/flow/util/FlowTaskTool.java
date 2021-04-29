@@ -1609,7 +1609,7 @@ public class FlowTaskTool {
             virtualTask.setActType("virtual"); //引擎任务类型
             virtualTask.setActTaskId(null);//流程引擎ID（直接用虚拟单词代替）
             virtualTask.setTaskName(currentNode.get("name") + "(虚拟)"); //任务名称
-            virtualTask.setActTaskDefKey(actTaskDefKey+"-virtual");//节点代码
+            virtualTask.setActTaskDefKey(actTaskDefKey + "-virtual");//节点代码
             virtualTask.setDepict(content); //描述（通知里面写的内容）
             virtualTask.setTaskJsonDef(currentNode.toString());//当前节点json信息
 
@@ -1645,21 +1645,34 @@ public class FlowTaskTool {
             virtualTask.setTenantCode(ContextUtil.getTenantCode());//租户
             virtualTask.setTiming(0.00);//任务额定工时
             List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(receiverIds);
+            List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
             for (Executor executor : executorList) {
-                virtualTask.setId(null);
-                virtualTask.setExecutorId(executor.getId());
-                virtualTask.setExecutorAccount(executor.getCode());
-                virtualTask.setExecutorName(executor.getName());
-                virtualTask.setExecutorOrgId(executor.getOrganizationId());
-                virtualTask.setExecutorOrgCode(executor.getOrganizationCode());
-                virtualTask.setExecutorOrgName(executor.getOrganizationName());
-                virtualTask.setOwnerId(executor.getId());
-                virtualTask.setOwnerAccount(executor.getCode());
-                virtualTask.setOwnerName(executor.getName());
-                virtualTask.setOwnerOrgId(executor.getOrganizationId());
-                virtualTask.setOwnerOrgCode(executor.getOrganizationCode());
-                virtualTask.setOwnerOrgName(executor.getOrganizationName());
-                flowTaskDao.save(virtualTask);
+                FlowTask bean = new FlowTask();
+                BeanUtils.copyProperties(virtualTask, bean);
+                bean.setExecutorId(executor.getId());
+                bean.setExecutorAccount(executor.getCode());
+                bean.setExecutorName(executor.getName());
+                bean.setExecutorOrgId(executor.getOrganizationId());
+                bean.setExecutorOrgCode(executor.getOrganizationCode());
+                bean.setExecutorOrgName(executor.getOrganizationName());
+                bean.setOwnerId(executor.getId());
+                bean.setOwnerAccount(executor.getCode());
+                bean.setOwnerName(executor.getName());
+                bean.setOwnerOrgId(executor.getOrganizationId());
+                bean.setOwnerOrgCode(executor.getOrganizationCode());
+                bean.setOwnerOrgName(executor.getOrganizationName());
+                flowTaskDao.save(bean);
+                needAddList.add(bean);
+            }
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            if (pushBasic) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushToBasic(needAddList, null, null, null);
+                    }
+                }).start();
             }
         } else {
             throw new FlowException("生产虚拟待办失败：该流程实例不存在！");
