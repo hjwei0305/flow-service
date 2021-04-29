@@ -48,6 +48,7 @@ import org.springframework.util.CollectionUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -606,6 +607,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private boolean initTask(FlowInstance flowInstance, Boolean force) {
         boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
+            //排除虚拟任务
+            flowTaskList = flowTaskList.stream().filter(task -> !TaskStatus.VIRTUAL.toString().equals(task.getTaskStatus())).collect(Collectors.toList());
+        }
         if (force) {
             if (flowTaskList != null && !flowTaskList.isEmpty()) {
                 flowInstance.getFlowTasks().addAll(flowTaskList);
@@ -1926,8 +1931,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
             List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(instanceId);
             if (!CollectionUtils.isEmpty(flowTaskList)) {
-                for(FlowTask flowTask:flowTaskList){
-                    if(flowTask.getTrustState()!=1){
+                for (FlowTask flowTask : flowTaskList) {
+                    if (flowTask.getTrustState() != 1) {
                         return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
                     }
                 }

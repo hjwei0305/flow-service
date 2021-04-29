@@ -29,6 +29,10 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
 
+    @Test
+    public void endCommon() {
+        service.endCommon("D4D4FE95-A884-11EB-AD06-0242C0A8462A", false);
+    }
 
     @Test
     public void jumpToTargetNode() {
