@@ -2794,6 +2794,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             OperateResult result = null;
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
+                if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+                    OperateResult.operationFailure("当前任务属于虚拟任务，不能进行转办操作！");
+                }
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
                 //根据用户的id获取执行人
                 Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
@@ -2909,6 +2912,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             OperateResult result;
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
+
+                if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+                    OperateResult.operationFailure("当前任务属于虚拟任务，不能进行委托操作！");
+                }
 
                 if (flowTask.getTrustState() != null && flowTask.getTrustState() == 1) {
                     return OperateResult.operationFailure("当前任务已经委托出去，不能重复进行委托操作！");
