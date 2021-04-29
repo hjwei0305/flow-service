@@ -607,10 +607,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private boolean initTask(FlowInstance flowInstance, Boolean force) {
         boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
-        if (!CollectionUtils.isEmpty(flowTaskList)) {
-            //排除虚拟任务
-            flowTaskList = flowTaskList.stream().filter(task -> !TaskStatus.VIRTUAL.toString().equals(task.getTaskStatus())).collect(Collectors.toList());
-        }
         if (force) {
             if (flowTaskList != null && !flowTaskList.isEmpty()) {
                 flowInstance.getFlowTasks().addAll(flowTaskList);
@@ -622,7 +618,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 int index = 0;
                 for (FlowTask flowTask : flowTaskList) {
                     Boolean canCancel = flowTask.getCanSuspension();
-                    if (canCancel != null && canCancel) {
+                    //正常待办终止时，一起终止掉虚拟待办
+                    if ((canCancel != null && canCancel) || TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) {
                         index++;
                     }
                 }
