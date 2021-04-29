@@ -1079,6 +1079,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowHistory == null) {
             return OperateResult.operationFailure("撤回失败：找不到需要撤回的节点！");
         }
+        if (TaskStatus.VIRTUAL.toString().equals(flowHistory.getTaskStatus())) { //虚拟任务
+            return OperateResult.operationFailure("撤回失败：当前任务属于虚拟任务，不能进行撤回操作！");
+        }
         return flowTaskTool.taskRollBack(flowHistory, opinion);
     }
 
@@ -1151,7 +1154,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (flowTask == null) {
             return OperateResult.operationFailure("驳回失败：任务已经不存在，可能已经被处理！");
         }
-        if(TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())){ //虚拟任务
+        if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
             return OperateResult.operationFailure("驳回失败：当前任务属于虚拟任务，不能进行驳回操作！");
         }
         flowTask.setDepict(opinion);
@@ -1759,12 +1762,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setExecutorId(flowTask.getExecutorId());
         result.setFlowInstanceCreatorId(flowTask.getFlowInstance().getCreatorId());
 
-        if(TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())){ //虚拟任务
-            result.setPrUser( "virtual[虚拟任务]");
+        if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+            result.setPrUser("virtual[虚拟任务]");
             result.setPreCreateTime(flowTask.getCreatedDate());
-            if(StringUtils.isNotEmpty(flowTask.getDepict())){
+            if (StringUtils.isNotEmpty(flowTask.getDepict())) {
                 result.setPrOpinion(flowTask.getDepict());
-            }else{
+            } else {
                 result.setPrOpinion("虚拟任务通知");
             }
         }
