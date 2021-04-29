@@ -227,32 +227,32 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     List<FlowTask> findByInstanceId(String instanceId);
 
     /**
-     * 选择下一步执行的节点信息
+     * 获取决策信息
      *
      * @param id 任务ID
-     * @return 下一步执行的节点信息
+     * @return 获取决策信息（下一步可能节点操作）
      * @throws NoSuchMethodException 方法找不到异常
      */
     @GET
     @Path("findNextNodes/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "选择下一步执行的节点信息", notes = "测试")
+    @ApiOperation(value = "获取决策信息", notes = "获取决策信息（下一步可能节点操作）")
     List<NodeInfo> findNextNodes(@PathParam("id") String id) throws NoSuchMethodException;
 
 
     /**
-     * 选择下一步执行的节点信息(兼容网关)
+     * 获取决策信息(兼容网关)
      *
      * @param id 任务ID
-     * @return 下一步执行的节点信息
+     * @return 获取决策信息（下一步可能节点操作）
      * @throws NoSuchMethodException 方法找不到异常
      */
     @GET
     @Path("findNextNodesOfGateway")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "选择下一步执行的节点信息", notes = "选择下一步执行的节点信息")
+    @ApiOperation(value = "获取决策信息", notes = "获取决策信息（下一步可能节点操作）")
     List<NodeInfo> findNextNodesOfGateway(@QueryParam("id") String id) throws NoSuchMethodException;
 
 

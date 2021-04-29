@@ -31,6 +31,18 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowDefinationService flowDefinationService;
 
     @Test
+    public void findNextNodes(){
+        try{
+            List<NodeInfo> nodeInfoList =  service.findNextNodes("112A2D0B-A887-11EB-A31B-983B8F805BAB");
+            System.out.println(ApiJsonUtils.toJson(nodeInfoList));
+        }catch (Exception e){
+            System.out.println("出错！");
+        }
+    }
+
+
+
+    @Test
     public void getAllCanAddNodeInfoList() {
         try {
             //加签列表

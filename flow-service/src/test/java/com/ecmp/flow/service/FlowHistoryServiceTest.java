@@ -25,13 +25,13 @@ public class FlowHistoryServiceTest extends BaseContextTestCase {
     }
 
     @Test
-    public void  initVirtualTask(){
-        try{
+    public void initVirtualTask() {
+        try {
             List<String> idList = new ArrayList<>();
             idList.add("B54E8964-D14D-11E8-A64B-0242C0A8441B");
             idList.add("394DE15B-F6FF-11EA-8F02-0242C0A8460D");
-            flowTaskTool.initVirtualTask("d4cf0b0c-a884-11eb-ad06-0242c0a8462a","UserTask_67","测试虚拟待办通知生产",idList);
-        }catch (Exception e){
+            flowTaskTool.initVirtualTask("d4cf0b0c-a884-11eb-ad06-0242c0a8462a", "UserTask_67", "测试虚拟待办通知生产", idList);
+        } catch (Exception e) {
         }
     }
 

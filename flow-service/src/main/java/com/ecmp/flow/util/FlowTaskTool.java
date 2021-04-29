@@ -408,6 +408,9 @@ public class FlowTaskTool {
         String nodeType = defObj.get("nodeType") + "";
 
         String actTaskDefKey = flowTask.getActTaskDefKey();
+        if (actTaskDefKey.contains("-virtual")) { //虚拟待办通知专属
+            actTaskDefKey = actTaskDefKey.replace("-virtual", "");
+        }
         String actProcessDefinitionId = flowTask.getFlowInstance().getFlowDefVersion().getActDefId();
         ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService)
                 .getDeployedProcessDefinition(actProcessDefinitionId);
@@ -426,7 +429,9 @@ public class FlowTaskTool {
             return nodeInfoList;
         }
 
-        if ("CounterSign".equalsIgnoreCase(nodeType) || "ParallelTask".equalsIgnoreCase(nodeType) || "SerialTask".equalsIgnoreCase(nodeType)) {//多实例节点，直接返回当前会签节点信息
+        if ("CounterSign".equalsIgnoreCase(nodeType)
+                || "ParallelTask".equalsIgnoreCase(nodeType)
+                || "SerialTask".equalsIgnoreCase(nodeType)) {//多实例节点，直接返回当前会签节点信息
 
             NodeInfo tempNodeInfo = new NodeInfo();
             tempNodeInfo.setCurrentTaskType(nodeType);
@@ -434,22 +439,27 @@ public class FlowTaskTool {
             tempNodeInfo.setUiType(uiType);
             ProcessInstance instance = runtimeService.createProcessInstanceQuery()
                     .processInstanceId(flowTask.getFlowInstance().getActInstanceId()).singleResult();
-            // 取得当前任务
-            HistoricTaskInstance currTask = historyService
-                    .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
-                    .singleResult();
-            String executionId = currTask.getExecutionId();
+            if (!TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //不是虚拟待办通知（虚拟待办actTaskId为空）
+                // 取得当前任务
+                HistoricTaskInstance currTask = historyService
+                        .createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
+                        .singleResult();
+                String executionId = currTask.getExecutionId();
 
-            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+                Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
 
-            //完成会签的次数
-            Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
-            //总循环次数
-            Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
-            if (completeCounter + 1 == instanceOfNumbers) {//会签,串，并最后一个执行人
-                tempNodeInfo.setCounterSignLastTask(true);
-                counterSignLastTask = true;
-                if ("CounterSign".equalsIgnoreCase(nodeType)) {
+                //完成会签的次数
+                Integer completeCounter = (Integer) processVariables.get("nrOfCompletedInstances").getValue();
+                //总循环次数
+                Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
+                if (completeCounter + 1 == instanceOfNumbers) {//会签,串，并最后一个执行人
+                    tempNodeInfo.setCounterSignLastTask(true);
+                    counterSignLastTask = true;
+                    if ("CounterSign".equalsIgnoreCase(nodeType)) {
+                        nodeInfoList.add(tempNodeInfo);
+                        return nodeInfoList;
+                    }
+                } else {
                     nodeInfoList.add(tempNodeInfo);
                     return nodeInfoList;
                 }
@@ -457,8 +467,8 @@ public class FlowTaskTool {
                 nodeInfoList.add(tempNodeInfo);
                 return nodeInfoList;
             }
-
         }
+
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<>();
         initNextNodes(false, flowTask, currActivity, nextNodes, 0, nodeType, null);
         if (!CollectionUtils.isEmpty(nextNodes)) {
