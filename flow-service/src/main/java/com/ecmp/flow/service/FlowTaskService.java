@@ -530,6 +530,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
             } else {//人工选择任务的情况
                 FlowTask flowTask = flowTaskDao.findOne(taskId);
+                if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+                    return OperateResultWithData.operationFailure("当前任务属于虚拟任务，不能进行实际处理！");
+                }
                 String taskJsonDef = flowTask.getTaskJsonDef();
                 JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
                 String nodeType = taskJsonDefObj.get("nodeType") + "";//针对审批网关的情况
@@ -683,6 +686,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return OperateResultWithData.operationFailure("委托的任务不能直接提交到下一步，需要先返回委托方进行处理！");
                 }
             }
+            if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+                return OperateResultWithData.operationFailure("当前任务属于虚拟任务，不能进行实际处理！");
+            }
+
 
             String taskJsonDef = flowTask.getTaskJsonDef();
             JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
@@ -2516,7 +2523,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else {
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟待办
-                return OperateResultWithData.operationFailure("虚拟待办不允许进行实际操作！");
+                return OperateResultWithData.operationFailure("虚拟任务不能获取下一步信息！");
             }
             return OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
         }
