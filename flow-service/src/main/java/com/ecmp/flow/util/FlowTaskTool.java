@@ -2526,6 +2526,54 @@ public class FlowTaskTool {
         return result;
     }
 
+
+    public FlowHistory initVirtualFlowHistory(FlowTask flowTask) {
+        FlowHistory flowHistory = new FlowHistory();
+        flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());
+        flowHistory.setActType(flowTask.getActType());
+        flowHistory.setTaskJsonDef(flowTask.getTaskJsonDef());
+        flowHistory.setFlowDefId(flowTask.getFlowDefinitionId());
+        flowHistory.setCanCancel(null);
+        flowHistory.setFlowName(flowTask.getFlowName());
+        flowHistory.setDepict(flowTask.getDepict());
+        flowHistory.setActClaimTime(flowTask.getActClaimTime());
+        flowHistory.setFlowTaskName(flowTask.getTaskName());
+        flowHistory.setFlowInstance(flowTask.getFlowInstance());
+        flowHistory.setOwnerAccount(flowTask.getOwnerAccount());
+        flowHistory.setOwnerId(flowTask.getOwnerId());
+        flowHistory.setOwnerName(flowTask.getOwnerName());
+        flowHistory.setExecutorAccount(flowTask.getExecutorAccount());
+        flowHistory.setExecutorId(flowTask.getExecutorId());
+        flowHistory.setExecutorName(flowTask.getExecutorName());
+        flowHistory.setCandidateAccount(flowTask.getCandidateAccount());
+        //添加组织机构信息
+        flowHistory.setExecutorOrgId(flowTask.getExecutorOrgId());
+        flowHistory.setExecutorOrgCode(flowTask.getExecutorOrgCode());
+        flowHistory.setExecutorOrgName(flowTask.getExecutorOrgName());
+        flowHistory.setOwnerOrgId(flowTask.getOwnerOrgId());
+        flowHistory.setOwnerOrgCode(flowTask.getOwnerOrgCode());
+        flowHistory.setOwnerOrgName(flowTask.getOwnerOrgName());
+
+        flowHistory.setActWorkTimeInMillis(null);
+        flowHistory.setActStartTime(flowTask.getCreatedDate());
+        flowHistory.setActEndTime(new Date());
+        Long actDurationInMillis = flowHistory.getActEndTime().getTime() - flowHistory.getActStartTime().getTime();
+        flowHistory.setActDurationInMillis(actDurationInMillis);
+        flowHistory.setActHistoryId(null);
+        flowHistory.setActTaskDefKey(flowTask.getActTaskDefKey());
+        flowHistory.setPreId(flowTask.getPreId());
+        flowHistory.setDepict(flowTask.getDepict());
+        flowHistory.setTaskStatus(flowTask.getTaskStatus());
+        flowHistory.setOldTaskId(flowTask.getId());
+        flowHistory.setTiming(flowTask.getTiming() == null ? 0.00 : flowTask.getTiming());
+        flowHistory.setDisagreeReasonId(null);
+        flowHistory.setDisagreeReasonCode(null);
+        flowHistory.setDisagreeReasonName(null);
+        flowHistory.setFlowExecuteStatus(FlowExecuteStatus.HAVEREAD.getCode());
+        flowHistory.setTenantCode(ContextUtil.getTenantCode());
+        return flowHistory;
+    }
+
     public FlowHistory initFlowHistory(FlowTask flowTask, HistoricTaskInstance historicTaskInstance, Boolean canCancel, Map<String, Object> variables) {
         FlowHistory flowHistory = new FlowHistory();
         flowTask.setFlowDefinitionId(flowTask.getFlowDefinitionId());

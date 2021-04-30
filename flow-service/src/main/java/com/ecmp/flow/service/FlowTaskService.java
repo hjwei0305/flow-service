@@ -4250,6 +4250,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         return ResponseData.operationFailure("已阅失败：" + responseNodeInfo.getMessage());
                     }
                 } else {
+                    if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟待办
+                        return this.completeVirtualTask(flowTask);
+                    }
                     return ResponseData.operationFailure("已阅失败：当前节点不是抄送（呈报）节点！");
                 }
             } else {
@@ -4258,6 +4261,37 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         } else {
             return ResponseData.operationFailure("已阅失败：参数任务ID不能为空！");
         }
+    }
+
+
+    /**
+     * 处理虚拟待办
+     *
+     * @param flowTask
+     * @return
+     */
+    public ResponseData completeVirtualTask(FlowTask flowTask) {
+        try {
+            List<FlowTask> oldList = new ArrayList<>();
+            oldList.add(flowTask);
+            FlowHistory flowHistory = flowTaskTool.initVirtualFlowHistory(flowTask);
+            flowTaskDao.delete(flowTask);
+            flowHistoryDao.save(flowHistory);
+            //是否推送信息到baisc
+            Boolean pushBasic = this.getBooleanPushTaskToBasic();
+            if (pushBasic) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushToBasic(null, oldList, null, null);
+                    }
+                }).start();
+            }
+        } catch (Exception e) {
+            LogUtil.error("已阅失败：虚拟任务处理失败！", e);
+            return ResponseData.operationFailure("已阅失败：虚拟任务处理失败！");
+        }
+        return ResponseData.operationSuccess("已阅成功！");
     }
 
 
