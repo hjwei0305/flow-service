@@ -1620,7 +1620,11 @@ public class FlowTaskTool {
             virtualTask.setActTaskId(null);//流程引擎ID（直接用虚拟单词代替）
             virtualTask.setTaskName(currentNode.get("name") + "(虚拟)"); //任务名称
             virtualTask.setActTaskDefKey(actTaskDefKey + "-virtual");//节点代码
-            virtualTask.setDepict(content); //描述（通知里面写的内容）
+            if (StringUtils.isNotEmpty(content)) {
+                virtualTask.setDepict(content); //描述（通知里面写的内容）
+            } else {
+                virtualTask.setDepict("虚拟待办通知"); //描述（通知里面写的内容）
+            }
             virtualTask.setTaskJsonDef(currentNode.toString());//当前节点json信息
 
             JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");

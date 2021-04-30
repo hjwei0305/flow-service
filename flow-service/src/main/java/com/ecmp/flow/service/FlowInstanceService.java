@@ -1929,7 +1929,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(instanceId);
             if (!CollectionUtils.isEmpty(flowTaskList)) {
                 for (FlowTask flowTask : flowTaskList) {
-                    if (flowTask.getTrustState() != 1) {
+                    if (flowTask.getTrustState() != 1 && !TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) {
                         return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
                     }
                 }
