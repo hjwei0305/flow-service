@@ -1763,6 +1763,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setFlowInstanceCreatorId(flowTask.getFlowInstance().getCreatorId());
 
         if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+            result.setCarbonCopyOrReport(true); //虚拟任务默认成抄送呈报，只需要点进去自动访问flowTask/haveReadTaskByTaskId
             result.setPrUser("virtual[虚拟任务]");
             result.setPreCreateTime(flowTask.getCreatedDate());
             if (StringUtils.isNotEmpty(flowTask.getDepict())) {
