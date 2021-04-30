@@ -56,6 +56,10 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>, CustomFlowHi
     @Query("select fh from com.ecmp.flow.entity.FlowHistory fh where fh.flowInstance.id  = :instanceId order by fh.actEndTime asc")
     List<FlowHistory> findByInstanceId(@Param("instanceId") String instanceId);
 
+    @Query("select fh from com.ecmp.flow.entity.FlowHistory fh where fh.flowInstance.id  = :instanceId and fh.taskStatus != 'VIRTUAL'  order by fh.actEndTime asc")
+    List<FlowHistory> findByInstanceIdNoVirtual(@Param("instanceId") String instanceId);
+
+
     /**
      * 根据业务实体类型id，业务单据id，获取所有业务执行的待办，
      * 包括撤销之前的历史任务以及不同流程类型、不同流程定义、不同版本的数据

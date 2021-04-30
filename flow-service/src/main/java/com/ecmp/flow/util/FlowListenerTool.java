@@ -454,7 +454,7 @@ public class FlowListenerTool {
                     String actProcessInstanceId = delegateTask.getProcessInstanceId();
                     FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                     List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
-                    List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+                    List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 
                     if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
                         AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();

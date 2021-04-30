@@ -67,7 +67,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
         String actProcessInstanceId = delegateTask.getProcessInstanceId();
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
         List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
-        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 
         try {
             ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;

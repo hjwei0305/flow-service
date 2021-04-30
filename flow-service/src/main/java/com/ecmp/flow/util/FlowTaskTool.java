@@ -1214,7 +1214,7 @@ public class FlowTaskTool {
     public Boolean serviceTaskHasExecute(ProcessInstance instance, PvmActivity currActivity) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
         if (flowInstance != null) {
-            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
             FlowHistory serHistory = flowHistoryList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
             if (serHistory != null) {
                 return true;
@@ -1240,7 +1240,7 @@ public class FlowTaskTool {
                 }
             }
 
-            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
             if (!CollectionUtils.isEmpty(flowHistoryList)) {
                 FlowHistory serHistory = flowHistoryList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
                 if (serHistory != null) { //接收任务已经触发执行过

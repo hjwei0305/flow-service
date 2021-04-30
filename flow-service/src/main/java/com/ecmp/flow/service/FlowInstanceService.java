@@ -1934,7 +1934,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                 }
             }
-            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(instanceId);
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(instanceId);
             Map<String, Object> variables = runtimeService.getVariables(flowInstance.getActInstanceId());
             FlowHistory preTask = null;
             if (!CollectionUtils.isEmpty(flowHistoryList)) {
