@@ -73,6 +73,16 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
 
 
     /**
+     * 根据流程实例id查询待办（不查虚拟待办）
+     *
+     * @param instanceId
+     * @return
+     */
+    @Query("select ft from com.ecmp.flow.entity.FlowTask ft where ft.flowInstance.id  = :instanceId and ft.taskStatus != 'VIRTUAL' ")
+    List<FlowTask> findByInstanceIdNoVirtual(@Param("instanceId") String instanceId);
+
+
+    /**
      * 根据执行人集合查询归类查询(转授权)
      *
      * @param executorId

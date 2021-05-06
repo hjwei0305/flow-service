@@ -1894,6 +1894,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return flowTaskDao.findByInstanceId(instanceId);
     }
 
+    /**
+     * 根据流程实例Id获取待办（不查虚拟待办）
+     *
+     * @param instanceId
+     * @return
+     */
+    public List<FlowTask> findByInstanceIdNoVirtual(String instanceId) {
+        return flowTaskDao.findByInstanceIdNoVirtual(instanceId);
+    }
+
 
     public ResponseData listFlowTaskHeader() {
         try {

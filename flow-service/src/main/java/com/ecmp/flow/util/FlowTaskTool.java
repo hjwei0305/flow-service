@@ -1232,7 +1232,7 @@ public class FlowTaskTool {
     public Boolean receiveTaskHasExecute(ProcessInstance instance, PvmActivity currActivity) {
         FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(instance.getId());
         if (flowInstance != null) {
-            List<FlowTask> taskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+            List<FlowTask> taskList = flowTaskDao.findByInstanceIdNoVirtual(flowInstance.getId());
             if (!CollectionUtils.isEmpty(taskList)) {
                 FlowTask receiveTask = taskList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
                 if (receiveTask != null) { //接收任务还未触发

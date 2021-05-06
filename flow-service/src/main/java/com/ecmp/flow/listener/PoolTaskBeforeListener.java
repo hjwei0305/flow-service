@@ -131,7 +131,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 }
 
                 if ((flowOperateResult == null || !flowOperateResult.isSuccess())) {
-                    List<FlowTask> flowTaskList = flowTaskService.findByInstanceId(flowInstance.getId());
+                    List<FlowTask> flowTaskList = flowTaskService.findByInstanceIdNoVirtual(flowInstance.getId());
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 
                     if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList)) { //如果是开始节点，手动回滚

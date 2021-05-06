@@ -559,7 +559,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     public Boolean checkCanEnd(String id) {
         Boolean canEnd = false;
-        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(id);
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(id);
         if (flowTaskList != null && !flowTaskList.isEmpty()) {
             int taskCount = flowTaskList.size();
             int index = 0;
@@ -1926,10 +1926,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (flowInstance.isEnded()) {
                 return ResponseData.operationFailure("补偿失败：当前流程实例已结束！");
             }
-            List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(instanceId);
+            List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(instanceId);
             if (!CollectionUtils.isEmpty(flowTaskList)) {
                 for (FlowTask flowTask : flowTaskList) {
-                    if (flowTask.getTrustState() != 1 && !TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) {
+                    if (flowTask.getTrustState() == null || flowTask.getTrustState() != 1) {
                         return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
                     }
                 }
@@ -2011,7 +2011,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      * @return
      */
     public ResponseData checkCurrentFlowWhetherCanJump(FlowInstance flowInstance) {
-        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(flowInstance.getId());
         if (!CollectionUtils.isEmpty(flowTaskList)) {
             if (flowTaskList.size() == 1) {
                 FlowTask flowTask = flowTaskList.get(0);
@@ -2081,7 +2081,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
             if (flowInstance != null) {
                 if (!flowInstance.isEnded()) {
-                    List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+                    List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(flowInstance.getId());
                     if (!CollectionUtils.isEmpty(flowTaskList)) {
                         FlowTask flowTask = flowTaskList.get(0);
                         //得到目标节点信息
@@ -2355,7 +2355,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (StringUtils.isNotEmpty(instanceId)) {
             FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
             if (flowInstance != null) {
-                List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+                List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(flowInstance.getId());
                 if (!CollectionUtils.isEmpty(flowTaskList)) {
                     currentTask = flowTaskList.get(0);
                     businessId = flowInstance.getBusinessId();

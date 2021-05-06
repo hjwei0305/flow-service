@@ -68,7 +68,7 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
 
     @Test
     public void taskFailTheCompensation() {
-        String instanceId = "47ED9C73-56D1-11EB-9ECA-0242C0A84413";
+        String instanceId = "A9BCDB5C-A97B-11EB-A5F0-0242C0A8462A";
         service.taskFailTheCompensation(instanceId);
     }
 
