@@ -14,6 +14,12 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase{
     @Autowired
     private  DefaultFlowBaseService defaultFlowBaseService;
 
+    @Test
+    public void getWhetherLastByBusinessId(){
+        ResponseData  responseData =   defaultFlowBaseService.getWhetherLastByBusinessId("D2203EB8-A884-11EB-AD06-0242C0A8462A");
+        System.out.println(JsonUtils.toJson(responseData));
+    }
+
 
     @Test
     public void solidifyCheckAndSetAndStart(){

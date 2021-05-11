@@ -8,6 +8,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
@@ -17,6 +18,7 @@ import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -740,4 +742,57 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     }
 
 
+    @Override
+    public ResponseData getWhetherLastByBusinessId(String businessId) {
+        if (StringUtils.isEmpty(businessId)) {
+            return ResponseData.operationFailure("参数不能为空！");
+        }
+        //通过业务单据id查询没有结束并且没有挂起的流程实例
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
+        if (!CollectionUtils.isEmpty(flowInstanceList)) {
+            FlowInstance instance = flowInstanceList.get(0);
+            //根据流程实例id查询待办（不包含虚拟任务）
+            List<FlowTask> nowTaskList = flowTaskService.findByInstanceIdNoVirtual(instance.getId());
+            if (!CollectionUtils.isEmpty(nowTaskList)) {
+                FlowTask flowTask;
+                if (nowTaskList.size() == 1) {
+                    flowTask = nowTaskList.get(0);
+                } else {
+                    String firstKey = null;
+                    for (FlowTask task : nowTaskList) {
+                        if (firstKey == null) {
+                            firstKey = task.getActTaskDefKey();
+                        } else {
+                            if (!firstKey.equals(task.getActTaskDefKey())) {
+                                return OperateResultWithData.operationFailure("查询出多节点待办，不能进行判断");
+                            }
+                        }
+                    }
+                    flowTask = nowTaskList.get(0);
+                }
+
+                List<NodeInfo> nodeInfoList;
+                try {
+                    nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask.getId(), "true", null);
+                } catch (Exception e) {
+                    LogUtil.error("查询是否为最后节点，通过任务获取下一节点信息错误！", e);
+                    return OperateResultWithData.operationFailure("查询是否为最后节点，通过任务获取下一节点信息错误:" + e.getMessage());
+                }
+
+                if (!CollectionUtils.isEmpty(nodeInfoList)) {
+                    if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
+                        return OperateResultWithData.operationSuccessWithData("最后节点！");
+                    } else {
+                        return OperateResultWithData.operationFailure("不是最后一个节点");
+                    }
+                } else if (nodeInfoList == null) {
+                    return OperateResultWithData.operationFailure("任务不存在，可能已经被处理！");
+                } else {
+                    return OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
+                }
+            }
+            return ResponseData.operationFailure("未找到符合条件的待办信息！");
+        }
+        return ResponseData.operationFailure("单据未在流程中！");
+    }
 }

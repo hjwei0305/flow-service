@@ -288,4 +288,18 @@ public interface IDefaultFlowBaseService {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据Id集合获取待办执行人", notes = "通过业务单据Id集合获取待办执行人（不包含子流程）")
     ResponseData getExecutorsByBusinessIdList(List<String> businessIdLists);
+
+
+    /**
+     * 通过单据号，判断是否到达最后一个节点（审计项目零时添加使用）
+     * @param businessId
+     * @return
+     */
+    @GET
+    @Path("getWhetherLastByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据号，判断是否到达最后一个节点", notes = "通过单据号，判断是否到达最后一个节点")
+    ResponseData getWhetherLastByBusinessId(@QueryParam("businessId") String businessId);
+
 }
