@@ -87,9 +87,9 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
      */
     @Test
     public void signalPoolTaskByBusinessId() {
-        String businessId = "F293FCCB-59EC-11EA-AB67-0242C0A84421";
-        String poolTaskActDefId = "PoolTask_22";
-        String userId = "1592D012-A330-11E7-A967-02420B99179E";
+        String businessId = "D2203EB8-A884-11EB-AD06-0242C0A8462A";
+        String poolTaskActDefId = "PoolTask_70";
+        String userId = "B54E8964-D14D-11E8-A64B-0242C0A8441B";
         Map<String, Object> v = new HashMap<>();
         OperateResult operateResult = service.signalPoolTaskByBusinessId(businessId, poolTaskActDefId, userId, v);
         System.out.println(JsonUtils.toJson(operateResult));
@@ -101,11 +101,11 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Test
     public void signalPoolTaskByBusinessIdAndUserList() {
         SignalPoolTaskVO signalPoolTaskVO = new SignalPoolTaskVO();
-        signalPoolTaskVO.setBusinessId("F293FCCB-59EC-11EA-AB67-0242C0A84421");
-        signalPoolTaskVO.setPoolTaskActDefId("PoolTask_22");
-        List<String> list = new ArrayList<String>();
-        list.add("1592D012-A330-11E7-A967-02420B99179E");
-        list.add("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
+        signalPoolTaskVO.setBusinessId("D2203EB8-A884-11EB-AD06-0242C0A8462A");
+        signalPoolTaskVO.setPoolTaskActDefId("PoolTask_70");
+        List<String> list = new ArrayList<>();
+        list.add("02620F45-5EAF-11EA-A2E3-0242C0A84605");
+        list.add("73819619-6FD9-11EA-9C1B-0242C0A84603");
         Map<String, Object> v = new HashMap<>();
         signalPoolTaskVO.setUserIds(list);
         signalPoolTaskVO.setMap(v);

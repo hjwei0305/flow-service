@@ -29,7 +29,7 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
 
     long deleteByFlowInstanceId(String flowInstanceId);
 
-    FlowTask findByActTaskId(String actTaskId);
+    List<FlowTask> findByActTaskId(String actTaskId);
 
     /**
      * 根据流程实例id，节点key查询待办

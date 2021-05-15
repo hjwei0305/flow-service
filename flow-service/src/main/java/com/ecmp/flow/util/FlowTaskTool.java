@@ -1553,7 +1553,8 @@ public class FlowTaskTool {
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
-                FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
+                List<FlowTask> tempFlowTasks = flowTaskDao.findByActTaskId(task.getId());
+                FlowTask tempFlowTask = tempFlowTasks.get(0);
                 if (tempFlowTask != null) {
                     continue;
                 }
@@ -1733,8 +1734,8 @@ public class FlowTaskTool {
                 String nodeType = (String) currentNode.get("nodeType");
                 if (("CounterSign".equalsIgnoreCase(nodeType) || "ParallelTask".equalsIgnoreCase(nodeType) || "SerialTask".equalsIgnoreCase(nodeType))) {
 
-                    FlowTask tempFlowTask = flowTaskDao.findByActTaskId(task.getId());
-                    if (tempFlowTask != null) {
+                    List<FlowTask> tempFlowTasks = flowTaskDao.findByActTaskId(task.getId());
+                    if (!CollectionUtils.isEmpty(tempFlowTasks)) {
                         continue;
                     }
                     //串行会签，将上一步执行历史，换成真实的上一步执行节点信息

@@ -262,7 +262,12 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(taskActDefId).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                return flowTaskDao.findByActTaskId(historicTaskInstance.getId());
+                List<FlowTask> flowTasks = flowTaskDao.findByActTaskId(historicTaskInstance.getId());
+                if (!CollectionUtils.isEmpty(flowTasks)) {
+                    return flowTasks.get(0);
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -836,20 +841,108 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         //根据用户的id列表获取执行人列表
         List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
         if (executorList != null) {
-            FlowTask oldFlowTask = flowTaskDao.findByActTaskId(actTaskId);
-            //是否推送信息到baisc
-            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            List<FlowTask> needDelList = new ArrayList<>();  //需要删除的待办
-            List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
+            List<FlowTask> oldFlowTasks = flowTaskDao.findByActTaskId(actTaskId);
+            if (!CollectionUtils.isEmpty(oldFlowTasks)) {
+                FlowTask oldFlowTask = oldFlowTasks.get(0);
+                //是否推送信息到baisc
+                Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+                List<FlowTask> needDelList = new ArrayList<>();  //需要删除的待办
+                List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
 
-            String flowTypeId = oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
+                String flowTypeId = oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId();
 
-            for (Executor executor : executorList) {
+                for (Executor executor : executorList) {
+                    FlowTask newFlowTask = new FlowTask();
+                    org.springframework.beans.BeanUtils.copyProperties(oldFlowTask, newFlowTask);
+                    newFlowTask.setId(null);
+                    //通过授权用户ID和流程类型返回转授权信息（转办模式）
+                    TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTypeId);
+                    if (taskMakeOverPower != null) {
+                        newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                        newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                        newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                        newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                        newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
+                        if (StringUtils.isEmpty(newFlowTask.getDepict())) {
+                            newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】");
+                        } else {
+                            newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】" + newFlowTask.getDepict());
+                        }
+                    } else {
+                        newFlowTask.setExecutorId(executor.getId());
+                        newFlowTask.setExecutorAccount(executor.getCode());
+                        newFlowTask.setExecutorName(executor.getName());
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                        newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                        newFlowTask.setExecutorOrgName(executor.getOrganizationName());
+                    }
+                    newFlowTask.setOwnerId(executor.getId());
+                    newFlowTask.setOwnerName(executor.getName());
+                    newFlowTask.setOwnerAccount(executor.getCode());
+                    //添加组织机构信息
+                    newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                    newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setOwnerOrgName(executor.getOrganizationName());
+                    newFlowTask.setTrustState(0);
+                    if (v.get("instancyStatus") != null) {
+                        try {
+                            if ((Boolean) v.get("instancyStatus") == true) {
+                                newFlowTask.setPriority(3);//设置为紧急
+                            }
+                        } catch (Exception e) {
+                            LogUtil.error(e.getMessage(), e);
+                        }
+                    }
+                    flowTaskDao.save(newFlowTask);
+                    needAddList.add(newFlowTask);
+                }
+
+                needDelList.addAll(oldFlowTasks);
+                flowTaskDao.deleteAll(oldFlowTasks);
+
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushToBasic(needAddList, null, needDelList, null);
+                        }
+                    }).start();
+                }
+                return ResponseData.operationSuccessWithData(needAddList);
+            } else {
+                return ResponseData.operationFailure("未查询到相应节点的待办!");
+            }
+        } else {
+            return ResponseData.operationFailure("执行人列表查询结果为空!");
+        }
+
+    }
+
+    //任务池指定真实用户，抢单池确定用户签定
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId, Map<String, Object> v) {
+        OperateResultWithData<FlowTask> result;
+        String actTaskId = historicTaskInstance.getId();
+        //根据用户的id获取执行人
+        Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
+        if (executor != null) {
+            List<FlowTask> oldFlowTasks = flowTaskDao.findByActTaskId(actTaskId);
+            if (!CollectionUtils.isEmpty(oldFlowTasks)) {
+                FlowTask oldFlowTask = oldFlowTasks.get(0);
                 FlowTask newFlowTask = new FlowTask();
                 org.springframework.beans.BeanUtils.copyProperties(oldFlowTask, newFlowTask);
                 newFlowTask.setId(null);
+                //是否推送信息到baisc
+                Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+                List<FlowTask> needDelList = new ArrayList<>();  //需要删除的待办
+                if (pushBasic) {
+                    needDelList.addAll(oldFlowTasks);
+                }
                 //通过授权用户ID和流程类型返回转授权信息（转办模式）
-                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTypeId);
+                TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), newFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                 if (taskMakeOverPower != null) {
                     newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                     newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
@@ -880,7 +973,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
                 newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                 newFlowTask.setTrustState(0);
-                if (v.get("instancyStatus") != null) {
+                if (v != null && v.get("instancyStatus") != null) {
                     try {
                         if ((Boolean) v.get("instancyStatus") == true) {
                             newFlowTask.setPriority(3);//设置为紧急
@@ -889,105 +982,29 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         LogUtil.error(e.getMessage(), e);
                     }
                 }
+                taskService.setAssignee(actTaskId, executor.getId());
+
                 flowTaskDao.save(newFlowTask);
-                needAddList.add(newFlowTask);
-            }
+                flowTaskDao.deleteAll(oldFlowTasks);
 
-            needDelList.add(oldFlowTask);
-            flowTaskDao.delete(oldFlowTask);
+                List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
+                if (pushBasic) {
+                    needAddList.add(newFlowTask);
 
-            if (pushBasic) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        flowTaskService.pushToBasic(needAddList, null, needDelList, null);
-                    }
-                }).start();
-            }
-            return ResponseData.operationSuccessWithData(needAddList);
-        } else {
-            return ResponseData.operationFailure("执行人列表查询结果为空!");
-        }
-
-    }
-
-    //任务池指定真实用户，抢单池确定用户签定
-    @Transactional(propagation = Propagation.REQUIRED)
-    public OperateResultWithData<FlowTask> poolTaskSign(HistoricTaskInstance historicTaskInstance, String userId, Map<String, Object> v) {
-        OperateResultWithData<FlowTask> result = null;
-        String actTaskId = historicTaskInstance.getId();
-        //根据用户的id获取执行人
-        Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
-        if (executor != null) {
-            FlowTask newFlowTask = flowTaskDao.findByActTaskId(actTaskId);
-            FlowTask delFlowTask = new FlowTask();
-            org.springframework.beans.BeanUtils.copyProperties(newFlowTask, delFlowTask);
-            //是否推送信息到baisc
-            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-            List<FlowTask> needDelList = new ArrayList<>();  //需要删除的待办
-            if (pushBasic) {
-                needDelList.add(delFlowTask);
-            }
-            //通过授权用户ID和流程类型返回转授权信息（转办模式）
-            TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), newFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
-            if (taskMakeOverPower != null) {
-                newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
-                newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
-                newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                //添加组织机构信息
-                newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
-                newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
-                newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
-                if (StringUtils.isEmpty(newFlowTask.getDepict())) {
-                    newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】");
-                } else {
-                    newFlowTask.setDepict("【转授权-" + executor.getName() + "授权】" + newFlowTask.getDepict());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskService.pushToBasic(needAddList, null, needDelList, null);
+                        }
+                    }).start();
                 }
+                result = OperateResultWithData.operationSuccess();
+                result.setData(newFlowTask);
             } else {
-                newFlowTask.setExecutorId(executor.getId());
-                newFlowTask.setExecutorAccount(executor.getCode());
-                newFlowTask.setExecutorName(executor.getName());
-                //添加组织机构信息
-                newFlowTask.setExecutorOrgId(executor.getOrganizationId());
-                newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
-                newFlowTask.setExecutorOrgName(executor.getOrganizationName());
+                result = OperateResultWithData.operationFailure("未查询到相应的流程节点待办！");
             }
-            newFlowTask.setOwnerId(executor.getId());
-            newFlowTask.setOwnerName(executor.getName());
-            newFlowTask.setOwnerAccount(executor.getCode());
-            //添加组织机构信息
-            newFlowTask.setOwnerOrgId(executor.getOrganizationId());
-            newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
-            newFlowTask.setOwnerOrgName(executor.getOrganizationName());
-            newFlowTask.setTrustState(0);
-            if (v != null && v.get("instancyStatus") != null) {
-                try {
-                    if ((Boolean) v.get("instancyStatus") == true) {
-                        newFlowTask.setPriority(3);//设置为紧急
-                    }
-                } catch (Exception e) {
-                    LogUtil.error(e.getMessage(), e);
-                }
-            }
-            taskService.setAssignee(actTaskId, executor.getId());
-
-            flowTaskDao.save(newFlowTask);
-
-            List<FlowTask> needAddList = new ArrayList<FlowTask>(); //需要新增的待办
-            if (pushBasic) {
-                needAddList.add(newFlowTask);
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        flowTaskService.pushToBasic(needAddList, null, needDelList, null);
-                    }
-                }).start();
-            }
-            result = OperateResultWithData.operationSuccess();
-            result.setData(newFlowTask);
         } else {
-            result = OperateResultWithData.operationFailure("10038");//执行人查询结果为空
+            result = OperateResultWithData.operationFailure("10038");
         }
         return result;
     }
@@ -1007,22 +1024,18 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             return ResponseData.operationFailure("工作池任务设置多执行人失败,用户ID未传入！");
         }
 
-        if (signalPoolTaskVO.getUserIds().size() == 1) {   //只有一个执行人
-            return this.signalPoolTaskByBusinessId(signalPoolTaskVO.getBusinessId(), signalPoolTaskVO.getPoolTaskActDefId(), signalPoolTaskVO.getUserIds().get(0), signalPoolTaskVO.getMap());
-        } else {
-            FlowInstance flowInstance = this.findLastInstanceByBusinessId(signalPoolTaskVO.getBusinessId());
-            if (flowInstance != null && !flowInstance.isEnded()) {
-                String actInstanceId = flowInstance.getActInstanceId();
-                HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(signalPoolTaskVO.getPoolTaskActDefId()).unfinished().singleResult(); // 创建历史任务实例查询
-                if (historicTaskInstance != null) {
-                    this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap());
-                    return ResponseData.operationSuccess();
-                } else {
-                    return ResponseData.operationFailure("工作池任务设置多执行人失败,当前节点不存在！");
-                }
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(signalPoolTaskVO.getBusinessId());
+        if (flowInstance != null && !flowInstance.isEnded()) {
+            String actInstanceId = flowInstance.getActInstanceId();
+            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(signalPoolTaskVO.getPoolTaskActDefId()).unfinished().singleResult(); // 创建历史任务实例查询
+            if (historicTaskInstance != null) {
+                this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap());
+                return ResponseData.operationSuccess();
             } else {
-                return ResponseData.operationFailure("工作池任务设置多执行人失败,流程实例找不到，或者已经结束！");
+                return ResponseData.operationFailure("工作池任务设置多执行人失败,当前节点不存在！");
             }
+        } else {
+            return ResponseData.operationFailure("工作池任务设置多执行人失败,流程实例找不到，或者已经结束！");
         }
     }
 
