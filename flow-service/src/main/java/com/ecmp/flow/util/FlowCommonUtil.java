@@ -169,6 +169,8 @@ public class FlowCommonUtil implements Serializable {
         if (executors.isEmpty()) {
             LogUtil.error(messageLog + "返回信息为空！");
             throw new FlowException(getNulString("【根据岗位列表获取执行人】"));
+        } else {
+            LogUtil.bizLog(messageLog + ",返回信息【" + JsonUtils.toJson(executors) + "】");
         }
         return executors;
     }
@@ -181,7 +183,7 @@ public class FlowCommonUtil implements Serializable {
      * @return 流程执行人集合
      */
     public List<Executor> getBasicExecutorsByPostCatIds(List<String> postCatIds, String orgId) {
-        FindExecutorByPositionCateParamVo vo  =  new FindExecutorByPositionCateParamVo();
+        FindExecutorByPositionCateParamVo vo = new FindExecutorByPositionCateParamVo();
         vo.setPostCatIds(postCatIds);
         vo.setOrgId(orgId);
         String url = Constants.getBasicPositionGetexecutorsbyposcateidsUrl();
@@ -206,6 +208,8 @@ public class FlowCommonUtil implements Serializable {
         if (executors.isEmpty()) {
             LogUtil.error(messageLog + "返回信息为空！");
             throw new FlowException(getNulString("【根据岗位类别列表获取执行人】"));
+        } else {
+            LogUtil.bizLog(messageLog + ",返回信息【" + JsonUtils.toJson(executors) + "】");
         }
         return executors;
     }
@@ -245,6 +249,8 @@ public class FlowCommonUtil implements Serializable {
         if (executors.isEmpty()) {
             LogUtil.error(messageLog + "返回信息为空！");
             throw new FlowException(getNulString("【根据岗位、组织维度和组织机构获取执行人】"));
+        } else {
+            LogUtil.bizLog(messageLog + ",返回信息【" + JsonUtils.toJson(executors) + "】");
         }
         return executors;
     }
@@ -282,6 +288,8 @@ public class FlowCommonUtil implements Serializable {
         if (executors.isEmpty()) {
             LogUtil.error(messageLog + "返回信息为空！");
             throw new FlowException(getNulString("【根据岗位类别和组织机构获取执行人】"));
+        } else {
+            LogUtil.bizLog(messageLog + ",返回信息【" + JsonUtils.toJson(executors) + "】");
         }
         return executors;
     }
@@ -289,7 +297,7 @@ public class FlowCommonUtil implements Serializable {
 
     public List<Executor> getExecutorsBySelfDef(String appModuleCode, String selfName, String path, FlowInvokeParams flowInvokeParams) {
         String messageLog = "调用【自定义执行人-" + selfName + "】";
-        String url = PageUrlUtil.buildUrl(Constants.getConfigValueByApi(appModuleCode),path);
+        String url = PageUrlUtil.buildUrl(Constants.getConfigValueByApi(appModuleCode), path);
         String mes = "-接口地址：" + url + ",参数值:" + JsonUtils.toJson(flowInvokeParams);
         ResponseData<List<Executor>> result;
         List<Executor> executors;
@@ -311,6 +319,8 @@ public class FlowCommonUtil implements Serializable {
         if (executors.isEmpty()) {
             LogUtil.error(messageLog + "返回执行人为空！");
             throw new FlowException(getNulString("【自定义执行人-" + selfName + "】"));
+        } else {
+            LogUtil.bizLog(messageLog + ",返回信息【" + JsonUtils.toJson(executors) + "】");
         }
         return executors;
     }
