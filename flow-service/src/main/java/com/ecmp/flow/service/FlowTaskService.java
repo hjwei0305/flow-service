@@ -2654,33 +2654,27 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(String taskIds) throws NoSuchMethodException {
-        List<NodeGroupByFlowVersionInfo> all = new ArrayList<NodeGroupByFlowVersionInfo>();
+        List<NodeGroupByFlowVersionInfo> all = new ArrayList<>();
         List<NodeGroupInfo> nodeGroupInfoList = this.findNexNodesGroupWithUserSetCanBatch(taskIds);
-        Map<String, NodeGroupByFlowVersionInfo> nodeGroupByFlowVersionInfoMap = new HashMap<String, NodeGroupByFlowVersionInfo>();
+        Map<String, NodeGroupByFlowVersionInfo> nodeGroupByFlowVersionInfoMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(nodeGroupInfoList)) {
+            int i = 0;
             for (NodeGroupInfo nodeGroupInfo : nodeGroupInfoList) {
+                i++;
                 String flowDefVersionId = nodeGroupInfo.getFlowDefVersionId();
-                NodeGroupByFlowVersionInfo nodeGroupByFlowVersionInfo = nodeGroupByFlowVersionInfoMap.get(flowDefVersionId);
-                if (nodeGroupByFlowVersionInfo == null) {
-                    nodeGroupByFlowVersionInfo = new NodeGroupByFlowVersionInfo();
-                    nodeGroupByFlowVersionInfo.setId(flowDefVersionId);
-                    nodeGroupByFlowVersionInfo.setName(nodeGroupInfo.getFlowDefVersionName());
-                    FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
-                    if (flowDefVersion != null) {
-                        Boolean boo = flowDefVersion.getSolidifyFlow() == null ? false : flowDefVersion.getSolidifyFlow();
-                        nodeGroupByFlowVersionInfo.setSolidifyFlow(boo);
-                    }
-                    if (nodeGroupByFlowVersionInfo.getSolidifyFlow() == true) {
-                        nodeGroupInfo.setExecutorSet(null);
-                    }
-                    nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
-                    nodeGroupByFlowVersionInfoMap.put(flowDefVersionId, nodeGroupByFlowVersionInfo);
-                } else {
-                    if (nodeGroupByFlowVersionInfo.getSolidifyFlow() == true) {
-                        nodeGroupInfo.setExecutorSet(null);
-                    }
-                    nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
+                NodeGroupByFlowVersionInfo nodeGroupByFlowVersionInfo = new NodeGroupByFlowVersionInfo();
+                nodeGroupByFlowVersionInfo.setId(flowDefVersionId+"_"+i);
+                nodeGroupByFlowVersionInfo.setName(nodeGroupInfo.getFlowDefVersionName());
+                FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
+                if (flowDefVersion != null) {
+                    Boolean boo = flowDefVersion.getSolidifyFlow() == null ? false : flowDefVersion.getSolidifyFlow();
+                    nodeGroupByFlowVersionInfo.setSolidifyFlow(boo);
                 }
+                if (nodeGroupByFlowVersionInfo.getSolidifyFlow() == true) {
+                    nodeGroupInfo.setExecutorSet(null);
+                }
+                nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
+                nodeGroupByFlowVersionInfoMap.put(flowDefVersionId+"_"+i, nodeGroupByFlowVersionInfo);
             }
             all.addAll(nodeGroupByFlowVersionInfoMap.values());
         }
