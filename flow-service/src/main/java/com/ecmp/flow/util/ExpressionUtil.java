@@ -54,15 +54,15 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonProperties());
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonProperties());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ALL, false);
         String messageLog = "开始调用【条件属性说明服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        ResponseData<Map<String,String>> result;
+        ResponseData<Map<String, String>> result;
         Map<String, String> map;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String,String>>>() {
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String, String>>>() {
             }, params);
             if (result.successful()) {
                 map = result.getData();
@@ -84,39 +84,39 @@ public class ExpressionUtil {
 
     /**
      * 获取条件属性的备注说明
+     *
      * @param businessModel 业务模型
      * @return
      */
-    public  static Map<String,String>  getPropertiesRemark(BusinessModel businessModel){
+    public static Map<String, String> getPropertiesRemark(BusinessModel businessModel) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
-        String clientApiBaseUrl =  Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String  clientApiUrl =  PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonProperties()+"Remark");
-        Map<String,Object> params = new HashMap();
-        params.put(Constants.BUSINESS_MODEL_CODE,businessModelCode);
-        String messageLog = "开始调用【获取条件属性的备注说明】，接口url="+clientApiUrl+",参数值"+ JsonUtils.toJson(params);
-        ResponseData<Map<String,String>> result;
-        Map<String,String> map;
+        String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonProperties() + "Remark");
+        Map<String, Object> params = new HashMap();
+        params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
+        String messageLog = "开始调用【获取条件属性的备注说明】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
+        ResponseData<Map<String, String>> result;
+        Map<String, String> map;
         try {
-            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String,String>>>() {}, params);
+            result = ApiClient.getEntityViaProxy(clientApiUrl, new GenericType<ResponseData<Map<String, String>>>() {
+            }, params);
             if (result.successful()) {
                 map = result.getData();
             } else {
                 messageLog += "-接口返回信息：" + result.getMessage();
                 LogUtil.error(messageLog);
-                return  null;
+                return null;
             }
             messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
             LogUtil.bizLog(messageLog);
-        }catch (Exception e){
-            messageLog+="-调用异常："+e.getMessage();
+        } catch (Exception e) {
+            messageLog += "-调用异常：" + e.getMessage();
             LogUtil.error(messageLog);
-            return  null;
+            return null;
         }
         return map;
     }
-
-
 
 
     /**
@@ -128,7 +128,7 @@ public class ExpressionUtil {
     public static Map<String, Object> getPropertiesInitialValuesMap(BusinessModel businessModel) {
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonPSValue());
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonPSValue());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
         String messageLog = "开始调用【条件属性初始值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
@@ -166,7 +166,7 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonPValue());
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonPValue());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ID, businessId);
@@ -210,7 +210,7 @@ public class ExpressionUtil {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl,businessModel.getConditonStatusRest());
+        String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonStatusRest());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ID, businessId);
@@ -223,15 +223,15 @@ public class ExpressionUtil {
             }, params);
             if (result.successful()) {
                 boo = result.getData();
-                if(boo == null){
+                if (boo == null) {
                     messageLog += "-接口返回data信息为空：" + result.getMessage();
                     LogUtil.error(messageLog);
-                    throw new FlowException(getErrorLogString("【重置单据状态】"));
+                    throw new FlowException("【重置单据状态】异常，接口返回data信息为空：" + JsonUtils.toJson(result));
                 }
             } else {
                 messageLog += "-接口返回信息：" + result.getMessage();
                 LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString("【重置单据状态】"));
+                throw new FlowException("【重置单据状态】异常，接口返回信息：" + result.getMessage());
             }
             messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
             LogUtil.bizLog(messageLog);
