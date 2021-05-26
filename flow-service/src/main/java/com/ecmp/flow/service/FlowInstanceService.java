@@ -223,10 +223,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return flowHistoryDao.findAllByBusinessId(businessId);
     }
 
-    public List<FlowHistory> findLastByBusinessId(String businessId) {
-        List<FlowHistory> flowHistoryList = flowHistoryDao.findLastByBusinessId(businessId);
-        flowHistoryService.initFlowTaskAppModule(flowHistoryList);
-        return flowHistoryList;
+    public List<FlowHistory> findLastHisByBusinessId(String businessId) {
+        //流程中如果存在未终止的实例，肯定是最后一个
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        List<FlowHistory> flowHistoryList = new ArrayList<>();
+        if (flowInstance != null) {
+            flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+        }
+        return  flowHistoryList;
     }
 
     //因为中泰时间服务器问题，所以不能按照时间倒序查询

@@ -114,17 +114,17 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     List<FlowHistory> findAllByBusinessId(@QueryParam("businessId") String businessId);
 
     /**
-     * 通过业务单据id获取单据最近一次流程实例流程历史记录
+     * 通过业务单据id获取单据最近一次流程实例的流程历史记录
      *
      * @param businessId 业务单据id
      * @return 流程执行历史
      */
     @GET
-    @Path("findLastByBusinessId/{businessId}")
+    @Path("findLastHisByBusinessId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例流程历史记录", notes = "测试")
-    List<FlowHistory> findLastByBusinessId(@PathParam("businessId") String businessId);
+    @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例的流程历史记录", notes = "通过业务单据id获取单据最近一次流程实例的流程历史记录")
+    List<FlowHistory> findLastHisByBusinessId(@QueryParam("businessId") String businessId);
 
 
     /**
@@ -141,7 +141,7 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     FlowInstance findLastInstanceByBusinessId(@PathParam("businessId") String businessId);
 
     /**
-     * 通过业务单据id获取单据最近一次流程实例
+     * 通过业务单据id获取单据最近一次待办列表
      *
      * @param businessId 业务单据id
      * @return 流程实例
