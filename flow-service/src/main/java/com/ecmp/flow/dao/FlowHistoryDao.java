@@ -30,7 +30,7 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>, CustomFlowHi
      * @param executorId
      * @return
      */
-    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId  and  ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject') or  ft.flowExecuteStatus is null )  group by ft.flowDefId ")
+    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId  and  ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject','haveRead') or  ft.flowExecuteStatus is null )  group by ft.flowDefId ")
     List findHisByExecutorIdGroupValid(@Param("executorId") String executorId);
 
     /**

@@ -47,8 +47,8 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             for(SearchFilter filters :  searchFilters){
                 if("flowExecuteStatus".equals(filters.getFieldName())){
                     if (filters.getValue()!=null && "valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
-                        hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
-                        hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
+                        hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject','haveRead')  or  ft.flowExecuteStatus is null  )";
+                        hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject','haveRead')  or  ft.flowExecuteStatus is null  ) ";
                     } else if (filters.getValue()!=null && "record".equals(filters.getValue())) { //记录数据
                         hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
                         hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
@@ -255,8 +255,8 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
             for(SearchFilter filters :  searchFilters){
                 if("flowExecuteStatus".equals(filters.getFieldName())){
                     if (filters.getValue()!=null && "valid".equals(filters.getValue())) {//有效数据(以前没这个字段，都作为有效数据)
-                        hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  )";
-                        hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject')  or  ft.flowExecuteStatus is null  ) ";
+                        hqlCount += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject','haveRead')  or  ft.flowExecuteStatus is null  )";
+                        hqlQuery += " and ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject','haveRead')  or  ft.flowExecuteStatus is null  ) ";
                     } else if (filters.getValue()!=null && "record".equals(filters.getValue())) { //记录数据
                         hqlCount += " and ft.flowExecuteStatus in ('end','auto') ";
                         hqlQuery += " and ft.flowExecuteStatus in ('end','auto') ";
