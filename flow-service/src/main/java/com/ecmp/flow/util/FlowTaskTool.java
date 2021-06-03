@@ -1236,7 +1236,7 @@ public class FlowTaskTool {
             if (!CollectionUtils.isEmpty(taskList)) {
                 FlowTask receiveTask = taskList.stream().filter(a -> currActivity.getId().equalsIgnoreCase(a.getActTaskDefKey())).findFirst().orElse(null);
                 if (receiveTask != null) { //接收任务还未触发
-                    return true;
+                    return false;
                 }
             }
 
