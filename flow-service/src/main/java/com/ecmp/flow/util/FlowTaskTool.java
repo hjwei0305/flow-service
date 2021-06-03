@@ -956,10 +956,11 @@ public class FlowTaskTool {
             }
 
             // 取得下一步活动
-            ActivityImpl currActivity = ((ProcessDefinitionImpl) definition).findActivity(currTask.getTaskDefinitionKey());
+//            ActivityImpl currActivity = ((ProcessDefinitionImpl) definition).findActivity(currTask.getTaskDefinitionKey());
             //只判断下一步是否已经执行（如果执行了，不显示撤回按钮）
-            resultCheck = checkIfTheNextNodeHasBeenProcessed(currActivity, instance, currTask);
-
+//            resultCheck = checkIfTheNextNodeHasBeenProcessed(currActivity, instance, currTask);
+            //现在存在不按照流程图设计走的情况(处理后直接返回审批，节点跳转)，以前的依据流程图划线判断不行，重新构造判断条件
+            resultCheck = checkIfTheNextNodeHasBeenProcessed_new(flowHistory.getFlowInstance(), flowHistory.getId());
         } catch (Exception e) {
             LogUtil.error("检查是否可以撤回报错：{}", e.getMessage(), e);
         }
@@ -1251,6 +1252,21 @@ public class FlowTaskTool {
         return false;
     }
 
+
+    /**
+     * 只判断下一步是否已经执行
+     */
+    public Boolean checkIfTheNextNodeHasBeenProcessed_new(FlowInstance flowInstance, String hisId) {
+        if (flowInstance != null) {
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findListByProperty("preId", hisId);
+            if (CollectionUtils.isEmpty(flowHistoryList)) {  //已办关联不等于空表示下一步已经有处理的了
+                List<FlowTask> taskList = flowTaskDao.findListByProperty("preId", hisId);
+                //待办不等于空表达下一步还在（默认服务任务和接收任务是不可逆的）
+                return !CollectionUtils.isEmpty(taskList);
+            }
+        }
+        return false;
+    }
 
     /**
      * 只判断下一步是否已经执行
