@@ -1007,10 +1007,16 @@ public class FlowTaskTool {
             // 取得下一步活动
             ActivityImpl currActivity = ((ProcessDefinitionImpl) definition).findActivity(currTask.getTaskDefinitionKey());
 
-            OperateResult resultCheck = checkNextNodeNotCompleted(currActivity, instance, currTask);
+//            OperateResult resultCheck = checkNextNodeNotCompleted(currActivity, instance, currTask);
+//            if (!resultCheck.successful()) {
+//                return resultCheck;
+//            }
+
+            OperateResult resultCheck = checkNextNodeNotCompleted_new(flowHistory.getFlowInstance(), flowHistory.getId());
             if (!resultCheck.successful()) {
                 return resultCheck;
             }
+
 
             HistoricActivityInstance historicActivityInstance = null;
             HistoricActivityInstanceQuery his = historyService.createHistoricActivityInstanceQuery().executionId(executionId);
@@ -1082,7 +1088,10 @@ public class FlowTaskTool {
             callBackRunIdentityLinkEntity(currTask.getId());//还原候选人等信
 
             // 删除其他到达的节点
-            deleteOtherNode(currActivity, instance, definition, currTask, flowHistory.getFlowInstance());
+//            deleteOtherNode(currActivity, instance, definition, currTask, flowHistory.getFlowInstance());
+            // 删除其他到达的节点
+            deleteOtherNode_new(flowHistory.getFlowInstance(), flowHistory.getId());
+
 
             //记录历史
             if (result.successful()) {
@@ -1139,6 +1148,47 @@ public class FlowTaskTool {
 
         }
     }
+
+
+    /**
+     * 删除其他到达的节点
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteOtherNode_new(FlowInstance flowInstance, String hisId) {
+        List<FlowTask> taskList = flowTaskDao.findListByProperty("preId", hisId);
+        //是否推送信息到baisc
+        Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+        //是否推送信息到业务模块或者直接配置的url
+        Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
+        List<FlowTask> needDelList = new ArrayList<>();
+        for (FlowTask flowTask : taskList) {
+            taskService.deleteRuningTask(flowTask.getActTaskId(), false);
+            historyService.deleteHistoricActivityInstancesByTaskId(flowTask.getActTaskId());
+            historyService.deleteHistoricTaskInstance(flowTask.getActTaskId());
+            if (pushBasic || pushModelOrUrl) {
+                needDelList.add(flowTask);
+            }
+            flowTaskDao.delete(flowTask);
+        }
+
+        if (pushBasic) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    flowTaskService.pushToBasic(null, null, needDelList, null);
+                }
+            }).start();
+        }
+        if (pushModelOrUrl) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    flowTaskService.pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
+                }
+            }).start();
+        }
+    }
+
 
     /**
      * 删除其他到达的节点
@@ -1326,6 +1376,31 @@ public class FlowTaskTool {
         }
         return result;
     }
+
+
+
+
+    /**
+     * 检查下一节点是否已经执行完成
+     */
+    public OperateResult checkNextNodeNotCompleted_new(FlowInstance flowInstance, String hisId) {
+        if (flowInstance != null) {
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findListByProperty("preId", hisId);
+            if (CollectionUtils.isEmpty(flowHistoryList)) {  //已办关联不等于空表示下一步已经有处理的了
+                List<FlowTask> taskList = flowTaskDao.findListByProperty("preId", hisId);
+                if (!CollectionUtils.isEmpty(taskList)) {//待办不等于空表达下一步还在（默认服务任务和接收任务是不可逆的）
+                    return OperateResult.operationSuccess();
+                } else {
+                    return OperateResult.operationFailure("撤回失败：下一步为不可逆节点！");
+                }
+            } else {
+                return OperateResult.operationFailure("撤回失败：下一步已经执行！");
+            }
+        } else {
+            return OperateResult.operationFailure("撤回失败：流程实例为空!");
+        }
+    }
+
 
     /**
      * 检查下一节点是否已经执行完成
