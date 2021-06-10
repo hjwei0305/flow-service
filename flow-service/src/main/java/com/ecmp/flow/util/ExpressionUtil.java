@@ -206,7 +206,7 @@ public class ExpressionUtil {
      * @param businessId    业务ID
      * @return
      */
-    public static boolean resetState(BusinessModel businessModel, String businessId, FlowStatus status) {
+    public static ResponseData resetState(BusinessModel businessModel, String businessId, FlowStatus status) {
         String businessModelCode = businessModel.getClassName();
         String apiBaseAddressConfig = getAppModule(businessModel).getApiBaseAddress();
         String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
@@ -215,32 +215,26 @@ public class ExpressionUtil {
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ID, businessId);
         params.put(Constants.STATUS, status);
-        String messageLog = "开始调用【重置单据状态】接口，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
-        ResponseData<Boolean> result;
-        Boolean boo;
         try {
-            result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData<Boolean>>() {
+            ResponseData  result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData>() {
             }, params);
             if (result.successful()) {
-                boo = result.getData();
-                if (boo == null) {
-                    messageLog += "-接口返回data信息为空：" + result.getMessage();
-                    LogUtil.error(messageLog);
-                    throw new FlowException("【重置单据状态】异常，接口返回data信息为空：" + JsonUtils.toJson(result));
+                Boolean boo = (Boolean)result.getData();
+                if (BooleanUtils.isFalse(boo)) {
+                    LogUtil.error("调用【重置单据状态】，接口返回失败信息：{}，地址=[{}]，参数=[{}]，返回=[{}]", result.getMessage(), clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
+                    return  ResponseData.operationFailure("调用【重置单据状态】，接口返回失败信息：" + result.getMessage());
+                }else{
+                    LogUtil.bizLog("调用【重置单据状态】，地址=[{}]，参数=[{}]，返回=[{}]", clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
+                    return result;
                 }
             } else {
-                messageLog += "-接口返回信息：" + result.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException("【重置单据状态】异常，接口返回信息：" + result.getMessage());
+                LogUtil.error("调用【重置单据状态】，接口返回错误信息：{}，地址=[{}]，参数=[{}]，返回=[{}]", result.getMessage(), clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
+                return  ResponseData.operationFailure("调用【重置单据状态】，接口返回错误信息：" + result.getMessage());
             }
-            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
-            LogUtil.bizLog(messageLog);
         } catch (Exception e) {
-            messageLog += "-调用异常：" + e.getMessage();
-            LogUtil.error(messageLog);
-            throw new FlowException(getErrorLogString("【重置单据状态】"), e);
+            LogUtil.error("调用【重置单据状态】，接口调用异常：{}，地址=[{}]，参数=[{}]", e.getMessage(), clientApiUrl, JsonUtils.toJson(params));
+            return  ResponseData.operationFailure("调用【重置单据状态】，接口调用异常：" + e.getMessage());
         }
-        return boo;
     }
 
 

@@ -215,10 +215,9 @@ public class StartEventCompleteListener implements ExecutionListener {
             throw new FlowException(callAfterStartResult.getMessage());
         }
 
-        Boolean result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
-        if (!result) {
-            String message = ContextUtil.getMessage("10042");
-            throw new FlowException(message);//流程启动-调用重置表单服务失败！
+        ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
+        if (!responseData.getSuccess()) {
+            throw new FlowException("流程启动-调用重置表单服务失败："+responseData.getMessage() );
         }
     }
 

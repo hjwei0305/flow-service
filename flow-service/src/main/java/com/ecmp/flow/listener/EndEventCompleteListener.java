@@ -11,6 +11,7 @@ import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.vo.ResponseData;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
@@ -87,9 +88,9 @@ public class EndEventCompleteListener implements ExecutionListener {
                 flowInstanceDao.save(flowInstance);
                 //回写状态
                 FlowInstance flowInstanceP = flowInstance.getParent();
-                boolean result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.COMPLETED);
-                if (!result) {
-                    throw new FlowException(ContextUtil.getMessage("10049"));//流程结束-调用重置表单状态失败!
+                ResponseData result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.COMPLETED);
+                if (!result.getSuccess()) {
+                    throw new FlowException("流程结束-调用重置表单状态失败：" + result.getMessage());
                 }
                 if (flowInstanceP != null) {
                     ExecutionEntity parent = taskEntity.getSuperExecution();
@@ -120,7 +121,8 @@ public class EndEventCompleteListener implements ExecutionListener {
                                     e.printStackTrace();
                                 }
                                 try {
-                                    result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
+                                    ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
+                                    result = responseData.getSuccess();
                                 } catch (Exception e) {
                                     LogUtil.error(e.getMessage(), e);
                                 }
@@ -144,7 +146,8 @@ public class EndEventCompleteListener implements ExecutionListener {
                                     e.printStackTrace();
                                 }
                                 try {
-                                    result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
+                                    ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
+                                    result = responseData.getSuccess();
                                 } catch (Exception e) {
                                     LogUtil.error(e.getMessage(), e);
                                 }

@@ -17,6 +17,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -119,7 +120,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 }
                 String param = JsonUtils.toJson(tempV);
                 FlowOperateResult flowOperateResult = null;
-                String callMessage ;
+                String callMessage;
                 try {
                     flowOperateResult = ServiceCallUtil.callService(serviceTaskId, serviceTaskName, flowTaskName, businessId, param);
                     if (flowOperateResult != null && flowOperateResult.isSuccess() && StringUtils.isNotEmpty(flowOperateResult.getUserId())) {
@@ -147,7 +148,8 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                                         e.printStackTrace();
                                     }
                                     try {
-                                        result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                        ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                        result = responseData.getSuccess();
                                     } catch (Exception e) {
                                         LogUtil.error(e.getMessage(), e);
                                     }

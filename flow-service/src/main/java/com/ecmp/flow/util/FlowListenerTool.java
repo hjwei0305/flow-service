@@ -470,7 +470,8 @@ public class FlowListenerTool {
                                         e.printStackTrace();
                                     }
                                     try {
-                                        result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                        ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                        result = responseData.getSuccess();
                                     } catch (Exception e) {
                                         LogUtil.error(e.getMessage(), e);
                                     }

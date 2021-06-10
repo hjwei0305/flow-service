@@ -18,6 +18,7 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.apache.commons.lang.StringUtils;
@@ -148,7 +149,8 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                                             e.printStackTrace();
                                         }
                                         try {
-                                            result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                            ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                                            result = responseData.getSuccess();
                                         } catch (Exception e) {
                                             LogUtil.error(e.getMessage(), e);
                                         }
