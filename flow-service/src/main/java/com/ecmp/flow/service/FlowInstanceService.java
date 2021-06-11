@@ -230,7 +230,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (flowInstance != null) {
             flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
         }
-        return  flowHistoryList;
+        return flowHistoryList;
     }
 
     //因为中泰时间服务器问题，所以不能按照时间倒序查询
@@ -891,7 +891,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
                     newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                     newFlowTask.setTrustState(0);
-                    if (v.get("instancyStatus") != null) {
+                    if (v != null && v.get("instancyStatus") != null) {
                         try {
                             if ((Boolean) v.get("instancyStatus") == true) {
                                 newFlowTask.setPriority(3);//设置为紧急
