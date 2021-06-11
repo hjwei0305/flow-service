@@ -2528,8 +2528,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         try {
             nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, includeNodeIds);
         } catch (Exception e) {
-            LogUtil.error("获取下一节点信息错误！", e);
-            return OperateResultWithData.operationFailure("获取下一节点信息错误:" + e.getMessage());
+            LogUtil.error("获取下一节点信息错误：{}", e.getMessage(), e);
+            return OperateResultWithData.operationFailure("获取下一节点信息错误：" + e.getMessage());
         }
 
         if (!CollectionUtils.isEmpty(nodeInfoList)) {
@@ -2663,7 +2663,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 i++;
                 String flowDefVersionId = nodeGroupInfo.getFlowDefVersionId();
                 NodeGroupByFlowVersionInfo nodeGroupByFlowVersionInfo = new NodeGroupByFlowVersionInfo();
-                nodeGroupByFlowVersionInfo.setId(flowDefVersionId+"_"+i);
+                nodeGroupByFlowVersionInfo.setId(flowDefVersionId + "_" + i);
                 nodeGroupByFlowVersionInfo.setName(nodeGroupInfo.getFlowDefVersionName());
                 FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
                 if (flowDefVersion != null) {
@@ -2674,7 +2674,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeGroupInfo.setExecutorSet(null);
                 }
                 nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
-                nodeGroupByFlowVersionInfoMap.put(flowDefVersionId+"_"+i, nodeGroupByFlowVersionInfo);
+                nodeGroupByFlowVersionInfoMap.put(flowDefVersionId + "_" + i, nodeGroupByFlowVersionInfo);
             }
             all.addAll(nodeGroupByFlowVersionInfoMap.values());
         }
