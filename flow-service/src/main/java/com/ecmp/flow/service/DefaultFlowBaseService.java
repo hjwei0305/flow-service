@@ -488,6 +488,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
         flowTaskCompleteVO.setTaskId(taskId);
+        if(StringUtils.isEmpty(opinion)){
+            opinion = "";
+        }
         flowTaskCompleteVO.setOpinion(opinion);
         Map<String, String> selectedNodesMap = new HashMap<>();
         Map<String, Object> v = new HashMap<>();
