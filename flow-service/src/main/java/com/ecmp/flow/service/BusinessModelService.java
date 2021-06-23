@@ -505,7 +505,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     }
                     try {
                         String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
-                        apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                        apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
                         return ResponseData.operationFailure("获取模块Api基地址失败！");
