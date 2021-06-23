@@ -480,4 +480,48 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
         return result;
     }
+
+
+
+    @Override
+    public ResponseData getPropertiesByHisIdOfModile(String historyId) {
+        if (StringUtils.isNotEmpty(historyId)) {
+            FlowHistory flowHistory = flowHistoryService.findOne(historyId);
+            if (flowHistory != null) {
+                FlowType flowType = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType();
+                if (flowType != null) {
+                    String businessDetailServiceUrl;
+                    String apiBaseAddress;
+                    String businessModelCode;
+                    try {
+                        businessDetailServiceUrl = flowType.getBusinessDetailServiceUrl();
+                        if (StringUtils.isEmpty(businessDetailServiceUrl)) {
+                            businessDetailServiceUrl = flowType.getBusinessModel().getBusinessDetailServiceUrl();
+                        }
+                        businessModelCode = flowType.getBusinessModel().getClassName();
+                    } catch (Exception e) {
+                        LogUtil.error(e.getMessage(), e);
+                        return ResponseData.operationFailure("获取业务实体数据失败！");
+                    }
+                    try {
+                        String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
+                        apiBaseAddress = ContextUtil.getGlobalProperty(apiBaseAddressConfig);
+                    } catch (Exception e) {
+                        LogUtil.error(e.getMessage(), e);
+                        return ResponseData.operationFailure("获取模块Api基地址失败！");
+                    }
+                    String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
+                    return this.getPropertiesOfModile(url, businessModelCode, flowHistory.getFlowInstance().getBusinessId());
+                } else {
+                    return ResponseData.operationFailure("找不到对应的流程类型！");
+                }
+            } else {
+                return ResponseData.operationFailure("找不到对应的流程历史！");
+            }
+        } else {
+            return ResponseData.operationFailure("参数：流程历史ID不能为空！");
+        }
+    }
+
+
 }
