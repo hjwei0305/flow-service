@@ -1090,7 +1090,7 @@ public class FlowTaskTool {
             // 删除其他到达的节点
 //            deleteOtherNode(currActivity, instance, definition, currTask, flowHistory.getFlowInstance());
             // 删除其他到达的节点
-            deleteOtherNode_new(flowHistory.getFlowInstance(), flowHistory.getId());
+            deleteOtherNode_new(flowHistory.getId());
 
 
             //记录历史
@@ -1154,18 +1154,16 @@ public class FlowTaskTool {
      * 删除其他到达的节点
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteOtherNode_new(FlowInstance flowInstance, String hisId) {
+    public void deleteOtherNode_new(String hisId) {
         List<FlowTask> taskList = flowTaskDao.findListByProperty("preId", hisId);
         //是否推送信息到baisc
         Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
-        //是否推送信息到业务模块或者直接配置的url
-        Boolean pushModelOrUrl = flowTaskService.getBooleanPushModelOrUrl(flowInstance);
         List<FlowTask> needDelList = new ArrayList<>();
         for (FlowTask flowTask : taskList) {
             taskService.deleteRuningTask(flowTask.getActTaskId(), false);
             historyService.deleteHistoricActivityInstancesByTaskId(flowTask.getActTaskId());
             historyService.deleteHistoricTaskInstance(flowTask.getActTaskId());
-            if (pushBasic || pushModelOrUrl) {
+            if (pushBasic) {
                 needDelList.add(flowTask);
             }
             flowTaskDao.delete(flowTask);
@@ -1176,14 +1174,6 @@ public class FlowTaskTool {
                 @Override
                 public void run() {
                     flowTaskService.pushToBasic(null, null, needDelList, null);
-                }
-            }).start();
-        }
-        if (pushModelOrUrl) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    flowTaskService.pushTaskToModelOrUrl(flowInstance, needDelList, TaskStatus.DELETE);
                 }
             }).start();
         }

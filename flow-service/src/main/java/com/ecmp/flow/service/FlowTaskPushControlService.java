@@ -108,43 +108,12 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         ResponseData responseData;
         if (TYPE_BASIC.equals(pushType)) { //推送到basic
             responseData = this.pushAgainToBasic(pushStatus, flowTaskList);
-        } else if (TYPE_BUSINESS.equalsIgnoreCase(pushType)) { //推送到业务模块
-            responseData = this.pushAgainToBusiness(pushStatus, flowTaskList);
         } else {
             responseData = ResponseData.operationFailure("推送类型不能识别!");
         }
         return responseData;
     }
 
-    /**
-     * 重新推送到业务模块
-     *
-     * @param pushStatus
-     * @param flowTaskList
-     * @return
-     */
-    public ResponseData pushAgainToBusiness(String pushStatus, List<FlowTask> flowTaskList) {
-        FlowInstance flowInstance = flowTaskList.get(0).getFlowInstance();
-        if (flowInstance == null) {
-            return ResponseData.operationFailure("得不到流程实例！");
-        }
-        Boolean boo;
-        if (STATUS_BUSINESS_INIT.equals(pushStatus)) {
-            boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.INIT);
-        } else if (STATUS_BUSINESS_COMPLETED.equals(pushStatus)) {
-            boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.COMPLETED);
-        } else if (STATUS_BUSINESS_DEDLETE.equals(pushStatus)) {
-            boo = flowTaskService.pushTaskToModelOrUrl(flowInstance, flowTaskList, TaskStatus.DELETE);
-        } else {
-            return ResponseData.operationFailure("推送状态不能识别！");
-        }
-
-        if (boo) {
-            return ResponseData.operationSuccess("重推成功，状态：【成功】！");
-        } else {
-            return ResponseData.operationFailure("重推成功，状态：【失败】！");
-        }
-    }
 
     /**
      * 重新推送到basic
