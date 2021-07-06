@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -272,81 +273,102 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Transactional
     public void selfMotionExecuteTask(String businessId) {
         if (StringUtils.isNotEmpty(businessId)) {
-            List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
-            if (!CollectionUtils.isEmpty(solidifylist)) {//说明该单据走的固化流程
-                //根据业务id查询待办
-                ResponseData responseData = flowTaskService.findTasksNoUrlByBusinessId(businessId);
-                if (responseData.getSuccess()) {
-                    List<FlowTask> taskList = (List<FlowTask>) responseData.getData();
-                    if (!CollectionUtils.isEmpty(taskList)) {
-                        List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
-                        for (FlowTask flowTask : taskList) {
-                            FlowSolidifyExecutor bean = solidifylist.stream().
-                                    filter(a -> a.getActTaskDefKey().equalsIgnoreCase(flowTask.getActTaskDefKey())).findFirst().orElse(null);
-                            //说明是可以自动跳过的任务（普通、单签、会签、审批、并行、串行）
-                            if (bean != null) {
-                                if (bean.getTaskOrder() == 0) { //该节点未执行过
-                                    //检查已经执行过的任务中，待执行人相同的数据
-                                    List<FlowSolidifyExecutor> executeList = solidifylist.stream().
-                                            filter(a -> (a.getTaskOrder() > 0 && a.getExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
-                                    if (!CollectionUtils.isEmpty(executeList)) {
-                                        //检查相同数据中有多少是单签（单签待办很多，实际执行人只有一个）
-                                        List<FlowSolidifyExecutor> singleSignList = executeList.stream().
-                                                filter(a -> a.getNodeType().equalsIgnoreCase("SingleSign")).collect(Collectors.toList());
-                                        if (!CollectionUtils.isEmpty(singleSignList)) {
-                                            if (executeList.size() != singleSignList.size()) {
-                                                //执行过的不全是单签，该任务需要自动跳过
-                                                needLsit.add(flowTask);
-                                            } else {
-                                                //单签里面实际执行人中有没有当前任务的执行人
-                                                List<FlowSolidifyExecutor> trueExecuteList = singleSignList.stream().
-                                                        filter(a -> (a.getTrueExecutorIds() != null && a.getTrueExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
-                                                if (!CollectionUtils.isEmpty(trueExecuteList)) {
-                                                    //单签实际执行人有当前的执行人，该任务需要自动跳过
-                                                    needLsit.add(flowTask);
-                                                }
-                                            }
-                                        } else {
-                                            //执行过的没有单签，该任务需要自动跳过
-                                            needLsit.add(flowTask);
-                                        }
-                                    } else { //还没有相同执行人的情况，判断执行人是否是流程发起人
-                                        FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
-                                        if (flowTask.getExecutorId().equals(flowInstance.getCreatorId())) {
-                                            needLsit.add(flowTask);
-                                        }
-                                    }
-                                } else {//该节点已经执行过(执行过的节点，回到该节点，无论前后都不自动执行)
-                                    List<FlowSolidifyExecutor> updateList = solidifylist.stream().
-                                            filter(a -> a.getTaskOrder() >= bean.getTaskOrder()).collect(Collectors.toList());
-                                    if (!CollectionUtils.isEmpty(updateList)) {
-                                        updateList.forEach(a -> {
-                                            a.setTrueExecutorIds(null);
-                                            a.setTaskOrder(0);
-                                            flowSolidifyExecutorDao.save(a);
-                                        });
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-
-                        //需要自动跳过的任务
+            //根据业务id查询待办
+            ResponseData responseData = flowTaskService.findTasksNoUrlByBusinessId(businessId);
+            if (responseData.getSuccess()) {
+                List<FlowTask> checkList = (List<FlowTask>) responseData.getData();
+                List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
+                if (!CollectionUtils.isEmpty(solidifylist)) {
+                    //检查固化需要跳过的待办
+                    ResponseData solidifyResult = this.checkAutomaticToDoSolidifyTask(solidifylist, checkList);
+                    if (solidifyResult.successful()) {
+                        List<FlowTask> needLsit = (List<FlowTask>) solidifyResult.getData();
                         if (!CollectionUtils.isEmpty(needLsit)) {
+                            //执行需要自动跳过的任务
                             this.needSelfMotionTaskList(needLsit, solidifylist);
                         }
-
                     }
                 } else {
-                    LogUtil.error("自动执行待办-查询待办失败！");
+                    //检查非固化需要跳过的待办
+                    ResponseData needTaskResult = flowTaskService.checkAutomaticToDoTask(checkList);
+                    if (needTaskResult.successful()) {
+                        List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
+                        if (!CollectionUtils.isEmpty(needLsit)) {
+                            //执行需要自动跳过的任务
+                            flowTaskService.automaticToDoTask(needLsit);
+                        }
+                    }
                 }
             } else {
-                //非固化也存在跳过的可能
-                flowTaskService.checkAutomaticToDoTask(businessId);
+                LogUtil.error("自动执行待办-查询待办失败！");
             }
         } else {
             LogUtil.error("自动执行待办-参数为空！");
         }
+    }
+
+    /**
+     * 检查固化流程需要跳过的待办
+     *
+     * @param solidifylist 固化配置信息
+     * @param taskList     全部待办信息
+     * @return 需要自动执行的待办
+     */
+    public ResponseData<List<FlowTask>> checkAutomaticToDoSolidifyTask(List<FlowSolidifyExecutor> solidifylist, List<FlowTask> taskList) {
+        List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
+        if (!CollectionUtils.isEmpty(taskList)) {
+            for (FlowTask flowTask : taskList) {
+                FlowSolidifyExecutor bean = solidifylist.stream().
+                        filter(a -> a.getActTaskDefKey().equalsIgnoreCase(flowTask.getActTaskDefKey())).findFirst().orElse(null);
+                //说明是可以自动跳过的任务（普通、单签、会签、审批、并行、串行）
+                if (bean != null) {
+                    if (bean.getTaskOrder() == 0) { //该节点未执行过
+                        //检查已经执行过的任务中，待执行人相同的数据
+                        List<FlowSolidifyExecutor> executeList = solidifylist.stream().
+                                filter(a -> (a.getTaskOrder() > 0 && a.getExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
+                        if (!CollectionUtils.isEmpty(executeList)) {
+                            //检查相同数据中有多少是单签（单签待办很多，实际执行人只有一个）
+                            List<FlowSolidifyExecutor> singleSignList = executeList.stream().
+                                    filter(a -> a.getNodeType().equalsIgnoreCase("SingleSign")).collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(singleSignList)) {
+                                if (executeList.size() != singleSignList.size()) {
+                                    //执行过的不全是单签，该任务需要自动跳过
+                                    needLsit.add(flowTask);
+                                } else {
+                                    //单签里面实际执行人中有没有当前任务的执行人
+                                    List<FlowSolidifyExecutor> trueExecuteList = singleSignList.stream().
+                                            filter(a -> (a.getTrueExecutorIds() != null && a.getTrueExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
+                                    if (!CollectionUtils.isEmpty(trueExecuteList)) {
+                                        //单签实际执行人有当前的执行人，该任务需要自动跳过
+                                        needLsit.add(flowTask);
+                                    }
+                                }
+                            } else {
+                                //执行过的没有单签，该任务需要自动跳过
+                                needLsit.add(flowTask);
+                            }
+                        } else { //还没有相同执行人的情况，判断执行人是否是流程发起人
+                            FlowInstance flowInstance = flowTask.getFlowInstance();
+                            if (flowTask.getExecutorId().equals(flowInstance.getCreatorId())) {
+                                needLsit.add(flowTask);
+                            }
+                        }
+                    } else {//该节点已经执行过(执行过的节点，回到该节点，无论前后都不自动执行)
+                        List<FlowSolidifyExecutor> updateList = solidifylist.stream().
+                                filter(a -> a.getTaskOrder() >= bean.getTaskOrder()).collect(Collectors.toList());
+                        if (!CollectionUtils.isEmpty(updateList)) {
+                            updateList.forEach(a -> {
+                                a.setTrueExecutorIds(null);
+                                a.setTaskOrder(0);
+                                flowSolidifyExecutorDao.save(a);
+                            });
+                            return ResponseData.operationSuccessWithData(needLsit);
+                        }
+                    }
+                }
+            }
+        }
+        return ResponseData.operationSuccessWithData(needLsit);
     }
 
 
@@ -406,12 +428,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
 
                         try {
-                            long time = 1; //默认1秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
-                            try {
-                                Thread.sleep(1000 * time);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            //默认5秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
+                            TimeUnit.SECONDS.sleep(5);
                             //自动执行待办
                             long currentTime = System.currentTimeMillis();
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),

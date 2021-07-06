@@ -18,6 +18,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
+     * 待办是否为自动处理（只在推送待办时区分）
+     */
+    @Transient
+    private Boolean  newTaskAuto = false;
+
+
+    /**
      * 表单相对路径
      */
     @Transient
@@ -933,5 +940,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
     public void setOwnerOrgName(String ownerOrgName) {
         this.ownerOrgName = ownerOrgName;
+    }
+
+    public Boolean getNewTaskAuto() {
+        return newTaskAuto;
+    }
+
+    public void setNewTaskAuto(Boolean newTaskAuto) {
+        this.newTaskAuto = newTaskAuto;
     }
 }

@@ -3869,48 +3869,37 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     /**
-     * 检查待办是否自动执行
-     *
-     * @param businessId 业务单据ID
+     * 检查非固化流程需要跳过的待办
+     * @param taskList  全部待办
+     * @return  需要自动执行的待办
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void checkAutomaticToDoTask(String businessId) {
-        //根据业务id查询待办
-        ResponseData responseData = this.findTasksNoUrlByBusinessId(businessId);
-        if (responseData.getSuccess()) {
-            List<FlowTask> taskList = (List<FlowTask>) responseData.getData();
-            if (!CollectionUtils.isEmpty(taskList)) {
-                List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
-                for (FlowTask flowTask : taskList) {
-                    if (StringUtils.isNotEmpty(flowTask.getPreId())) {
-                        //上一节点信息
-                        FlowHistory flowHistory = flowHistoryService.findOne(flowTask.getPreId());
-                        //上一步和当前执行人一致
-                        if (StringUtils.isNotEmpty(flowHistory.getExecutorId()) && StringUtils.isNotEmpty(flowTask.getExecutorId()) && flowHistory.getExecutorId().equals(flowTask.getExecutorId())) {
-                            String hisJson = flowHistory.getTaskJsonDef();
-                            JSONObject hisJsonObj = JSONObject.fromObject(hisJson);
-                            String hisNodeType = hisJsonObj.get("nodeType") + "";
-                            //上一步如果是审批节点(并且同意)
-                            if ("Approve".equalsIgnoreCase(hisNodeType) && "agree".equalsIgnoreCase(flowHistory.getFlowExecuteStatus())) {
-                                String taskJsonDef = flowTask.getTaskJsonDef();
-                                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-                                String nodeType = taskJsonDefObj.get("nodeType") + "";
-                                //本节点也是审批节点
-                                if ("Approve".equalsIgnoreCase(nodeType)) {
-                                    needLsit.add(flowTask);
-                                }
+    public ResponseData<List<FlowTask>> checkAutomaticToDoTask(List<FlowTask> taskList) {
+        List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
+        if (!CollectionUtils.isEmpty(taskList)) {
+            for (FlowTask flowTask : taskList) {
+                if (StringUtils.isNotEmpty(flowTask.getPreId())) {
+                    //上一节点信息
+                    FlowHistory flowHistory = flowHistoryService.findOne(flowTask.getPreId());
+                    //上一步和当前执行人一致
+                    if (StringUtils.isNotEmpty(flowHistory.getExecutorId()) && StringUtils.isNotEmpty(flowTask.getExecutorId()) && flowHistory.getExecutorId().equals(flowTask.getExecutorId())) {
+                        String hisJson = flowHistory.getTaskJsonDef();
+                        JSONObject hisJsonObj = JSONObject.fromObject(hisJson);
+                        String hisNodeType = hisJsonObj.get("nodeType") + "";
+                        //上一步如果是审批节点(并且同意)
+                        if ("Approve".equalsIgnoreCase(hisNodeType) && "agree".equalsIgnoreCase(flowHistory.getFlowExecuteStatus())) {
+                            String taskJsonDef = flowTask.getTaskJsonDef();
+                            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                            String nodeType = taskJsonDefObj.get("nodeType") + "";
+                            //本节点也是审批节点
+                            if ("Approve".equalsIgnoreCase(nodeType)) {
+                                needLsit.add(flowTask);
                             }
                         }
                     }
                 }
-                //需要自动执行的待办
-                if (!CollectionUtils.isEmpty(needLsit)) {
-                    this.automaticToDoTask(needLsit);
-                }
             }
-        } else {
-            LogUtil.error("自动执行-查询待办失败！");
         }
+        return  ResponseData.operationSuccessWithData(needLsit);
     }
 
 
@@ -3993,12 +3982,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
 
                 try {
-                    long time = 1; //默认1秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
-                    try {
-                        Thread.sleep(1000 * time);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    //默认5秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
+                    TimeUnit.SECONDS.sleep(5);
                     //自动执行待办
                     defaultFlowBaseService.completeTask(task.getId(), task.getFlowInstance().getBusinessId(),
                             "同意【自动执行】", taskListString,

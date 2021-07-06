@@ -92,7 +92,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void checkAutomaticToDoTask() {
-        service.checkAutomaticToDoTask("2FFDBAE5-6509-11EA-A049-0242C0A8460D");
+        service.checkAutomaticToDoTask(null);
     }
 
     @Test
