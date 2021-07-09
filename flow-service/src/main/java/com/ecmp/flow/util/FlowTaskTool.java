@@ -2083,6 +2083,8 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+                        //为推送的待办添加是否为自动执行的标记
+                        flowTaskService.addTaskAutoStatus(pushTaskList);
                         flowTaskService.pushToBasic(pushTaskList, null, null, null);
                     }
                 }).start();

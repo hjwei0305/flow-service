@@ -91,8 +91,12 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
-    public void checkAutomaticToDoTask() {
-        service.checkAutomaticToDoTask(null);
+    public void addTaskAutoStatus() {
+        FlowTask flowTask = service.findOne("42BB7CFF-DE2D-11EB-9E14-0242C0A8462A");
+        List<FlowTask> checkFlowList = new ArrayList<>();
+        checkFlowList.add(flowTask);
+        service.addTaskAutoStatus(checkFlowList);
+        System.out.println(ApiJsonUtils.toJson(checkFlowList));
     }
 
     @Test

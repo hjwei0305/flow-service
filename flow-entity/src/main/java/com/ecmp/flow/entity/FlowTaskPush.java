@@ -20,6 +20,12 @@ public class FlowTaskPush extends com.ecmp.core.entity.BaseAuditableEntity imple
 
 
     /**
+     * 待办是否为自动处理（只在推送待办时区分）
+     */
+    @Column(name = "new_task_auto")
+    private Boolean newTaskAuto;
+
+    /**
      * 表单相对路径
      */
     @Transient
@@ -806,5 +812,14 @@ public class FlowTaskPush extends com.ecmp.core.entity.BaseAuditableEntity imple
 
     public void setFlowTaskId(String flowTaskId) {
         this.flowTaskId = flowTaskId;
+    }
+
+
+    public Boolean getNewTaskAuto() {
+        return newTaskAuto;
+    }
+
+    public void setNewTaskAuto(Boolean newTaskAuto) {
+        this.newTaskAuto = newTaskAuto;
     }
 }

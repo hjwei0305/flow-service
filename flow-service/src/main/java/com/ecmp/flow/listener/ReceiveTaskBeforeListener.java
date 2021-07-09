@@ -100,7 +100,6 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     flowTask.setActDueDate(now);
                     flowTask.setActTaskDefKey(actTaskDefKey);
                     flowTask.setPreId(null);
-                    flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
                     flowTask.setTaskStatus(TaskStatus.INIT.toString());
 
                     //接收任务添加配置是否可以发起人终止

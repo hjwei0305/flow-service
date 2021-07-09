@@ -18,6 +18,7 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -265,6 +266,22 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
 
     /**
+     * 检查页面配置是否允许自动执行
+     *
+     * @param task
+     * @return
+     */
+    public boolean checkPage(FlowTask task) {
+        boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
+        if (BooleanUtils.isTrue(canMobile)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
      * 固化流程中自动执行待办
      *
      * @param businessId
@@ -333,24 +350,32 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             if (!CollectionUtils.isEmpty(singleSignList)) {
                                 if (executeList.size() != singleSignList.size()) {
                                     //执行过的不全是单签，该任务需要自动跳过
-                                    needLsit.add(flowTask);
+                                    if (this.checkPage(flowTask)) {
+                                        needLsit.add(flowTask);
+                                    }
                                 } else {
                                     //单签里面实际执行人中有没有当前任务的执行人
                                     List<FlowSolidifyExecutor> trueExecuteList = singleSignList.stream().
                                             filter(a -> (a.getTrueExecutorIds() != null && a.getTrueExecutorIds().contains(flowTask.getExecutorId()))).collect(Collectors.toList());
                                     if (!CollectionUtils.isEmpty(trueExecuteList)) {
                                         //单签实际执行人有当前的执行人，该任务需要自动跳过
-                                        needLsit.add(flowTask);
+                                        if (this.checkPage(flowTask)) {
+                                            needLsit.add(flowTask);
+                                        }
                                     }
                                 }
                             } else {
                                 //执行过的没有单签，该任务需要自动跳过
-                                needLsit.add(flowTask);
+                                if (this.checkPage(flowTask)) {
+                                    needLsit.add(flowTask);
+                                }
                             }
                         } else { //还没有相同执行人的情况，判断执行人是否是流程发起人
                             FlowInstance flowInstance = flowTask.getFlowInstance();
                             if (flowTask.getExecutorId().equals(flowInstance.getCreatorId())) {
-                                needLsit.add(flowTask);
+                                if (this.checkPage(flowTask)) {
+                                    needLsit.add(flowTask);
+                                }
                             }
                         }
                     } else {//该节点已经执行过(执行过的节点，回到该节点，无论前后都不自动执行)
@@ -382,10 +407,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     public void needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
         if (!CollectionUtils.isEmpty(taskList) && !CollectionUtils.isEmpty(solidifylist)) {
             for (FlowTask task : taskList) {
-                boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
-                if (!canMobile) {
-                    continue;
-                }
                 FlowSolidifyExecutor bean = solidifylist.stream().filter(a -> a.getActTaskDefKey().equalsIgnoreCase(task.getActTaskDefKey())).findFirst().orElse(null);
                 if (bean != null) {
                     String approved = null; //是否同意
@@ -428,8 +449,8 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
 
                         try {
-                            //默认5秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
-                            TimeUnit.SECONDS.sleep(5);
+                            //默认3秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
+                            TimeUnit.SECONDS.sleep(3);
                             //自动执行待办
                             long currentTime = System.currentTimeMillis();
                             defaultFlowBaseService.completeTask(task.getId(), bean.getBusinessId(),

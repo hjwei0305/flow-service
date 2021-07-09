@@ -100,7 +100,6 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
 
                 flowTask.setActTaskDefKey(actTaskDefKey);
                 flowTask.setPreId(null);
-                flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
 
                 //选择下一步可能的执行子流程路径

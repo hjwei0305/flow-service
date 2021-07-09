@@ -224,6 +224,52 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return pushBasic;
     }
 
+
+    /**
+     * 为推送的待办添加是否为自动执行的标记
+     *
+     * @param newList
+     */
+    public void addTaskAutoStatus(List<FlowTask> newList) {
+        Map<String, Object> map = new HashMap<>();
+        for (FlowTask flowTask : newList) {
+            List<FlowTask> checkList = new ArrayList<>();
+            checkList.add(flowTask);
+            String businessId = flowTask.getFlowInstance().getBusinessId();
+            List<FlowSolidifyExecutor> solidifylist;
+            if (map.get(businessId) == null) {
+                solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
+                map.put(businessId, solidifylist);
+            } else {
+                solidifylist = (List<FlowSolidifyExecutor>) map.get(businessId);
+            }
+
+            if (!CollectionUtils.isEmpty(solidifylist)) {
+                //检查固化需要跳过的待办
+                ResponseData solidifyResult = flowSolidifyExecutorService.checkAutomaticToDoSolidifyTask(solidifylist, checkList);
+                if (solidifyResult.successful()) {
+                    List<FlowTask> needLsit = (List<FlowTask>) solidifyResult.getData();
+                    if (!CollectionUtils.isEmpty(needLsit)) {
+                        LogUtil.bizLog("固化记录需要自动执行信息：taskId={},taskName={},executorName={}",flowTask.getId(),flowTask.getTaskName(),flowTask.getExecutorName());
+                        flowTask.setNewTaskAuto(true);
+                    }
+                }
+            } else {
+                //检查非固化需要跳过的待办
+                ResponseData needTaskResult = this.checkAutomaticToDoTask(checkList);
+                if (needTaskResult.successful()) {
+                    List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
+                    if (!CollectionUtils.isEmpty(needLsit)) {
+                        LogUtil.bizLog("非固化记录需要自动执行信息：taskId={},taskName={},executorName={}",flowTask.getId(),flowTask.getTaskName(),flowTask.getExecutorName());
+                        flowTask.setNewTaskAuto(true);
+                    }
+                }
+            }
+
+        }
+
+    }
+
     /**
      * @param newList 待办
      * @param oldList 待办转已办
@@ -3870,8 +3916,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     /**
      * 检查非固化流程需要跳过的待办
-     * @param taskList  全部待办
-     * @return  需要自动执行的待办
+     *
+     * @param taskList 全部待办
+     * @return 需要自动执行的待办
      */
     public ResponseData<List<FlowTask>> checkAutomaticToDoTask(List<FlowTask> taskList) {
         List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
@@ -3892,14 +3939,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             String nodeType = taskJsonDefObj.get("nodeType") + "";
                             //本节点也是审批节点
                             if ("Approve".equalsIgnoreCase(nodeType)) {
-                                needLsit.add(flowTask);
+                                if (flowSolidifyExecutorService.checkPage(flowTask)) {
+                                    needLsit.add(flowTask);
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        return  ResponseData.operationSuccessWithData(needLsit);
+        return ResponseData.operationSuccessWithData(needLsit);
     }
 
 
@@ -3910,10 +3959,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public void automaticToDoTask(List<FlowTask> taskList) {
         for (int i = 0; i < taskList.size(); i++) {
             FlowTask task = taskList.get(i);
-            Boolean canMobile = task.getCanMobile() == null ? false : task.getCanMobile();
-            if (!canMobile) {
-                continue;
-            }
             ResponseData responseData = ResponseData.operationFailure("模拟请求下一步失败！");
             try {
                 //模拟请求下一步数据
@@ -3982,8 +4027,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
 
                 try {
-                    //默认5秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
-                    TimeUnit.SECONDS.sleep(5);
+                    //默认3秒后执行，防止和前面节点执行时间一样，在历史里面顺序不定
+                    TimeUnit.SECONDS.sleep(3);
                     //自动执行待办
                     defaultFlowBaseService.completeTask(task.getId(), task.getFlowInstance().getBusinessId(),
                             "同意【自动执行】", taskListString,
