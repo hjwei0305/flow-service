@@ -230,7 +230,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @param newList
      */
-    public void addTaskAutoStatus(List<FlowTask> newList) {
+    public ResponseData addTaskAutoStatus(List<FlowTask> newList) {
         Map<String, Object> map = new HashMap<>();
         for (FlowTask flowTask : newList) {
             List<FlowTask> checkList = new ArrayList<>();
@@ -265,9 +265,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             }
-
         }
-
+        return  ResponseData.operationSuccess();
     }
 
     /**

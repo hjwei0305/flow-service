@@ -2084,8 +2084,10 @@ public class FlowTaskTool {
                     @Override
                     public void run() {
                         //为推送的待办添加是否为自动执行的标记
-                        flowTaskService.addTaskAutoStatus(pushTaskList);
-                        flowTaskService.pushToBasic(pushTaskList, null, null, null);
+                        ResponseData addAuto = flowTaskService.addTaskAutoStatus(pushTaskList);
+                        if(addAuto.successful()){
+                            flowTaskService.pushToBasic(pushTaskList, null, null, null);
+                        }
                     }
                 }).start();
             }
