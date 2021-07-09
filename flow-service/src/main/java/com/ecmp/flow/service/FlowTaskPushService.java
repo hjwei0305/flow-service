@@ -67,8 +67,10 @@ public class FlowTaskPushService extends BaseEntityService<FlowTaskPush> impleme
             pushList.forEach(push -> {
                 if (flowTask.getId().equals(push.getFlowTaskId())) {
                     String oldId = push.getId();
+                    Boolean newAuto = push.getNewTaskAuto();
                     BeanUtils.copyProperties(flowTask, push);
                     push.setId(oldId);
+                    push.setNewTaskAuto(newAuto); //这样在重新推送待办才能保证参数的正确
                     push.setFlowTaskId(flowTask.getId());
                     list.add(push);
                 }
