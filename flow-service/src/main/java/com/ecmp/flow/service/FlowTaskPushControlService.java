@@ -125,10 +125,13 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         if (STATUS_BASIC_NEW.equals(pushStatus)) {//新增待办
             boo = flowTaskService.pushToBasic(flowTaskList, null, null, null);
         } else if (STATUS_BASIC_OLD.equals(pushStatus)) { //待办转已办
+            flowTaskList.forEach(a->{a.setNewTaskAuto(false);});
             boo = flowTaskService.pushToBasic(null, flowTaskList, null, null);
         } else if (STATUS_BASIC_DEL.equals(pushStatus)) { //删除待办
+            flowTaskList.forEach(a->{a.setNewTaskAuto(false);});
             boo = flowTaskService.pushToBasic(null, null, flowTaskList, null);
         } else if (STATUS_BASIC_END.equals(pushStatus)) { //归档（终止）
+            flowTaskList.forEach(a->{a.setNewTaskAuto(false);});
             boo = flowTaskService.pushToBasic(null, null, null, flowTaskList.get(0));
         } else {
             return ResponseData.operationFailure("推送状态不能识别！");
