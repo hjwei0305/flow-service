@@ -45,8 +45,10 @@ public class FlowTaskPushService extends BaseEntityService<FlowTaskPush> impleme
             } else {
                 flowTaskPush = flowTaskPushList.get(0);
                 String oldId = flowTaskPush.getId();
+                Boolean taskAuto = flowTaskPush.getNewTaskAuto();
                 BeanUtils.copyProperties(flowTask, flowTaskPush);
                 flowTaskPush.setId(oldId);
+                flowTaskPush.setNewTaskAuto(taskAuto);
                 flowTaskPush.setFlowTaskId(flowTask.getId());
             }
             list.add(flowTaskPush);
