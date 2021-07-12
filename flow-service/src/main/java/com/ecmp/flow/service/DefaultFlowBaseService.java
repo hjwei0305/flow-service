@@ -702,6 +702,19 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
 
     @Override
+    public ResponseData findTasksByBusinessIdList(List<String> businessIdLists) {
+        if (businessIdLists == null || businessIdLists.size() == 0) {
+            return ResponseData.operationFailure("请求参数不能为空！");
+        }
+        Map<String, List<FlowTask>> map = new HashMap<>();
+        businessIdLists.forEach(businessId -> {
+            ResponseData response = flowTaskService.findTasksByBusinessId(businessId);
+            map.put(businessId, (List<FlowTask>) response.getData());
+        });
+        return ResponseData.operationSuccessWithData(map);
+    }
+
+    @Override
     public ResponseData getExecutorsByBusinessIdList(List<String> businessIdLists) {
         if (businessIdLists == null || businessIdLists.size() == 0) {
             return ResponseData.operationFailure("参数不能为空！");

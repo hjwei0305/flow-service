@@ -276,6 +276,19 @@ public interface IDefaultFlowBaseService {
     ResponseData findTasksByBusinessId(@QueryParam("businessId") String businessId);
 
 
+
+    /**
+     * 通过业务单据Id集合获取待办任务（中泰要求新增的功能:不包含子流程信息）
+     *
+     * @param businessIdLists 业务单据id集合
+     * @return 待办任务集合
+     */
+    @POST
+    @Path("findTasksByBusinessIdList")
+    @ApiOperation(value = "获取待办任务", notes = "通过业务单据Id集合获取待办任务（不包含子流程）")
+    ResponseData findTasksByBusinessIdList(List<String> businessIdLists);
+
+
     /**
      * 通过业务单据Id集合获取待办执行人（中泰要求新增的功能:不包含子流程信息）
      *
