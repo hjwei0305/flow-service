@@ -8,11 +8,9 @@ import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowTaskPushControlService;
 import com.ecmp.flow.dao.FlowTaskPushControlDao;
-import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.FlowTaskPush;
 import com.ecmp.flow.entity.FlowTaskPushControl;
-import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.CleaningPushHistoryVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
@@ -125,13 +123,10 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         if (STATUS_BASIC_NEW.equals(pushStatus)) {//新增待办
             boo = flowTaskService.pushToBasic(flowTaskList, null, null, null);
         } else if (STATUS_BASIC_OLD.equals(pushStatus)) { //待办转已办
-            flowTaskList.forEach(a->{a.setNewTaskAuto(false);});
             boo = flowTaskService.pushToBasic(null, flowTaskList, null, null);
         } else if (STATUS_BASIC_DEL.equals(pushStatus)) { //删除待办
-            flowTaskList.forEach(a->{a.setNewTaskAuto(false);});
             boo = flowTaskService.pushToBasic(null, null, flowTaskList, null);
         } else if (STATUS_BASIC_END.equals(pushStatus)) { //归档（终止）
-            flowTaskList.forEach(a->{a.setNewTaskAuto(false);});
             boo = flowTaskService.pushToBasic(null, null, null, flowTaskList.get(0));
         } else {
             return ResponseData.operationFailure("推送状态不能识别！");
@@ -196,10 +191,8 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         //保存推送任务集合
         List<FlowTaskPush> pushTaskList = flowTaskPushService.saveListByFlowTaskList(taskList);
         //推送任务ID集合
-        List<String> pushIdList = new ArrayList<String>();
-        pushTaskList.forEach(a -> {
-            pushIdList.add(a.getId());
-        });
+        List<String> pushIdList = new ArrayList<>();
+        pushTaskList.forEach(a -> pushIdList.add(a.getId()));
         //创建关联关系
         RelationParam relationParam = new RelationParam();
         relationParam.setParentId(control.getId());
@@ -249,10 +242,8 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         //更新推送任务集合
         pushList = flowTaskPushService.updateListByFlowTaskList(taskList, pushList);
         //推送任务ID集合
-        List<String> pushIdList = new ArrayList<String>();
-        pushList.forEach(a -> {
-            pushIdList.add(a.getId());
-        });
+        List<String> pushIdList = new ArrayList<>();
+        pushList.forEach(a -> pushIdList.add(a.getId()));
         //创建关联关系
         RelationParam relationParam = new RelationParam();
         relationParam.setParentId(control.getId());

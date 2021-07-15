@@ -20,7 +20,14 @@ public class FlowTaskPush extends com.ecmp.core.entity.BaseAuditableEntity imple
 
 
     /**
-     * 待办是否为自动处理（只在推送待办时区分）
+     * 推送的已办审批状态（审批任务：agree/disagree）
+     */
+    @Column(name = "approve_status")
+    private String approveStatus;
+
+
+    /**
+     * 推送的待办是否为自动处理
      */
     @Column(name = "new_task_auto")
     private Boolean newTaskAuto;
@@ -821,5 +828,13 @@ public class FlowTaskPush extends com.ecmp.core.entity.BaseAuditableEntity imple
 
     public void setNewTaskAuto(Boolean newTaskAuto) {
         this.newTaskAuto = newTaskAuto;
+    }
+
+    public String getApproveStatus() {
+        return approveStatus;
+    }
+
+    public void setApproveStatus(String approveStatus) {
+        this.approveStatus = approveStatus;
     }
 }

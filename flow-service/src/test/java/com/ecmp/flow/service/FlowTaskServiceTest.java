@@ -31,15 +31,14 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowDefinationService flowDefinationService;
 
     @Test
-    public void findNextNodes(){
-        try{
-            List<NodeInfo> nodeInfoList =  service.findNextNodes("112A2D0B-A887-11EB-A31B-983B8F805BAB");
+    public void findNextNodes() {
+        try {
+            List<NodeInfo> nodeInfoList = service.findNextNodes("112A2D0B-A887-11EB-A31B-983B8F805BAB");
             System.out.println(ApiJsonUtils.toJson(nodeInfoList));
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("出错！");
         }
     }
-
 
 
     @Test
@@ -55,7 +54,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     }
 
     @Test
-    public void haveReadTaskByTaskId(){
+    public void haveReadTaskByTaskId() {
         String taskId = "4FBE1BFA-6683-11EB-8467-0242C0A84413";
         ResponseData responseData = service.haveReadTaskByTaskId(taskId);
         System.out.println(ApiJsonUtils.toJson(responseData));
@@ -148,7 +147,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Test
     public void findTasksByBusinessId() {
         String id = "A966DAE3-F8FB-11E8-A118-0242C0A84405";
-        ResponseData responseData = service.findTasksByBusinessId(id);
+        ResponseData responseData = service.findTasksByBusinessId(id, true);
         Assert.assertNotNull(responseData);
         System.out.println(ApiJsonUtils.toJson(responseData));
     }

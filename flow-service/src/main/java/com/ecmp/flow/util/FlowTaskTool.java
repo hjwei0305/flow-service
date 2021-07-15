@@ -1368,8 +1368,6 @@ public class FlowTaskTool {
     }
 
 
-
-
     /**
      * 检查下一节点是否已经执行完成
      */
@@ -2083,9 +2081,12 @@ public class FlowTaskTool {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        //为推送的待办添加是否为自动执行的标记
-                        ResponseData addAuto = flowTaskService.addTaskAutoStatus(pushTaskList);
-                        if(addAuto.successful()){
+                        try {
+                            //为推送的待办添加是否为自动执行的标记
+                            flowTaskService.addTaskAutoStatus(pushTaskList);
+                        } catch (Exception e) {
+                            LogUtil.error("为推送的待办添加自动执行标记失败：{}", e.getMessage(), e);
+                        } finally {
                             flowTaskService.pushToBasic(pushTaskList, null, null, null);
                         }
                     }

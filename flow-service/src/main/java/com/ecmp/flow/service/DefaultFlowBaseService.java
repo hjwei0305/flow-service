@@ -8,7 +8,6 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
@@ -18,7 +17,6 @@ import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -488,7 +486,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         FlowTaskCompleteVO flowTaskCompleteVO = new FlowTaskCompleteVO();
         flowTaskCompleteVO.setTaskId(taskId);
-        if(StringUtils.isEmpty(opinion)){
+        if (StringUtils.isEmpty(opinion)) {
             opinion = "";
         }
         flowTaskCompleteVO.setOpinion(opinion);
@@ -696,7 +694,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
      */
     @Override
     public ResponseData findTasksByBusinessId(String businessId) {
-        ResponseData responseData = flowTaskService.findTasksByBusinessId(businessId);
+        ResponseData responseData = flowTaskService.findTasksByBusinessId(businessId, true);
         return responseData;
     }
 
@@ -708,7 +706,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         Map<String, List<FlowTask>> map = new HashMap<>();
         businessIdLists.forEach(businessId -> {
-            ResponseData response = flowTaskService.findTasksByBusinessId(businessId);
+            ResponseData response = flowTaskService.findTasksByBusinessId(businessId, false);
             map.put(businessId, (List<FlowTask>) response.getData());
         });
         return ResponseData.operationSuccessWithData(map);

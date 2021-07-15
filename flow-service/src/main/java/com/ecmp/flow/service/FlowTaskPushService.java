@@ -31,8 +31,8 @@ public class FlowTaskPushService extends BaseEntityService<FlowTaskPush> impleme
      * @param taskList 流程任务集合
      * @return
      */
-    public List<FlowTaskPush> saveListByFlowTaskList(List<FlowTask> taskList) throws Exception {
-        List<FlowTaskPush> list = new ArrayList<FlowTaskPush>();
+    public List<FlowTaskPush> saveListByFlowTaskList(List<FlowTask> taskList) {
+        List<FlowTaskPush> list = new ArrayList<>();
         taskList.forEach(flowTask -> {
             //如果是basic和业务模块都推送的情况，可以会出现一个任务id两条数据的情况
             List<FlowTaskPush> flowTaskPushList = flowTaskPushDao.findListByProperty("flowTaskId", flowTask.getId());
@@ -46,9 +46,11 @@ public class FlowTaskPushService extends BaseEntityService<FlowTaskPush> impleme
                 flowTaskPush = flowTaskPushList.get(0);
                 String oldId = flowTaskPush.getId();
                 Boolean taskAuto = flowTaskPush.getNewTaskAuto();
+                String approveStatus = flowTaskPush.getApproveStatus();
                 BeanUtils.copyProperties(flowTask, flowTaskPush);
                 flowTaskPush.setId(oldId);
                 flowTaskPush.setNewTaskAuto(taskAuto);
+                flowTaskPush.setApproveStatus(approveStatus);
                 flowTaskPush.setFlowTaskId(flowTask.getId());
             }
             list.add(flowTaskPush);
@@ -63,16 +65,18 @@ public class FlowTaskPushService extends BaseEntityService<FlowTaskPush> impleme
      * @param taskList 流程任务集合
      * @return
      */
-    public List<FlowTaskPush> updateListByFlowTaskList(List<FlowTask> taskList, List<FlowTaskPush> pushList) throws Exception {
-        List<FlowTaskPush> list = new ArrayList<FlowTaskPush>();
+    public List<FlowTaskPush> updateListByFlowTaskList(List<FlowTask> taskList, List<FlowTaskPush> pushList) {
+        List<FlowTaskPush> list = new ArrayList<>();
         taskList.forEach(flowTask -> {
             pushList.forEach(push -> {
                 if (flowTask.getId().equals(push.getFlowTaskId())) {
                     String oldId = push.getId();
                     Boolean newAuto = push.getNewTaskAuto();
+                    String approveStatus = push.getApproveStatus();
                     BeanUtils.copyProperties(flowTask, push);
                     push.setId(oldId);
                     push.setNewTaskAuto(newAuto); //这样在重新推送待办才能保证参数的正确
+                    push.setApproveStatus(approveStatus);
                     push.setFlowTaskId(flowTask.getId());
                     list.add(push);
                 }

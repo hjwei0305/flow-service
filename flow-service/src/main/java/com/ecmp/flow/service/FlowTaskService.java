@@ -230,9 +230,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      *
      * @param newList
      */
-    public ResponseData addTaskAutoStatus(List<FlowTask> newList) {
+    public void addTaskAutoStatus(List<FlowTask> newList) {
         Map<String, Object> map = new HashMap<>();
         for (FlowTask flowTask : newList) {
+            flowTask.setNewTaskAuto(false);//默认不会自动执行
             List<FlowTask> checkList = new ArrayList<>();
             checkList.add(flowTask);
             String businessId = flowTask.getFlowInstance().getBusinessId();
@@ -250,7 +251,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (solidifyResult.successful()) {
                     List<FlowTask> needLsit = (List<FlowTask>) solidifyResult.getData();
                     if (!CollectionUtils.isEmpty(needLsit)) {
-                        LogUtil.bizLog("固化记录需要自动执行信息：taskId={},taskName={},executorName={}",flowTask.getId(),flowTask.getTaskName(),flowTask.getExecutorName());
+                        LogUtil.bizLog("固化记录需要自动执行信息：taskId={},taskName={},executorName={}", flowTask.getId(), flowTask.getTaskName(), flowTask.getExecutorName());
                         flowTask.setNewTaskAuto(true);
                     }
                 }
@@ -260,13 +261,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (needTaskResult.successful()) {
                     List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
                     if (!CollectionUtils.isEmpty(needLsit)) {
-                        LogUtil.bizLog("非固化记录需要自动执行信息：taskId={},taskName={},executorName={}",flowTask.getId(),flowTask.getTaskName(),flowTask.getExecutorName());
+                        LogUtil.bizLog("非固化记录需要自动执行信息：taskId={},taskName={},executorName={}", flowTask.getId(), flowTask.getTaskName(), flowTask.getExecutorName());
                         flowTask.setNewTaskAuto(true);
                     }
                 }
             }
         }
-        return  ResponseData.operationSuccess();
     }
 
     /**
@@ -301,7 +301,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public Boolean pushNewTaskToBasic(List<FlowTask> taskList) {
         if (!CollectionUtils.isEmpty(taskList)) {
             List<String> idList = new ArrayList<>();
-            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
+            taskList.forEach(a -> {
+                a.setApproveStatus(null);
+                idList.add("【id=" + a.getId() + "】");
+            });
             this.initFlowTasks(taskList); //添加待办处理地址等
             String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
             String messageLog = "开始调用‘推送待办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
@@ -330,7 +333,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public Boolean pushOldTaskToBasic(List<FlowTask> taskList) {
         if (!CollectionUtils.isEmpty(taskList)) {
             List<String> idList = new ArrayList<>();
-            taskList.forEach(a -> idList.add("【id=" + a.getId() + "】"));
+            taskList.forEach(a -> {
+                a.setNewTaskAuto(null);
+                idList.add("【id=" + a.getId() + "】");
+            });
             String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
             String messageLog = "开始调用‘推送已办到basic’接口，接口url=" + url + ",参数值ID集合:" + JsonUtils.toJson(idList);
             ResponseData responseData = ResponseData.operationFailure("默认失败！");
@@ -359,6 +365,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<String> idList = new ArrayList<>();
             taskList.forEach(a -> {
                 a.getFlowInstance().setFlowTasks(null);
+                a.setNewTaskAuto(null);
+                a.setApproveStatus(null);
                 idList.add("【id=" + a.getId() + "】");
             });
             String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
@@ -386,6 +394,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Override
     public Boolean pushEndTaskToBasic(FlowTask task) {
         if (task != null) {
+            task.setNewTaskAuto(null);
+            task.setApproveStatus(null);
             String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
             String messageLog = "开始调用‘推送归档任务到basic’接口，接口url=" + url + ",参数值ID集合:" + task.getId();
             ResponseData responseData = ResponseData.operationFailure("默认失败！");
@@ -651,6 +661,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             } else {
                 variables.put("disagreeReasonCode", null);
+            }
+
+            //审批任务，推送判断是同意还是不同意
+            if ("Approve".equalsIgnoreCase(nodeType)) {
+                String approved = variables.get("approved") + "";
+                if ("true".equalsIgnoreCase(approved)) {
+                    flowTask.setApproveStatus("agree");
+                } else {
+                    flowTask.setApproveStatus("disagree");
+                }
             }
 
 
@@ -3550,9 +3570,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * 通过业务单据Id获取待办任务（带url）
      *
      * @param businessId 业务单据id
+     * @param boo        是否加载url设置
      * @return 待办任务集合
      */
-    public ResponseData findTasksByBusinessId(String businessId) {
+    public ResponseData findTasksByBusinessId(String businessId, Boolean boo) {
         if (StringUtils.isEmpty(businessId)) {
             return ResponseData.operationFailure("参数不能为空！");
         }
@@ -3563,8 +3584,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowInstance instance = flowInstanceList.get(0);
             //根据流程实例id查询待办
             List<FlowTask> addList = flowTaskDao.findByInstanceId(instance.getId());
-            //完成待办任务的URL设置
-            this.initFlowTasks(addList);
+            if (boo) {
+                //完成待办任务的URL设置
+                this.initFlowTasks(addList);
+            }
             list.addAll(addList);
         }
         return ResponseData.operationSuccessWithData(list);

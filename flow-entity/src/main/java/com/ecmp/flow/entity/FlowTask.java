@@ -18,10 +18,16 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * 待办是否为自动处理（只在推送待办时区分）
+     * 推送的已办审批状态（审批任务：agree/disagree）
      */
     @Transient
-    private Boolean  newTaskAuto = false;
+    private String approveStatus;
+
+    /**
+     * 推送的待办是否为自动处理
+     */
+    @Transient
+    private Boolean newTaskAuto;
 
 
     /**
@@ -948,5 +954,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
     public void setNewTaskAuto(Boolean newTaskAuto) {
         this.newTaskAuto = newTaskAuto;
+    }
+
+    public String getApproveStatus() {
+        return approveStatus;
+    }
+
+    public void setApproveStatus(String approveStatus) {
+        this.approveStatus = approveStatus;
     }
 }
