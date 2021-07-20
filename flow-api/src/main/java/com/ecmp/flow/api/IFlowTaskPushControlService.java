@@ -41,4 +41,16 @@ public interface IFlowTaskPushControlService extends IBaseService<FlowTaskPushCo
     ResponseData cleaningPushHistoryData(CleaningPushHistoryVO cleaningPushHistoryVO);
 
 
+
+    /**
+     * 定时推送状态为失败的任务
+     * @return
+     */
+    @GET
+    @Path("pushFailTimingTask")
+    @ApiOperation(value = "定时推送状态为失败的任务", notes = "定时推送状态为失败的任务")
+    ResponseData  pushFailTimingTask();
+
+
+
 }
