@@ -125,6 +125,11 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private Boolean carbonCopyOrReport;
 
+    /**
+     * 当前节点是否配置了【处理后返回我审批】
+     */
+    private Boolean allowJumpBack;
+
 
     public Boolean getCarbonCopyOrReport() {
         return carbonCopyOrReport;
@@ -294,5 +299,13 @@ public class ApprovalHeaderVO implements Serializable{
 
     public void setCurrentNodeDefaultOpinion(String currentNodeDefaultOpinion) {
         this.currentNodeDefaultOpinion = currentNodeDefaultOpinion;
+    }
+
+    public Boolean getAllowJumpBack() {
+        return allowJumpBack;
+    }
+
+    public void setAllowJumpBack(Boolean allowJumpBack) {
+        this.allowJumpBack = allowJumpBack;
     }
 }
