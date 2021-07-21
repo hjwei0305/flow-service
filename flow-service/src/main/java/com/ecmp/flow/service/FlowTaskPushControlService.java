@@ -200,31 +200,31 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         relationParam.setChildIds(pushIdList);
         flowTaskControlAndPushService.insertRelationsByParam(relationParam);
         //如果推送不成功，进行重新推送3次（任何一次成功就终止）：第一次间隔1分钟，第二次间隔2分钟,第三次间隔3分钟
-        //以后项目改为定时任务自己推送： flowTaskPushControl/pushFailTimingTask   流程配置文件中PUSH_FAIL_TASK_TIME配置查询多少小时之内失败的任务进行推送
-//        if (!success) {
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Boolean result = false;
-//                    int index = 3;
-//                    String controlId = control.getId();
-//                    while (!result && index > 0) {
-//                        try {
-//                            Thread.sleep(1000 * 60 * (4 - index));
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        try {
-//                            ResponseData responseData = pushAgainByControlId(controlId);
-//                            result = responseData.getSuccess();
-//                        } catch (Exception e) {
-//                            LogUtil.error(e.getMessage(), e);
-//                        }
-//                        index--;
-//                    }
-//                }
-//            }).start();
-//        }
+        //也有定时任务： flowTaskPushControl/pushFailTimingTask   流程配置文件中PUSH_FAIL_TASK_TIME配置查询多少小时之内失败的任务进行推送
+        if (!success) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Boolean result = false;
+                    int index = 3;
+                    String controlId = control.getId();
+                    while (!result && index > 0) {
+                        try {
+                            Thread.sleep(1000 * 60 * (4 - index));
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            ResponseData responseData = pushAgainByControlId(controlId);
+                            result = responseData.getSuccess();
+                        } catch (Exception e) {
+                            LogUtil.error(e.getMessage(), e);
+                        }
+                        index--;
+                    }
+                }
+            }).start();
+        }
     }
 
 
