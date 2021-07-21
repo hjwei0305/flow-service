@@ -475,7 +475,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         OperateResultWithData<FlowStatus> result;
         try {
             if (CollectionUtils.isEmpty(manualSelectedNodes)) {//非人工选择任务的情况
-                result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
+                //是否直接返回上一个任务
+                Boolean boo = this.whetherOrNotReturnLastNode(taskId);
+                if (boo) {
+                    result = this.returnLastTask(taskId, flowTaskCompleteVO.getOpinion(), variables);
+                } else {
+                    result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
+                }
             } else {//人工选择任务的情况
                 FlowTask flowTask = flowTaskDao.findOne(taskId);
                 if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
@@ -1326,6 +1332,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             nodeInfo.setUiType("checkbox");
                         } else if ("Approve".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Approve");
+                            //如果是直接返回上一个节点，通过历史数据获取执行人信息
+                            if (flowTask.getJumpBackPrevious() != null && flowTask.getJumpBackPrevious()) {
+                                FlowHistory flowHistory = flowHistoryDao.findOne(flowTask.getPreId());
+                                String executorId = flowHistory.getExecutorId();
+                                Executor exe = flowCommonUtil.getBasicUserExecutor(executorId);
+                                Set<Executor> employeeSet = new HashSet<>();
+                                employeeSet.add(exe);
+                                nodeInfo.setExecutorSet(employeeSet);
+                                return nodeInfoList;
+                            }
                         } else if ("CounterSign".equalsIgnoreCase(userTaskTemp.getNodeType()) || "ParallelTask".equalsIgnoreCase(userTaskTemp.getNodeType()) || "SerialTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_List_CounterSign");
                             nodeInfo.setUiType("checkbox");
@@ -4295,6 +4311,106 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         runtimeService.removeVariable(instance.getProcessInstanceId(), currentTask.getActTaskDefKey() + "currentNodeAfterEvent");
         runtimeService.removeVariable(instance.getProcessInstanceId(), targetNodeId + "targetNodeBeforeEvent");
         return OperateResult.operationSuccess("跳转成功！");
+    }
+
+
+
+    /**
+     * 判断是否需要返回上一步
+     *
+     * @return
+     */
+    public Boolean whetherOrNotReturnLastNode(String flowTaskId) {
+        FlowTask flowTask = flowTaskDao.findOne(flowTaskId);
+        if (flowTask != null) {
+            return BooleanUtils.isTrue(flowTask.getJumpBackPrevious());
+        }
+        return false;
+    }
+
+
+    /**
+     * 返回上一个任务
+     *
+     * @param id
+     * @param opinion
+     * @param variables
+     * @return
+     * @throws Exception
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OperateResultWithData<FlowStatus> returnLastTask(String id, String opinion, Map<String, Object> variables) throws Exception {
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        if (flowTask == null) {
+            return OperateResultWithData.operationFailure("10009");
+        }
+        flowTask.setDepict("【自动返回】" + opinion);
+        if (StringUtils.isNotEmpty(flowTask.getPreId())) {
+            FlowHistory preFlowTask = flowHistoryDao.findOne(flowTask.getPreId());//上一个任务id
+            if (preFlowTask == null) {
+                return OperateResultWithData.operationFailure("自动返回上一步失败!");
+            } else {
+                return this.returnActivitiNode(flowTask, preFlowTask, variables);
+            }
+        } else {
+            return OperateResultWithData.operationFailure("10023");
+        }
+    }
+
+
+
+    /**
+     * 返回上一个任务
+     *
+     * @param currentTask
+     * @param preFlowTask
+     * @return
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OperateResultWithData returnActivitiNode(FlowTask currentTask, FlowHistory preFlowTask, Map<String, Object> variables) throws Exception {
+        OperateResultWithData result = OperateResultWithData.operationSuccess("执行成功！");
+        // 取得当前任务
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId()).singleResult();
+        // 取得流程实例
+        ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
+        if (instance == null) {
+            return OperateResultWithData.operationFailure("当前流程实例查找失败！");
+        }
+
+        // 取得流程定义
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+        if (definition == null) {
+            return OperateResultWithData.operationFailure("当前流程定义查找失败！");
+        }
+
+        // 取得当前任务标节点的活动
+        ActivityImpl currentActivity = definition.findActivity(currentTask.getActTaskDefKey());
+        // 取得上一个目标节点的活动
+        ActivityImpl preActivity = definition.findActivity(preFlowTask.getActTaskDefKey());
+
+        //取活动，清除活动方向
+        List<PvmTransition> oriPvmTransitionList = new ArrayList<>();
+        List<PvmTransition> pvmTransitionList = currentActivity.getOutgoingTransitions();
+        for (PvmTransition pvmTransition : pvmTransitionList) {
+            oriPvmTransitionList.add(pvmTransition);
+        }
+        pvmTransitionList.clear();
+        //建立新方向
+        TransitionImpl newTransition = currentActivity.createOutgoingTransition();
+        // 取得转向的目标，这里需要指定用需要回退到的任务节点
+        newTransition.setDestination(preActivity);
+
+        //完成任务
+        this.complete(currentTask.getId(), currentTask.getDepict(), variables);
+
+        //恢复方向
+        preActivity.getIncomingTransitions().remove(newTransition);
+        List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
+        pvmTList.clear();
+        for (PvmTransition pvmTransition : oriPvmTransitionList) {
+            pvmTransitionList.add(pvmTransition);
+        }
+        return result;
     }
 
 

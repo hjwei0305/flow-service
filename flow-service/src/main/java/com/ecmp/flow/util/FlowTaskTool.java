@@ -470,7 +470,16 @@ public class FlowTaskTool {
         }
 
         Map<PvmActivity, List> nextNodes = new LinkedHashMap<>();
-        initNextNodes(false, flowTask, currActivity, nextNodes, 0, nodeType, null);
+
+        //执行后直接返回上一（审批）节点
+        if (flowTask.getJumpBackPrevious() != null && flowTask.getJumpBackPrevious()) {
+            NodeInfo tempNodeInfo = this.getParentNodeInfoByTask(flowTask, definition);
+            nodeInfoList.add(tempNodeInfo);
+            return nodeInfoList;
+        } else {
+            initNextNodes(false, flowTask, currActivity, nextNodes, 0, nodeType, null);
+        }
+
         if (!CollectionUtils.isEmpty(nextNodes)) {
             //判断网关
             Object[] nextNodesKeyArray = nextNodes.keySet().toArray();
@@ -2064,6 +2073,13 @@ public class FlowTaskTool {
                                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
                                 flowTask.setPriority(0);
                                 flowTask.setFlowInstance(flowInstance);
+                                try {
+                                    Boolean allowJumpBack = (Boolean) variables.get("allowJumpBack");
+                                    if (allowJumpBack) {
+                                        flowTask.setJumpBackPrevious(true);
+                                    }
+                                } catch (Exception e) {
+                                }
                                 taskPropertityInit(flowTask, preTask, currentNode, variables);
                                 flowTaskDao.save(flowTask);
                                 if (pushBasic) {
@@ -2334,6 +2350,14 @@ public class FlowTaskTool {
         JSONObject defObj = JSONObject.fromObject(defJson);
         String nodeType = (String) defObj.get("nodeType");
         List<NodeInfo> result = new ArrayList<NodeInfo>();
+
+        //是否直接返回上一步
+        if (flowTask.getJumpBackPrevious() != null && flowTask.getJumpBackPrevious() == true) {
+            NodeInfo tempNodeInfo = this.getParentNodeInfoByTask(flowTask, definition);
+            result.add(tempNodeInfo);
+            return result;
+        }
+
         if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务
             int counterDecision = 100;
             try {
@@ -2860,6 +2884,30 @@ public class FlowTaskTool {
         tempNodeInfo.setCurrentTaskType(currentNodeType);
         tempNodeInfo = convertNodes(flowTask, tempNodeInfo, lastActivity);
         tempNodeInfo.setName(tempNodeInfo.getName());
+        return tempNodeInfo;
+    }
+
+    /**
+     * 通过流程任务得到返回上一步的节点信息
+     *
+     * @param flowTask
+     * @param definition
+     * @return
+     */
+    public NodeInfo getParentNodeInfoByTask(FlowTask flowTask, ProcessDefinitionEntity definition) {
+        String defJson = flowTask.getTaskJsonDef();
+        JSONObject defObj = JSONObject.fromObject(defJson);
+        String nodeType = defObj.get("nodeType") + "";
+
+        String flowHistoryId = flowTask.getPreId();
+        FlowHistory flowHistory = flowHistoryDao.findOne(flowHistoryId);
+        String actTaskKey = flowHistory.getActTaskDefKey();
+        PvmActivity lastActivity = this.getActivitNode(definition, actTaskKey);
+        NodeInfo tempNodeInfo = new NodeInfo();
+        tempNodeInfo.setCurrentTaskType(nodeType);
+        tempNodeInfo = convertNodes(flowTask, tempNodeInfo, lastActivity);
+        tempNodeInfo.setName("[返回]" + tempNodeInfo.getName());
+        tempNodeInfo.setUiType("readOnly");
         return tempNodeInfo;
     }
 

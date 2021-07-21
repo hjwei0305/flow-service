@@ -16,7 +16,7 @@ import java.util.Map;
  * <p/>
  * *************************************************************************************************
  */
-public class FlowTaskCompleteWebVO implements Serializable{
+public class FlowTaskCompleteWebVO implements Serializable {
 
     /**
      * 节点id
@@ -34,7 +34,8 @@ public class FlowTaskCompleteWebVO implements Serializable{
     private String userIds;
 
 
-    /**'
+    /**
+     * '
      * 流程节点用户变量名称
      */
     private String userVarName;
@@ -43,13 +44,16 @@ public class FlowTaskCompleteWebVO implements Serializable{
     /**
      * 调用子流程中的节点路径
      */
-   private String callActivityPath;
+    private String callActivityPath;
 
 
-   private Boolean instancyStatus;
+    private Boolean instancyStatus;
 
 
-   private Boolean solidifyFlow;
+    private Boolean solidifyFlow;
+
+
+    private Boolean allowJumpBack;
 
 
     public Boolean getSolidifyFlow() {
@@ -106,5 +110,14 @@ public class FlowTaskCompleteWebVO implements Serializable{
 
     public void setInstancyStatus(Boolean instancyStatus) {
         this.instancyStatus = instancyStatus;
+    }
+
+
+    public Boolean getAllowJumpBack() {
+        return allowJumpBack;
+    }
+
+    public void setAllowJumpBack(Boolean allowJumpBack) {
+        this.allowJumpBack = allowJumpBack;
     }
 }

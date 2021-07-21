@@ -331,6 +331,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
+     * 执行后返回上一节点
+     */
+    @Column(name = "jump_back_previous")
+    private Boolean jumpBackPrevious;
+
+
+    /**
      * 租户代码
      */
     @Column(name = "tenant_code", length = 10)
@@ -962,5 +969,14 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
     public void setApproveStatus(String approveStatus) {
         this.approveStatus = approveStatus;
+    }
+
+
+    public Boolean getJumpBackPrevious() {
+        return jumpBackPrevious;
+    }
+
+    public void setJumpBackPrevious(Boolean jumpBackPrevious) {
+        this.jumpBackPrevious = jumpBackPrevious;
     }
 }

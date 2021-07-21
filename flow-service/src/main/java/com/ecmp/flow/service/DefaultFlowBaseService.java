@@ -17,6 +17,7 @@ import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -553,6 +554,13 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         }
                     }
                     selectedNodesUserMap.put(f.getNodeId(), userList);
+                }
+
+                //允许返回上一节点（只判断普通任务类型）
+                if ("common".equalsIgnoreCase(f.getFlowTaskType()) && BooleanUtils.isTrue(f.getAllowJumpBack())) {
+                    v.put("allowJumpBack", true);
+                } else {
+                    v.put("allowJumpBack", false);
                 }
             }
             v.put("allowChooseInstancyMap", allowChooseInstancyMap);
