@@ -182,6 +182,8 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
         Boolean carbonCopyOrReport = false; //是否是抄送和呈报节点
         Integer trustState = null; //是否是被委托的任务
         String historyId = "";//撤回需要的历史ID
+        Boolean allowJumpBack = false; //允许处理后返回我审批
+
         List<DisagreeReason> disagreeReasonList = null;
         if (StringUtils.isNotEmpty(taskId) && StringUtils.isNotEmpty(typeId)) {
             //能查询到就是待办，查不到就是已处理
@@ -224,6 +226,13 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     }
                 }
 
+
+                //节点是否配置了【处理后返回我审批】
+                if (normalInfo.has("allowJumpBack") && BooleanUtils.isTrue(normalInfo.getBoolean("allowJumpBack"))) {
+                    allowJumpBack = true;
+                }
+
+
             }
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
@@ -262,6 +271,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 properties.put("flowTaskCanMobile", canMobile);//添加移动端是都可以查看
                 properties.put("trustState", trustState);//被委托的的任务为2，提交方法不一样
                 properties.put("carbonCopyOrReport", carbonCopyOrReport);//是否抄送和呈报节点
+                properties.put("allowJumpBack",allowJumpBack); //处理后返回我审批
                 if (!taskBoo) {
                     properties.put("canCancel", canCancel);//如果是已办，是否可以撤回，true为可以
                     properties.put("historyId", historyId);//撤回需要的历史ID
@@ -285,10 +295,10 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             params.put("businessModelCode", businessModelCode);
             params.put("id", id);
             String messageLog = "开始调用‘表单明细’接口（移动端），接口url=" + url + ",参数值" + JsonUtils.toJson(params);
-            ResponseData<Map<String,Object>> result;
+            ResponseData<Map<String, Object>> result;
             Map<String, Object> properties;
             try {
-                result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<Map<String,Object>>>() {
+                result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<Map<String, Object>>>() {
                 }, params);
                 if (result.successful()) {
                     properties = result.getData();
@@ -482,7 +492,6 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
     }
 
 
-
     @Override
     public ResponseData getPropertiesByHisIdOfModile(String historyId) {
         if (StringUtils.isNotEmpty(historyId)) {
@@ -505,7 +514,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     }
                     try {
                         String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
-                        apiBaseAddress =  Constants.getConfigValueByApi(apiBaseAddressConfig);
+                        apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
                         return ResponseData.operationFailure("获取模块Api基地址失败！");
