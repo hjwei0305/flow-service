@@ -1286,7 +1286,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 callEndServiceAndSon(son, endSign);
             }
         }
-        flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
+        FlowOperateResult  callAfterEndResult = flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
+        if (callAfterEndResult != null && !callAfterEndResult.isSuccess()) {
+            throw new FlowException(callAfterEndResult.getMessage());
+        }
     }
 
 
@@ -1295,9 +1298,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      *
      * @param flowInstance
      * @param endSign
-     * @return
      */
-    private FlowOperateResult callBeforeEndAndSon(FlowInstance flowInstance, int endSign) {
+    private void callBeforeEndAndSon(FlowInstance flowInstance, int endSign) {
         FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
         List<FlowInstance> flowInstanceChildren = flowInstanceDao.findByParentId(flowInstance.getId());//针对子流程
         if (flowInstanceChildren != null && !flowInstanceChildren.isEmpty()) {
@@ -1305,17 +1307,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 callBeforeEndAndSon(son, endSign);
             }
         }
-        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        AppModule appModule = businessModel.getAppModule();
         FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
-        if (callBeforeEndResult != null && callBeforeEndResult.isSuccess() != true) {
-            String message = "BusinessId=" + flowInstance.getBusinessId()
-                    + ",FlowDefVersion.id=" + flowInstance.getFlowDefVersion().getId()
-                    + ",appModule.code=" + appModule.getCode()
-                    + ",Check the error before the end of the process and return the message :" + callBeforeEndResult.getMessage();
-            throw new FlowException(message);
+        if (callBeforeEndResult != null && !callBeforeEndResult.isSuccess()) {
+            throw new FlowException(callBeforeEndResult.getMessage());
         }
-        return callBeforeEndResult;
     }
 
 
