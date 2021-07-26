@@ -411,6 +411,13 @@ public class Constants extends ConfigurableContants {
      */
     public final static String FLOW_SERVICE_URL_DAO = "flowServiceUrlDao";
 
+
+    /**
+     * 流程服务管理dao
+     */
+    public final static String FLOW_INSTANCE_SERVICE = "flowInstanceService";
+
+
     /**
      * 子流程选择节点执行人参数标记
      */

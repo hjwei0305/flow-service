@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.GenericType;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -247,6 +248,11 @@ public class StartEventCompleteListener implements ExecutionListener {
                     String checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
+
+                    Map<String, String> paramMap = new HashMap<>();
+                    paramMap.put("flowInstanceName",flowDefVersion.getName());
+                    flowInvokeParams.setParams(paramMap);
+
                     String msg = "启动后事件【" + flowServiceUrl.getName() + "】";
                     String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
                     if (afterStartServiceAync == true) {

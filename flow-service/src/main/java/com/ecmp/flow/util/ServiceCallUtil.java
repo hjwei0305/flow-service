@@ -6,7 +6,9 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.FlowServiceUrlDao;
 import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.AppModule;
+import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowServiceUrl;
+import com.ecmp.flow.service.FlowInstanceService;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
@@ -47,7 +49,7 @@ public class ServiceCallUtil {
                 String clientUrl = flowServiceUrl.getUrl();
                 AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
 
-                Map<String, String> paramMap = new HashMap<String, String>();
+                Map<String, String> paramMap = new HashMap<>();
                 FlowInvokeParams params = new FlowInvokeParams();
                 if (org.apache.commons.lang3.StringUtils.isNotEmpty(args[0])) {
                     try {
@@ -110,11 +112,22 @@ public class ServiceCallUtil {
                         throw e;
                     }
                 }
+                try {
+                    FlowInstanceService flowInstanceService = (FlowInstanceService) applicationContext.getBean(Constants.FLOW_INSTANCE_SERVICE);
+                    FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
+                    if (flowInstance != null) {
+                        paramMap.put("flowInstanceName", flowInstance.getFlowName());
+                        paramMap.put("flowTaskName", flowTaskName);
+                    }
+                } catch (Exception e) {
+                    LogUtil.error("获取流程名称和单据名称错误！", e);
+                }
+
                 params.setId(businessId);
                 params.setParams(paramMap);
                 String apiBaseAddressConfig = appModule.getApiBaseAddress();
                 String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                String url = PageUrlUtil.buildUrl(clientApiBaseUrl,clientUrl);
+                String url = PageUrlUtil.buildUrl(clientApiBaseUrl, clientUrl);
                 Date startDate = new Date();
                 SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
                 String msg = "[" + sim.format(startDate) + "]开始请求节点【" + flowTaskName + "】的事件【" + flowServiceUrl.getName() + "】";
