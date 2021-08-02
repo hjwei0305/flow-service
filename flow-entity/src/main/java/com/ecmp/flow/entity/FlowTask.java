@@ -205,7 +205,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * 优先级
+     * 优先级：1》驳回  2》撤回  3》紧急
      */
     @Column(name = "priority")
     private int priority;
