@@ -361,7 +361,7 @@ public class FlowListenerTool {
                     params.put("flowInstanceName",flowDefVersion.getName());
                     flowInvokeParams.setParams(params);
                     String msg = "结束前事件【" + flowServiceUrl.getName() + "】";
-                    String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(params);
+                    String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
                     if (endBeforeCallServiceAync != null && endBeforeCallServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
