@@ -591,8 +591,17 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Path("updateRemarkByBusinessId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "修改流程实例说明", notes = "修改流程实例说明")
+    @ApiOperation(value = "通过单据ID修改流程实例说明", notes = "通过单据ID修改流程实例说明")
     ResponseData updateRemarkByBusinessId(UpdateInstanceRemarkVo updateInstanceRemarkVo);
+
+
+    @POST
+    @Path("updateRemarkByInstaceId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程实例ID修改流程实例说明", notes = "通过流程实例ID修改流程实例说明")
+    ResponseData updateRemarkByInstaceId(UpdateRemarkByInstanceVo updateRemarkByInstanceVo);
+
 
 
     @GET

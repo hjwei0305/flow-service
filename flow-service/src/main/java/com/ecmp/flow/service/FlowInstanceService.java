@@ -1913,6 +1913,27 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
+    @Override
+    public ResponseData updateRemarkByInstaceId(UpdateRemarkByInstanceVo updateRemarkByInstanceVo) {
+        if (Objects.isNull(updateRemarkByInstanceVo)) {
+            return ResponseData.operationFailure("参数不能为空！");
+        }
+        if (StringUtils.isEmpty(updateRemarkByInstanceVo.getInstanceId())) {
+            return ResponseData.operationFailure("流程实例ID不能为空！");
+        }
+        if (StringUtils.isEmpty(updateRemarkByInstanceVo.getUpdateRemark())) {
+            return ResponseData.operationFailure("修改说明不能为空！");
+        }
+        FlowInstance flowInstance = flowInstanceDao.findOne(updateRemarkByInstanceVo.getInstanceId());
+        if (flowInstance != null) {
+            flowInstance.setBusinessModelRemark(updateRemarkByInstanceVo.getUpdateRemark());
+            this.save(flowInstance);
+            return ResponseData.operationSuccess("修改成功");
+        }
+        return ResponseData.operationFailure("流程实例ID错误！");
+
+    }
+
     /**
      * 待办生产失败的补偿接口
      *
