@@ -15,6 +15,12 @@ public class UpdateInstanceRemarkVo implements Serializable {
     private String updateRemark;
 
 
+    /**
+     * 是否覆盖附加说明
+     */
+    private Boolean coverAdditionalRemark;
+
+
     public String getBusinessId() {
         return businessId;
     }
@@ -29,5 +35,13 @@ public class UpdateInstanceRemarkVo implements Serializable {
 
     public void setUpdateRemark(String updateRemark) {
         this.updateRemark = updateRemark;
+    }
+
+    public Boolean getCoverAdditionalRemark() {
+        return coverAdditionalRemark;
+    }
+
+    public void setCoverAdditionalRemark(Boolean coverAdditionalRemark) {
+        this.coverAdditionalRemark = coverAdditionalRemark;
     }
 }

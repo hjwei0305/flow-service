@@ -1286,7 +1286,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 callEndServiceAndSon(son, endSign);
             }
         }
-        FlowOperateResult  callAfterEndResult = flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
+        FlowOperateResult callAfterEndResult = flowListenerTool.callEndService(flowInstance.getBusinessId(), flowDefVersion, endSign, null);
         if (callAfterEndResult != null && !callAfterEndResult.isSuccess()) {
             throw new FlowException(callAfterEndResult.getMessage());
         }
@@ -1884,20 +1884,28 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (StringUtils.isEmpty(updateInstanceRemarkVo.getUpdateRemark())) {
             return ResponseData.operationFailure("修改说明不能为空！");
         }
+        if (BooleanUtils.isNotTrue(updateInstanceRemarkVo.getCoverAdditionalRemark())) {
+            updateInstanceRemarkVo.setCoverAdditionalRemark(false);
+        }
+
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(updateInstanceRemarkVo.getBusinessId());
         if (flowInstance != null && !flowInstance.isEnded()) { //只考虑还在流程中的流程实例
-            String newRemark;
-            String oldRemark = flowInstance.getBusinessModelRemark();
-            int i = oldRemark.lastIndexOf("【附加说明");
-            if (i != -1) { //有附加说明
-                newRemark = updateInstanceRemarkVo.getUpdateRemark() + oldRemark.substring(i);
+            if (updateInstanceRemarkVo.getCoverAdditionalRemark()) {
+                flowInstance.setBusinessModelRemark(updateInstanceRemarkVo.getUpdateRemark());
             } else {
-                newRemark = updateInstanceRemarkVo.getUpdateRemark();
+                String newRemark;
+                String oldRemark = flowInstance.getBusinessModelRemark();
+                int i = oldRemark.lastIndexOf("【附加说明");
+                if (i != -1) { //有附加说明
+                    newRemark = updateInstanceRemarkVo.getUpdateRemark() + oldRemark.substring(i);
+                } else {
+                    newRemark = updateInstanceRemarkVo.getUpdateRemark();
+                }
+                if (StringUtils.isNotEmpty(newRemark) && newRemark.length() > 2000) {
+                    return ResponseData.operationFailure("工作说明限定长度2000，实际长度为：" + newRemark.length());
+                }
+                flowInstance.setBusinessModelRemark(newRemark);
             }
-            if (StringUtils.isNotEmpty(newRemark) && newRemark.length() > 2000) {
-                return ResponseData.operationFailure("工作说明限定长度2000，实际长度为：" + newRemark.length());
-            }
-            flowInstance.setBusinessModelRemark(newRemark);
             this.save(flowInstance);
             return ResponseData.operationSuccess("修改成功");
         }
