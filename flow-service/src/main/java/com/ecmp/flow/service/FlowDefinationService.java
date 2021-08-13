@@ -637,6 +637,10 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
             String businessId = flowStartVO.getBusinessKey();
             Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
+            if (CollectionUtils.isEmpty(businessV)) {
+                return OperateResultWithData.operationFailure("条件属性接口返回为空！");
+            }
+
             if (CollectionUtils.isEmpty(flowStartVO.getVariables())) {
                 flowStartVO.setVariables(businessV);
             } else {
@@ -1041,7 +1045,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
 
-            if ( CollectionUtils.isEmpty(resultCurrent) && !CollectionUtils.isEmpty(resultDefault) ) {
+            if (CollectionUtils.isEmpty(resultCurrent) && !CollectionUtils.isEmpty(resultDefault)) {
                 resultCurrent.addAll(resultDefault);
             }
             result.addAll(resultCurrent);
@@ -1127,7 +1131,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
             }
             result.addAll(resultCurrent);
-            if ( CollectionUtils.isEmpty(result) && !CollectionUtils.isEmpty(resultDefault)) {
+            if (CollectionUtils.isEmpty(result) && !CollectionUtils.isEmpty(resultDefault)) {
                 result.addAll(resultDefault);
             }
 
