@@ -87,6 +87,14 @@ dependencies {
 
 //    compile group: 'org.springframework.data', name: 'spring-data-couchbase', version: '3.0.8.RELEASE'
 
+    // DB
+    compile(
+            // mysql
+            "mysql:mysql-connector-java",
+            // postgresql
+            "org.postgresql:postgresql"
+    )
+
     // 测试依赖
     testCompile(
             "org.springframework.boot:spring-boot-starter-test"
