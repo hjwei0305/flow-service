@@ -90,7 +90,6 @@ public abstract class AbstractBusinessModel extends com.ecmp.core.entity.BaseAud
      * 工作说明
      */
     @Column(name = "work_caption",length = 1000,nullable = false)
-    @Lob
     private  String workCaption;
 
     /**

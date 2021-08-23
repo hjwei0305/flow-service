@@ -67,7 +67,6 @@ public class DefaultBusinessModel extends com.ecmp.core.entity.BaseAuditableEnti
      * 工作说明
      */
     @Column(name = "work_caption")
-    @Lob
     private String workCaption;
 
     /**

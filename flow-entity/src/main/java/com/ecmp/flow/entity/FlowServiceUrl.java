@@ -54,7 +54,6 @@ public class FlowServiceUrl extends com.ecmp.core.entity.BaseAuditableEntity  {
     /**
      * URL服务地址
      */
-    @Lob
     @Basic(fetch=FetchType.LAZY)
     private String url;
 

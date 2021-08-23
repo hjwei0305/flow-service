@@ -51,14 +51,12 @@ public class FlowExecutorConfig extends com.ecmp.core.entity.BaseAuditableEntity
     /**
      * API地址
      */
-    @Lob
     @Basic(fetch=FetchType.LAZY)
     private String url;
 
     /**
      * 参数
      */
-    @Lob
     @Basic(fetch=FetchType.LAZY)
     private String param;
 

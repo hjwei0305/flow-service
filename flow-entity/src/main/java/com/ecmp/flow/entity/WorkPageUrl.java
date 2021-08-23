@@ -48,8 +48,6 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     /**
      * URL界面地址
      */
-//    @Lob
-//    @Basic(fetch=FetchType.LAZY)
     @Column(name = "url")
     private String url;
 

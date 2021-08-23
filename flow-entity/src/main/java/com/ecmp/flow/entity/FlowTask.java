@@ -260,7 +260,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
      * 任务定义JSON
      */
     @Column(name = "task_json_def")
-    @Lob
     private String taskJsonDef;
 
     /**

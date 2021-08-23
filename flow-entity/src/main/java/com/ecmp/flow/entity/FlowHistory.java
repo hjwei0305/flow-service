@@ -203,7 +203,6 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
      * 任务定义JSON
      */
     @Column(name = "task_json_def")
-    @Lob
     private String taskJsonDef;
 
     /**

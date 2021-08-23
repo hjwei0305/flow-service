@@ -255,7 +255,6 @@ public class FlowTaskPush extends com.ecmp.core.entity.BaseAuditableEntity imple
      * 任务定义JSON
      */
     @Column(name = "task_json_def")
-    @Lob
     private String taskJsonDef;
 
     /**

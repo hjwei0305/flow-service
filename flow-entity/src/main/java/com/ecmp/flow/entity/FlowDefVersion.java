@@ -80,7 +80,6 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 流程JSON文本
      */
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "def_json", columnDefinition = "CLOB")
     private String defJson;
@@ -96,7 +95,6 @@ public class FlowDefVersion extends com.ecmp.core.entity.BaseAuditableEntity imp
     /**
      * 最终定义XML
      */
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "def_xml", columnDefinition = "CLOB")
     private String defXml;
