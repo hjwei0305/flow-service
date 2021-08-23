@@ -129,11 +129,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	/**
 	 * 是否挂起
 	 */
+	@Column(name = "suspended")
 	private Boolean suspended=false;
 
 	/**
 	 * 是否结束
 	 */
+	@Column(name = "ended")
 	private Boolean ended=false;
 
 
