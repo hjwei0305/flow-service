@@ -137,8 +137,7 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
     /**
      * 查看单据的URL
      */
-    @Column(length = 6000,name = "look_url")
-    @Lob
+    @Column(name = "look_url")
     private String lookUrl;
 
     /**
