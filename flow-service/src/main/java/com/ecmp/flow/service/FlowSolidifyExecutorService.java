@@ -87,11 +87,11 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         if (StringUtils.isNotEmpty(businessId)) {
             FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
             if (flowInstance == null) {
-                return ResponseData.operationFailure("流程实例不存在！");
+                return ResponseData.operationFailure("10173");
             }
             List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
             if (solidifylist == null || solidifylist.size() == 0) {
-                return ResponseData.operationFailure("固化流程配置数据不存在！");
+                return ResponseData.operationFailure("10174");
             }
             Definition definitionP = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             List<NodeAndExecutes> list = new ArrayList<NodeAndExecutes>();
@@ -115,7 +115,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             }
             return ResponseData.operationSuccessWithData(list);
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -148,7 +148,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Transactional
     public ResponseData saveByExecutorVoList(List<FlowSolidifyExecutorVO> executorVoList, String businessModelCode, String businessId) {
         if (CollectionUtils.isEmpty(executorVoList) || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("请求参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         //新启动流程时，清除以前的数据
         List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
@@ -182,7 +182,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
             });
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            return ResponseData.operationFailure("节点信息、紧急状态、执行人不能为空！");
+            return ResponseData.operationFailure("10175");
         }
         return ResponseData.operationSuccess();
     }
@@ -196,7 +196,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      */
     public ResponseData setInstancyAndIdsByTaskList(List<FlowTaskCompleteWebVO> list, String businessId) {
         if (list == null || list.size() == 0 || StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
 
         for (FlowTaskCompleteWebVO webvO : list) {
@@ -216,7 +216,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 search.addFilter(new SearchFilter("actTaskDefKey", webvO.getNodeId()));
                 List<FlowSolidifyExecutor> solidifyExecutorlist = flowSolidifyExecutorDao.findByFilters(search);
                 if (solidifyExecutorlist == null || solidifyExecutorlist.size() == 0) {
-                    return ResponseData.operationFailure("固化执行人未设置！");
+                    return ResponseData.operationFailure("10176");
                 }
                 webvO.setInstancyStatus(solidifyExecutorlist.get(0).getInstancyStatus());
                 webvO.setUserIds(solidifyExecutorlist.get(0).getExecutorIds());
@@ -232,7 +232,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
     @Transactional
     public ResponseData deleteByBusinessId(String businessId) {
         if (StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         List<FlowSolidifyExecutor> list = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
         if (list != null) {
@@ -317,10 +317,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                     }
                 }
             } else {
-                LogUtil.error("自动执行待办-查询待办失败！");
+                LogUtil.error("10177");
             }
         } else {
-            LogUtil.error("自动执行待办-参数为空！");
+            LogUtil.error("10178");
         }
     }
 
@@ -415,7 +415,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         approved = "true";
                         opinion = "同意【自动执行】";
                     }
-                    ResponseData responseData = ResponseData.operationFailure("模拟下一步失败！");
+                    ResponseData responseData = ResponseData.operationFailure("10179");
                     try {
                         //模拟请求下一步数据
                         responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved);
@@ -501,9 +501,9 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 return ResponseData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
-            return ResponseData.operationFailure("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("10033");
         } else {
-            return ResponseData.operationFailure("当前表单规则找不到符合条件的分支");
+            return ResponseData.operationFailure("10180");
         }
     }
 

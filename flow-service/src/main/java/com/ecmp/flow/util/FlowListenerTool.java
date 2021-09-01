@@ -249,13 +249,13 @@ public class FlowListenerTool {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endCallServiceUrlId);
                 if (flowServiceUrl == null) {
                     LogUtil.error("获取结束后事件失败，可能已经被删除，serviceId = " + endCallServiceUrlId);
-                    throw new FlowException("获取结束后事件失败，可能已经被删除，详情请查看日志!");
+                    throw new FlowException(ContextUtil.getMessage("10322"));
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String endCallServiceUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
+                    String endCallServiceUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     Map<String, String> params = new HashMap<String, String>();
@@ -273,10 +273,9 @@ public class FlowListenerTool {
                         }
                     }
                     params.put("endSign", endSign + "");
-                    params.put("flowInstanceName",flowDefVersion.getName());
+                    params.put("flowInstanceName", flowDefVersion.getName());
                     flowInvokeParams.setParams(params);
-                    String msg = "结束后事件【" + flowServiceUrl.getName() + "】";
-                    String urlAndData = "-请求地址：" + endCallServiceUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
+                    String serviceName = flowServiceUrl.getName();
                     if (endCallServiceAync != null && endCallServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
@@ -285,28 +284,28 @@ public class FlowListenerTool {
                                     ResponseData result = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<ResponseData>() {
                                     }, flowInvokeParams);
                                     if (!result.successful()) {
-                                        LogUtil.error(msg + "异步调用报错:" + urlAndData + "【返回信息：" + JsonUtils.toJson(result) + "】");
+                                        LogUtil.error("结束后事件【{}】,异步调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(result), endCallServiceUrlPath, JsonUtils.toJson(flowInvokeParams));
                                     }
                                 } catch (Exception e) {
-                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
+                                    LogUtil.error("结束后事件【{}】,异步调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), endCallServiceUrlPath, JsonUtils.toJson(flowInvokeParams), e);
                                 }
                             }
                         }).start();
-                        flowOpreateResult = new FlowOperateResult(true, "事件已异步调用！");
+                        flowOpreateResult = new FlowOperateResult(true, ContextUtil.getMessage("10092"));
                     } else {
                         try {
                             ResponseData result = ApiClient.postViaProxyReturnResult(endCallServiceUrlPath, new GenericType<ResponseData>() {
                             }, flowInvokeParams);
                             if (result.successful()) {
-                                LogUtil.bizLog(msg + urlAndData + ",【返回信息：" + JsonUtils.toJson(result) + "】");
+                                LogUtil.bizLog("结束后事件【{}】,接口请求地址：{},请求参数：{},返回信息：{}", serviceName, endCallServiceUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(result));
                                 flowOpreateResult = new FlowOperateResult(true, result.getMessage());
                             } else {
-                                LogUtil.error(msg + "调用报错:" + urlAndData + "【返回信息：" + JsonUtils.toJson(result) + "】");
-                                flowOpreateResult = new FlowOperateResult(false, msg + "返回信息：【" + result.getMessage() + "】");
+                                LogUtil.error("结束后事件【{}】,调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(result), endCallServiceUrlPath, JsonUtils.toJson(flowInvokeParams));
+                                flowOpreateResult = new FlowOperateResult(false, ContextUtil.getMessage("10323", serviceName, result.getMessage()));
                             }
                         } catch (Exception e) {
-                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
-                            throw new FlowException(msg + "内部报错，详情请查看日志！");
+                            LogUtil.error("结束后事件【{}】,调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), endCallServiceUrlPath, JsonUtils.toJson(flowInvokeParams), e);
+                            throw new FlowException(ContextUtil.getMessage("10324", serviceName, e.getMessage()));
                         }
                     }
 
@@ -333,13 +332,13 @@ public class FlowListenerTool {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(endBeforeCallServiceUrlId);
                 if (flowServiceUrl == null) {
                     LogUtil.error("获取结束前事件失败，可能已经被删除，serviceId = " + endBeforeCallServiceUrlId);
-                    throw new FlowException("获取结束前事件失败，可能已经被删除，详情请查看日志!");
+                    throw new FlowException(ContextUtil.getMessage("10325"));
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                     String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl,checkUrl);
+                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
                     Map<String, String> params = new HashMap<String, String>();
@@ -358,10 +357,9 @@ public class FlowListenerTool {
 
                     }
                     params.put("endSign", endSign + "");
-                    params.put("flowInstanceName",flowDefVersion.getName());
+                    params.put("flowInstanceName", flowDefVersion.getName());
                     flowInvokeParams.setParams(params);
-                    String msg = "结束前事件【" + flowServiceUrl.getName() + "】";
-                    String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
+                    String serviceName = flowServiceUrl.getName();
                     if (endBeforeCallServiceAync != null && endBeforeCallServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
@@ -370,28 +368,28 @@ public class FlowListenerTool {
                                     ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                                     }, flowInvokeParams);
                                     if (!res.successful()) {
-                                        LogUtil.error(msg + "异步调用报错：" + urlAndData + ",【返回信息：" + JsonUtils.toJson(res) + "】");
+                                        LogUtil.error("结束前事件【{}】,异步调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(res), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
                                     }
                                 } catch (Exception e) {
-                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
+                                    LogUtil.error("结束前事件【{}】,异步调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
                                 }
                             }
                         }).start();
-                        result = new FlowOperateResult(true, "事件已异步调用！");
+                        result = new FlowOperateResult(true, ContextUtil.getMessage("10092"));
                     } else {
                         try {
                             ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                             }, flowInvokeParams);
                             if (res.successful()) {
-                                LogUtil.bizLog(msg + urlAndData + ",【返回信息：" + JsonUtils.toJson(result) + "】");
+                                LogUtil.bizLog("结束前事件【{}】,接口请求地址：{},请求参数：{},返回信息：{}", serviceName, checkUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(result));
                                 result = new FlowOperateResult(true, res.getMessage());
                             } else {
-                                LogUtil.error(msg + "调用报错：" + urlAndData + ",【返回信息：" + JsonUtils.toJson(res) + "】");
-                                result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
+                                LogUtil.error("结束前事件【{}】,调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(result), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
+                                result = new FlowOperateResult(false, ContextUtil.getMessage("10326", serviceName, result.getMessage()));
                             }
                         } catch (Exception e) {
-                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
-                            throw new FlowException(msg + "内部报错，详情请查看日志！");
+                            LogUtil.error("结束前事件【{}】,调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
+                            throw new FlowException(ContextUtil.getMessage("10327", serviceName, e.getMessage()));
                         }
                     }
                 }

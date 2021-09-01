@@ -247,7 +247,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            return ResponseData.operationFailure("操作失败！");
+            return ResponseData.operationFailure("10118");
         }
     }
 
@@ -296,7 +296,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
             return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            return ResponseData.operationFailure("操作失败！");
+            return ResponseData.operationFailure("10118");
         }
     }
 
@@ -517,7 +517,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         } else {
             searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
         }
-        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        List<SearchOrder> list = new ArrayList<>();
         list.add(searchOrder);
         searchConfig.setSortOrders(list);
 

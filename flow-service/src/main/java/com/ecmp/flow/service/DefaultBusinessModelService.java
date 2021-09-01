@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.core.service.Validation;
@@ -150,14 +151,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     public ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
-        return ResponseData.operationFailure("测试调用模块的报错信息是否传递！");
+        return ResponseData.operationFailure("10042");
     }
-
-
-
-
-
-
 
 
 
@@ -292,7 +287,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @SuppressWarnings("unchecked")
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResultWithData<DefaultBusinessModel> save(DefaultBusinessModel entity) {
-        Validation.notNull(entity, "持久化对象不能为空");
+        Validation.notNull(entity, ContextUtil.getMessage("10001"));
         String businessCode = CodeGenerator.genCodes(6, 1).get(0);
         if (StringUtils.isEmpty(entity.getBusinessCode())) {
             entity.setBusinessCode(businessCode);
@@ -348,7 +343,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         String str = callActivityPath;
         String[] resultArray = str.split("/");
         if ((resultArray.length < 4) || (resultArray.length % 2 != 0)) {
-            throw new RuntimeException("子流程路径解析错误");
+            throw new RuntimeException("10049");
         }
         List<String> resultList = new ArrayList<String>();
         for (int i = 1; i < resultArray.length; i++) {

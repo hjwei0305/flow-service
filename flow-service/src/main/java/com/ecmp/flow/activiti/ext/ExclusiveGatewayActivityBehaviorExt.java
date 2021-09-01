@@ -44,7 +44,7 @@ public class ExclusiveGatewayActivityBehaviorExt extends ExclusiveGatewayActivit
                     Map<String, Object> map = execution.getVariables();
                     Boolean boo = ConditionUtil.groovyTest(conditionFinal, map);
                     if(boo == null){
-                        throw  new FlowException("验证表达式失败！表达式：【"+conditionFinal+"】,带入参数：【"+ JsonUtils.toJson(map)+"】");
+                        throw  new FlowException(ContextUtil.getMessage("10090", conditionFinal, JsonUtils.toJson(map)));
                     }else if(boo){
                         execution.take(pv);
                         return;

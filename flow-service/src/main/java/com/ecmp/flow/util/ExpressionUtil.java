@@ -33,15 +33,9 @@ import java.util.*;
  */
 public class ExpressionUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExpressionUtil.class);
-
     public static AppModule getAppModule(BusinessModel businessModel) {
         AppModule appModule = businessModel.getAppModule();
         return appModule;
-    }
-
-    public static String getErrorLogString(String name) {
-        return "调用" + name + "接口异常,详情请查看日志!";
     }
 
     /**
@@ -58,7 +52,6 @@ public class ExpressionUtil {
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
         params.put(Constants.ALL, false);
-        String messageLog = "开始调用【条件属性说明服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
         ResponseData<Map<String, String>> result;
         Map<String, String> map;
         try {
@@ -67,16 +60,13 @@ public class ExpressionUtil {
             if (result.successful()) {
                 map = result.getData();
             } else {
-                messageLog += "-接口返回信息：" + result.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString("【条件属性说明服务地址】"));
+                LogUtil.error("开始调用【条件属性说明服务地址】,接口返回错误信息：{},url={},参数值{}", result.getMessage(), clientApiUrl, JsonUtils.toJson(params));
+                throw new FlowException(ContextUtil.getMessage("10277", result.getMessage()));
             }
-            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
-            LogUtil.bizLog(messageLog);
+            LogUtil.bizLog("开始调用【条件属性说明服务地址】,接口url={},参数值{},返回【result={}】", clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
         } catch (Exception e) {
-            messageLog += "-调用异常：" + e.getMessage();
-            LogUtil.error(messageLog);
-            throw new FlowException(getErrorLogString("【条件属性说明服务地址】"), e);
+            LogUtil.error("开始调用【条件属性说明服务地址】,接口调用异常：{},接口url={},参数值{}", e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
+            throw new FlowException(ContextUtil.getMessage("10278", e.getMessage()));
         }
         return map;
     }
@@ -95,7 +85,6 @@ public class ExpressionUtil {
         String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonProperties() + "Remark");
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModelCode);
-        String messageLog = "开始调用【获取条件属性的备注说明】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
         ResponseData<Map<String, String>> result;
         Map<String, String> map;
         try {
@@ -104,15 +93,12 @@ public class ExpressionUtil {
             if (result.successful()) {
                 map = result.getData();
             } else {
-                messageLog += "-接口返回信息：" + result.getMessage();
-                LogUtil.error(messageLog);
+                LogUtil.error("开始调用【获取条件属性的备注说明】,接口返回错误信息：{},接口url={},参数值{}", result.getMessage(), clientApiUrl, JsonUtils.toJson(params));
                 return null;
             }
-            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
-            LogUtil.bizLog(messageLog);
+            LogUtil.bizLog("开始调用【获取条件属性的备注说明】，接口url={},参数值{},返回【result={}】", clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
         } catch (Exception e) {
-            messageLog += "-调用异常：" + e.getMessage();
-            LogUtil.error(messageLog);
+            LogUtil.error("开始调用【获取条件属性的备注说明】,接口调用异常：{},接口url={},参数值{}", e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
             return null;
         }
         return map;
@@ -131,7 +117,6 @@ public class ExpressionUtil {
         String clientApiUrl = PageUrlUtil.buildUrl(clientApiBaseUrl, businessModel.getConditonPSValue());
         Map<String, Object> params = new HashMap();
         params.put(Constants.BUSINESS_MODEL_CODE, businessModel.getClassName());
-        String messageLog = "开始调用【条件属性初始值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
         ResponseData<Map<String, Object>> result;
         Map<String, Object> map;
         try {
@@ -140,16 +125,13 @@ public class ExpressionUtil {
             if (result.successful()) {
                 map = result.getData();
             } else {
-                messageLog += "-接口返回信息：" + result.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString("【条件属性初始值服务地址】"));
+                LogUtil.error("开始调用【条件属性初始值服务地址】,接口返回错误信息：{},接口url={},参数值{}", result.getMessage(), clientApiUrl, JsonUtils.toJson(params));
+                throw new FlowException(ContextUtil.getMessage("10279", result.getMessage()));
             }
-            messageLog += ",【result=" + JsonUtils.toJson(result) + "】";
-            LogUtil.bizLog(messageLog);
+            LogUtil.bizLog("开始调用【条件属性初始值服务地址】，接口url={},参数值{},返回【result={}】", clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
         } catch (Exception e) {
-            messageLog += "-调用异常：" + e.getMessage();
-            LogUtil.error(messageLog);
-            throw new FlowException(getErrorLogString("【条件属性初始值服务地址】"), e);
+            LogUtil.error("开始调用【条件属性初始值服务地址】,接口调用异常：{},接口url={},参数值{}", e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
+            throw new FlowException(ContextUtil.getMessage("10280", e.getMessage()));
         }
         return map;
     }
@@ -173,7 +155,6 @@ public class ExpressionUtil {
         params.put(Constants.ALL, all);
         Date startDate = new Date();
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-        String messageLog = sim.format(startDate) + "开始调用【条件属性值服务地址】，接口url=" + clientApiUrl + ",参数值" + JsonUtils.toJson(params);
         ResponseData<Map<String, Object>> result;
         Map<String, Object> map;
         try {
@@ -183,16 +164,13 @@ public class ExpressionUtil {
             if (result.successful()) {
                 map = result.getData();
             } else {
-                messageLog += "-接口返回信息：" + result.getMessage();
-                LogUtil.error(messageLog);
-                throw new FlowException(getErrorLogString("【条件属性值服务地址】"));
+                LogUtil.error("【{}】开始调用【条件属性值服务地址】,接口返回错误信息：{},接口url={},参数值{}", sim.format(startDate), result.getMessage(), clientApiUrl, JsonUtils.toJson(params));
+                throw new FlowException(ContextUtil.getMessage("10281", result.getMessage()));
             }
-            messageLog += "," + sim.format(endDate) + "【result=" + JsonUtils.toJson(result) + "】";
-            LogUtil.bizLog(messageLog);
+            LogUtil.bizLog("【{}】开始调用【条件属性值服务地址】，接口url={},参数值{},【{}】返回【result={}】", sim.format(startDate), clientApiUrl, JsonUtils.toJson(params), sim.format(endDate), JsonUtils.toJson(result));
         } catch (Exception e) {
-            messageLog += "-调用异常：" + e.getMessage();
-            LogUtil.error(messageLog);
-            throw new FlowException(getErrorLogString("【条件属性值服务地址】"), e);
+            LogUtil.error("【{}】开始调用【条件属性值服务地址】,接口调用异常：{},接口url={},参数值{}", sim.format(startDate), e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
+            throw new FlowException(ContextUtil.getMessage("10282", e.getMessage()));
         }
         return map;
     }
@@ -216,24 +194,24 @@ public class ExpressionUtil {
         params.put(Constants.ID, businessId);
         params.put(Constants.STATUS, status);
         try {
-            ResponseData  result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData>() {
+            ResponseData result = ApiClient.postViaProxyReturnResult(clientApiUrl, new GenericType<ResponseData>() {
             }, params);
             if (result.successful()) {
-                Boolean boo = (Boolean)result.getData();
+                Boolean boo = (Boolean) result.getData();
                 if (BooleanUtils.isFalse(boo)) {
                     LogUtil.error("调用【重置单据状态】，接口返回失败信息：{}，地址=[{}]，参数=[{}]，返回=[{}]", result.getMessage(), clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
-                    return  ResponseData.operationFailure("调用【重置单据状态】，接口返回失败信息：" + result.getMessage());
-                }else{
+                    return ResponseData.operationFailure(ContextUtil.getMessage("10283", result.getMessage()));
+                } else {
                     LogUtil.bizLog("调用【重置单据状态】，地址=[{}]，参数=[{}]，返回=[{}]", clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
                     return result;
                 }
             } else {
                 LogUtil.error("调用【重置单据状态】，接口返回错误信息：{}，地址=[{}]，参数=[{}]，返回=[{}]", result.getMessage(), clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
-                return  ResponseData.operationFailure("调用【重置单据状态】，接口返回错误信息：" + result.getMessage());
+                return ResponseData.operationFailure("调用【重置单据状态】，接口返回错误信息：" + result.getMessage());
             }
         } catch (Exception e) {
-            LogUtil.error("调用【重置单据状态】，接口调用异常：{}，地址=[{}]，参数=[{}]", e.getMessage(), clientApiUrl, JsonUtils.toJson(params));
-            return  ResponseData.operationFailure("调用【重置单据状态】，接口调用异常：" + e.getMessage());
+            LogUtil.error("调用【重置单据状态】，接口调用异常：{}，地址=[{}]，参数=[{}]", e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
+            return ResponseData.operationFailure(ContextUtil.getMessage("10284", e.getMessage()));
         }
     }
 

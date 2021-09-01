@@ -89,7 +89,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         if (boo) {
             //因为按照最小颗粒度（流程类型）储存的数据，所以修改也必须在最小颗粒度上进行修改
             if (StringUtils.isNotEmpty(entity.getId()) && StringUtils.isEmpty(entity.getFlowTypeId())) {
-                return OperateResultWithData.operationFailure("修改转授权信息等级必须控制到流程类型！");
+                return OperateResultWithData.operationFailure("10270");
             }
             //设置通用基础信息（授权人信息）
             this.setCommonInfo(entity);
@@ -108,7 +108,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                     //保存待办转授权信息
                     super.save(powerList);
                 } catch (Exception e) {
-                    throw new FlowException("保存转授权信息失败！", e);
+                    throw new FlowException(ContextUtil.getMessage("10271", e.getMessage()));
                 }
 
                 //转办模式的数据
@@ -118,10 +118,10 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 }
                 return OperateResultWithData.operationSuccess();
             } else {
-                return OperateResultWithData.operationFailure("待办转授权储存信息转换失败！");
+                return OperateResultWithData.operationFailure("10272");
             }
         } else {
-            return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
+            return OperateResultWithData.operationFailure("10273");
         }
     }
 
@@ -273,7 +273,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         if (StringUtils.isNotEmpty(bean.getFlowTypeId())) {
             search.addFilter(new SearchFilter("flowTypeId", bean.getFlowTypeId()));
         } else {
-            throw new FlowException("转授权信息没有控制到流程类型！");
+            throw new FlowException(ContextUtil.getMessage("10274"));
         }
 
         search.addFilter(new SearchFilter("openStatus", true));
@@ -310,7 +310,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 Date end = a.getPowerEndDate();
                 if (checkSameTime(startDate, endDate, start, end)) {
                     String mesString = this.getMesString(a);
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,您建立了一份" + mesString + "【被授权人：" + a.getPowerUserName() + "】的转授权，不能重复创建！");
+                    return ResponseData.operationFailure("10372", dateFormat.format(start), dateFormat.format(end), mesString, a.getPowerUserName());
                 }
             }
         }
@@ -413,13 +413,13 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         String mesString = "";
         //分级授权报错信息拼接
         if (StringUtils.isNotEmpty(a.getAppModuleName())) {
-            mesString += "【应用模块：" + a.getAppModuleName() + "】";
+            mesString +=  ContextUtil.getMessage("10373",a.getAppModuleName());
         }
         if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
-            mesString += "【业务实体：" + a.getBusinessModelName() + "】";
+            mesString += ContextUtil.getMessage("10374",a.getBusinessModelName());
         }
         if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
-            mesString += "【流程类型：" + a.getFlowTypeName() + "】";
+            mesString += ContextUtil.getMessage("10375",a.getFlowTypeName());
         }
         return mesString;
     }
@@ -531,7 +531,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 //根据不同转授权模式处理逻辑
                 this.makeOverPowerTypeToDo(bean);
             } else {
-                return OperateResultWithData.operationFailure("系统设置不允许待办转授权操作，请联系管理员！");
+                return OperateResultWithData.operationFailure("10275");
             }
         }
         return ResponseData.operationSuccessWithData(bean);

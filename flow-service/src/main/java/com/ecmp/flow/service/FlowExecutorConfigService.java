@@ -1,8 +1,6 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowExecutorConfigService;
 import com.ecmp.flow.dao.FlowExecutorConfigDao;
@@ -44,7 +42,7 @@ public class FlowExecutorConfigService extends BaseEntityService<FlowExecutorCon
     public OperateResultWithData<FlowExecutorConfig> saveValidateCode(FlowExecutorConfig flowExecutorConfig){
         FlowExecutorConfig  bean =  flowExecutorConfigDao.findByProperty("code",flowExecutorConfig.getCode());
         if(bean!=null&&!bean.getId().equals(flowExecutorConfig.getId())){
-            return  OperateResultWithData.operationFailure("操作失败：代码已存在！");
+            return  OperateResultWithData.operationFailure("10117");
         }
         flowExecutorConfigDao.save(flowExecutorConfig);
         return OperateResultWithData.operationSuccessWithData(flowExecutorConfig);
@@ -53,7 +51,7 @@ public class FlowExecutorConfigService extends BaseEntityService<FlowExecutorCon
     @Override
     public ResponseData listCombo(String businessModelId) {
         if(StringUtils.isEmpty(businessModelId)){
-            return  ResponseData.operationFailure("参数不能为空!");
+            return  ResponseData.operationFailure("10006");
         }
         List<FlowExecutorConfig>  list = flowExecutorConfigDao.findListByProperty("businessModel.id",businessModelId);
         return ResponseData.operationSuccessWithData(list);

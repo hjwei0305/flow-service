@@ -135,8 +135,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                     runtimeService.updateBusinessKey(processInstance.getId(), parentBusinessKey);
                     currentBusinessId = parentBusinessKey;
                 } else {//跨业务实体子流程,必须指定子流程关联单据id
-                    String message = ContextUtil.getMessage("10039");
-                    throw new FlowException(message);//子流程关联的单据找不到！
+                    throw new FlowException(ContextUtil.getMessage("10039"));//子流程关联的单据找不到！
                 }
             } else {
                 runtimeService.updateBusinessKey(processInstance.getId(), currentBusinessId);
@@ -150,7 +149,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         if (variables.containsKey(Constants.WORK_CAPTION)) {
             workCaption = (String) variables.get(Constants.WORK_CAPTION);//工作说明
             if (StringUtils.isNotEmpty(workCaption) && workCaption.length() > 2000) {
-                throw new FlowException("工作说明限定长度2000，实际长度为：" + workCaption.length());
+                throw new FlowException(ContextUtil.getMessage("10136", workCaption.length()));
             }
         }
         flowInstance.setBusinessModelRemark(workCaption);
@@ -159,7 +158,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         if (variables.containsKey(Constants.BUSINESS_CODE)) {
             businessCode = (String) variables.get(Constants.BUSINESS_CODE);//业务code
             if (StringUtils.isNotEmpty(businessCode) && businessCode.length() > 2000) {
-                throw new FlowException("业务单号限定长度2000,实际长度为：" + businessCode.length());
+                throw new FlowException(ContextUtil.getMessage("10363", businessCode.length()));
             }
         }
         flowInstance.setBusinessCode(businessCode);
@@ -168,7 +167,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         if (variables.containsKey(Constants.NAME)) {
             businessName = (String) variables.get(Constants.NAME);//业务单据名称
             if (StringUtils.isNotEmpty(businessName) && businessName.length() > 100) {
-                throw new FlowException("业务单据名称限定长度100,实际长度为：" + businessName.length());
+                throw new FlowException(ContextUtil.getMessage("10364", businessName.length()));
             }
         }
         flowInstance.setBusinessName(businessName);
@@ -218,7 +217,7 @@ public class StartEventCompleteListener implements ExecutionListener {
 
         ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
         if (!responseData.getSuccess()) {
-            throw new FlowException("流程启动-调用重置表单服务失败："+responseData.getMessage() );
+            throw new FlowException(ContextUtil.getMessage("10365", responseData.getMessage()));
         }
     }
 
@@ -239,7 +238,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(afterStartServiceId);
                 if (flowServiceUrl == null) {
                     LogUtil.error("获取启动后事件失败，可能已经被删除，serviceId = " + afterStartServiceId);
-                    throw new FlowException("获取启动后事件失败，可能已经被删除，详情请查看日志!");
+                    throw new FlowException(ContextUtil.getMessage("10366"));
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
@@ -250,9 +249,10 @@ public class StartEventCompleteListener implements ExecutionListener {
                     flowInvokeParams.setId(businessKey);
 
                     Map<String, String> paramMap = new HashMap<>();
-                    paramMap.put("flowInstanceName",flowDefVersion.getName());
+                    paramMap.put("flowInstanceName", flowDefVersion.getName());
                     flowInvokeParams.setParams(paramMap);
 
+                    String serviceName = flowServiceUrl.getName();
                     String msg = "启动后事件【" + flowServiceUrl.getName() + "】";
                     String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
                     if (afterStartServiceAync == true) {
@@ -263,28 +263,28 @@ public class StartEventCompleteListener implements ExecutionListener {
                                     ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                                     }, flowInvokeParams);
                                     if (!res.successful()) {
-                                        LogUtil.error(msg + "异步调用报错!" + urlAndData + ", 【返回错误结果：" + res.getMessage() + "】");
+                                        LogUtil.error("启动后事件【{}】,异步调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(res), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
                                     }
                                 } catch (Exception e) {
-                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
+                                    LogUtil.error("启动后事件【{}】,异步调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
                                 }
                             }
                         }).start();
-                        result = new FlowOperateResult(true, "事件已异步调用！");
+                        result = new FlowOperateResult(true, ContextUtil.getMessage("10092"));
                     } else {
                         try {
                             ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                             }, flowInvokeParams);
                             if (res.successful()) {
-                                LogUtil.bizLog(msg + urlAndData + ",【返回信息：" + JsonUtils.toJson(result) + "】");
+                                LogUtil.bizLog("启动后事件【{}】,接口请求地址：{},请求参数：{},返回信息：{}", serviceName, checkUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(res));
                                 result = new FlowOperateResult(true, res.getMessage());
                             } else {
-                                LogUtil.error(msg + "内部报错!" + urlAndData + "【返回信息：" + JsonUtils.toJson(res) + "】");
-                                result = new FlowOperateResult(false, msg + "返回信息：【" + res.getMessage() + "】");
+                                LogUtil.error("启动后事件【{}】,调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(res), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
+                                result = new FlowOperateResult(false, ContextUtil.getMessage("10367", serviceName, res.getMessage()));
                             }
                         } catch (Exception e) {
-                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
-                            throw new FlowException(msg + "内部报错，详情请查看日志！");
+                            LogUtil.error("启动后事件【{}】,调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
+                            throw new FlowException(ContextUtil.getMessage("10368", serviceName, e.getMessage()));
                         }
                     }
                 }

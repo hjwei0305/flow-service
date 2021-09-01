@@ -16,7 +16,6 @@ import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
-import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.vo.ConditionVo;
 import com.ecmp.log.util.LogUtil;
@@ -124,7 +123,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
 
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
-                return ResponseData.operationFailure("流程类型不存在！");
+                return ResponseData.operationFailure("10063");
             }
             String businessDetailServiceUrl;
             String apiBaseAddress;
@@ -138,7 +137,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 businessModelCode = flowType.getBusinessModel().getClassName();
             } catch (Exception e) {
                 LogUtil.error("获取业务实体数据失败！" + e.getMessage(), e);
-                return ResponseData.operationFailure("获取业务实体数据失败！");
+                return ResponseData.operationFailure("10004");
             }
 
             try {
@@ -146,7 +145,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error("获取模块Api基地址失败！" + e.getMessage(), e);
-                return ResponseData.operationFailure("获取模块Api基地址失败！");
+                return ResponseData.operationFailure("10005");
             }
 
             //请求业务系统
@@ -170,7 +169,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -236,7 +235,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             }
             FlowType flowType = flowTypeService.findOne(typeId);
             if (flowType == null) {
-                return ResponseData.operationFailure("流程类型不存在！");
+                return ResponseData.operationFailure("10063");
             }
 
 
@@ -252,7 +251,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 businessModelCode = flowType.getBusinessModel().getClassName();
             } catch (Exception e) {
                 LogUtil.error("获取业务实体数据失败！" + e.getMessage(), e);
-                return ResponseData.operationFailure("获取业务实体数据失败！");
+                return ResponseData.operationFailure("10004");
             }
 
             try {
@@ -260,7 +259,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
             } catch (Exception e) {
                 LogUtil.error("获取模块Api基地址失败！" + e.getMessage(), e);
-                return ResponseData.operationFailure("获取模块Api基地址失败！");
+                return ResponseData.operationFailure("10005");
             }
             //请求业务系统
             String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
@@ -284,7 +283,7 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 return responseData;
             }
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -306,15 +305,15 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                 } else {
                     messageLog += "-接口返回信息：" + result.getMessage();
                     LogUtil.error(messageLog);
-                    return ResponseData.operationFailure("接口调用抛错，请查看日志！");
+                    return ResponseData.operationFailure("10008");
                 }
             } catch (Exception e) {
                 messageLog += "表单明细接口调用异常：" + e.getMessage();
                 LogUtil.error(messageLog, e);
-                return ResponseData.operationFailure("接口调用异常，请查看日志！");
+                return ResponseData.operationFailure("10009");
             }
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -327,10 +326,10 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             if (result != null) {
                 return ResponseData.operationSuccessWithData(result);
             } else {
-                return ResponseData.operationFailure("调用接口异常，请查看日志！");
+                return ResponseData.operationFailure("10009");
             }
         } else {
-            return ResponseData.operationFailure("获取业务实体失败！");
+            return ResponseData.operationFailure("10013");
         }
     }
 
@@ -342,10 +341,10 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
             if (result != null) {
                 return ResponseData.operationSuccessWithData(result);
             } else {
-                return ResponseData.operationFailure("调用【获取条件属性的备注说明】接口异常，请查看日志！");
+                return ResponseData.operationFailure("10014");
             }
         } else {
-            return ResponseData.operationFailure("获取业务实体失败！");
+            return ResponseData.operationFailure("10013");
         }
     }
 
@@ -510,25 +509,25 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                         businessModelCode = flowType.getBusinessModel().getClassName();
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
-                        return ResponseData.operationFailure("获取业务实体数据失败！");
+                        return ResponseData.operationFailure("10004");
                     }
                     try {
                         String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
                         apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
-                        return ResponseData.operationFailure("获取模块Api基地址失败！");
+                        return ResponseData.operationFailure("10005");
                     }
                     String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
                     return this.getPropertiesOfModile(url, businessModelCode, flowHistory.getFlowInstance().getBusinessId());
                 } else {
-                    return ResponseData.operationFailure("找不到对应的流程类型！");
+                    return ResponseData.operationFailure("10015");
                 }
             } else {
-                return ResponseData.operationFailure("找不到对应的流程历史！");
+                return ResponseData.operationFailure("10016");
             }
         } else {
-            return ResponseData.operationFailure("参数：流程历史ID不能为空！");
+            return ResponseData.operationFailure("10022");
         }
     }
 

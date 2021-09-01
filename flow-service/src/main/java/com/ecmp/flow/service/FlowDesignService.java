@@ -1,15 +1,11 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
+import com.ecmp.context.ContextUtil;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchOrder;
-import com.ecmp.flow.api.IFlowDefVersionService;
 import com.ecmp.flow.api.IFlowDesignService;
-import com.ecmp.flow.api.IFlowInstanceService;
-import com.ecmp.flow.api.IFlowSolidifyExecutorService;
-import com.ecmp.flow.basic.vo.Organization;
 import com.ecmp.flow.basic.vo.OrganizationDimension;
 import com.ecmp.flow.basic.vo.Position;
 import com.ecmp.flow.basic.vo.PositionCategory;
@@ -66,17 +62,17 @@ public class FlowDesignService implements IFlowDesignService {
     @Override
     public ResponseData getEntity(String id, Integer versionCode, String businessModelCode, String businessId) {
         if (StringUtils.isEmpty(id)) {
-            return ResponseData.operationFailure("参数id为空");
+            return ResponseData.operationFailure("10113","id");
         }
         if (versionCode == null) {
-            return ResponseData.operationFailure("参数versionCode为空");
+            return ResponseData.operationFailure("10113","versionCode");
         }
         try {
             FlowDefVersion data = flowDefinationService.getFlowDefVersion(id, versionCode, businessModelCode, businessId);
             return ResponseData.operationSuccessWithData(data);
         } catch (Exception e) {
             LogUtil.error("获取流程定义出错!", e);
-            throw new FlowException("获取流程定义出错,详情请查看日志！");
+            throw new FlowException(ContextUtil.getMessage("10114"));
         }
     }
 
@@ -95,7 +91,7 @@ public class FlowDesignService implements IFlowDesignService {
             String id = definition.getProcess().getId();
             String reg = "^[a-zA-Z][A-Za-z0-9]{5,79}$";
             if (!id.matches(reg)) {
-                return ResponseData.operationFailure("流程代码以字母开头，允许数字或字母，且长度在6-80之间！");
+                return ResponseData.operationFailure("10115");
             }
             definition.setDefJson(def);
             OperateResultWithData<FlowDefVersion> result;
@@ -113,7 +109,7 @@ public class FlowDesignService implements IFlowDesignService {
             }
             return ResponseData.operationFailure(result.getMessage());
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -121,7 +117,7 @@ public class FlowDesignService implements IFlowDesignService {
     @Override
     public ResponseData listAllServiceUrl(String busModelId) throws ParseException {
         if (StringUtils.isEmpty(busModelId)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         List<FlowServiceUrl> flowServiceUrlPageResult = flowServiceUrlService.findByBusinessModelId(busModelId);
         return ResponseData.operationSuccessWithData(flowServiceUrlPageResult);
@@ -131,7 +127,7 @@ public class FlowDesignService implements IFlowDesignService {
     @Override
     public ResponseData listAllWorkPage(String businessModelId) {
         if (StringUtils.isEmpty(businessModelId)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         List<WorkPageUrl> result = workPageUrlService.findSelectEdByBusinessModelId(businessModelId);
         return ResponseData.operationSuccessWithData(result);
@@ -212,7 +208,7 @@ public class FlowDesignService implements IFlowDesignService {
                     }
                 } catch (Exception e) {
                     LogUtil.error("加载固化执行人列表失败，详情请查看日志!", e);
-                    return ResponseData.operationFailure("加载固化执行人列表失败，详情请查看日志!");
+                    return ResponseData.operationFailure("10116");
                 }
             }
         }

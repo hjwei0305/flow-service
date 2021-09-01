@@ -69,23 +69,23 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     public ResponseData solidifyCheckAndSetAndStart(SolidifyStartFlowVo solidifyStartFlowVo) throws Exception {
         String businessId = solidifyStartFlowVo.getBusinessId();
         if (StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("业务实体ID不能为空！");
+            return ResponseData.operationFailure("10043");
         }
         String businessModelCode = solidifyStartFlowVo.getBusinessModelCode();
         if (StringUtils.isEmpty(businessModelCode)) {
-            return ResponseData.operationFailure("业务实体类全路径不能为空！");
+            return ResponseData.operationFailure("10044");
         }
         String flowDefinationId = solidifyStartFlowVo.getFlowDefinationId();
         if (StringUtils.isEmpty(flowDefinationId)) {
-            return ResponseData.operationFailure("流程定义ID不能为空！");
+            return ResponseData.operationFailure("10047");
         }
         FlowDefination flowDefination = flowDefinationDao.findOne(flowDefinationId);
         if (flowDefination == null) {
-            return ResponseData.operationFailure("流程定义不存在！");
+            return ResponseData.operationFailure("10048");
         }
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastDeloyVersionId());
         if (!flowDefVersion.getSolidifyFlow()) {
-            return ResponseData.operationFailure("当前流程不是固化流程，默认启动失败！");
+            return ResponseData.operationFailure("10051");
         }
         Map<String, SolidifyStartExecutorVo> map =
                 this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
@@ -101,7 +101,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             //如果不需要人工干涉，保存系统默认选择的固化执行人信息
             ResponseData responseData = this.saveAutoSolidifyExecutorInfo(map, businessModelCode, businessId);
             if (!responseData.successful()) {
-                return ResponseData.operationFailure("自动保存固化执行人失败！");
+                return ResponseData.operationFailure("10053");
             }
         }
 
@@ -130,16 +130,16 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
      */
     public ResponseData autoStartSolidifyFlow(String businessId, String businessModelCode, String typeId, String flowDefKey) throws Exception {
         if (StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("业务实体ID不能为空！");
+            return ResponseData.operationFailure("10043");
         }
         if (StringUtils.isEmpty(businessModelCode)) {
-            return ResponseData.operationFailure("业务实体类全路径不能为空！");
+            return ResponseData.operationFailure("10044");
         }
         if (StringUtils.isEmpty(typeId)) {
-            return ResponseData.operationFailure("流程类型ID不能为空！");
+            return ResponseData.operationFailure("10059");
         }
         if (StringUtils.isEmpty(flowDefKey)) {
-            return ResponseData.operationFailure("流程定义代码不能为空！");
+            return ResponseData.operationFailure("10064");
         }
         StartFlowVo startFlowVo = new StartFlowVo();
         startFlowVo.setBusinessKey(businessId);
@@ -274,19 +274,19 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     public ResponseData startFlowByBusinessAndType(StartFlowBusinessAndTypeVo startParam) {
         String businessModelCode = startParam.getBusinessModelCode();
         if (StringUtils.isEmpty(businessModelCode)) {
-            return ResponseData.operationFailure("业务实体类全路径不能为空！");
+            return ResponseData.operationFailure("10044");
         }
         String businessKey = startParam.getBusinessKey();
         if (StringUtils.isEmpty(businessKey)) {
-            return ResponseData.operationFailure("业务实体ID不能为空！");
+            return ResponseData.operationFailure("10043");
         }
         String flowTypeCode = startParam.getFlowTypeCode();
         if (StringUtils.isEmpty(flowTypeCode)) {
-            return ResponseData.operationFailure("流程类型代码不能为空！");
+            return ResponseData.operationFailure("10070");
         }
         FlowType flowType = flowTypeService.findByProperty("code", flowTypeCode);
         if (flowType == null) {
-            return ResponseData.operationFailure("找不到流程类型！");
+            return ResponseData.operationFailure("10071");
         }
         FlowStartVO startVO = new FlowStartVO();
         startVO.setBusinessModelCode(startParam.getBusinessModelCode());
@@ -298,14 +298,14 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             flowStartTypeResult = flowDefinationService.startByVO(startVO);
         } catch (NoSuchMethodException e) {
             LogUtil.error("获取流程类型和节点信息异常！", e);
-            return ResponseData.operationFailure("获取流程类型和节点信息异常!");
+            return ResponseData.operationFailure("10072");
         }
         FlowStartResultVO flowStartResultVO = flowStartTypeResult.getData();
         if (CollectionUtils.isEmpty(flowStartResultVO.getFlowTypeList())) {
-            return ResponseData.operationFailure("业务实体没有找到合规的流程定义！");
+            return ResponseData.operationFailure("10073");
         }
         if (CollectionUtils.isEmpty(flowStartResultVO.getNodeInfoList())) {
-            return ResponseData.operationFailure("获取第一步节点信息为空！");
+            return ResponseData.operationFailure("10074");
         }
         StartFlowTypeVO flowTypeVo = flowStartResultVO.getFlowTypeList().get(0);
         NodeInfo nodeInfo = flowStartResultVO.getNodeInfoList().get(0);
@@ -355,7 +355,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (flowStartTypeResult.notSuccessful()) {
             return ResponseData.operationFailure(flowStartTypeResult.getMessage());
         }
-        return ResponseData.operationSuccessWithData("启动流程成功！");
+        return ResponseData.operationSuccessWithData("10075");
     }
 
 
@@ -408,7 +408,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         allowChooseInstancyMap.put(f.getNodeId(), f.getInstancyStatus());
                         //如果不是工作池任务，又没有选择用户的，提示错误
                         if (!"poolTask".equalsIgnoreCase(flowTaskType) && (StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
-                            return ResponseData.operationFailure("请选择下一节点用户！");
+                            return ResponseData.operationFailure("10076");
                         }
                         if (f.getUserIds() == null) { //react的工作池任务参数不是anonymous，而是userIds为null
                             if (flowTaskType.equalsIgnoreCase("PoolTask")) {
@@ -447,10 +447,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     }).start();
                     return ResponseData.operationSuccessWithData(flowStartResultVO);
                 } else {
-                    return ResponseData.operationFailure("启动流程失败,启动检查服务返回false!");
+                    return ResponseData.operationFailure("10077");
                 }
             } else {
-                return ResponseData.operationFailure("启动流程失败");
+                return ResponseData.operationFailure("10078");
             }
         } else {
             return ResponseData.operationFailure(operateResultWithData.getMessage());
@@ -537,7 +537,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 } else {
                     //如果不是工作池任务，又没有选择用户的，提示错误
                     if (!"poolTask".equalsIgnoreCase(flowTaskType) && (StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
-                        return ResponseData.operationFailure("请选择下一节点用户！");
+                        return ResponseData.operationFailure("10076");
                     }
 
                     if (f.getUserIds() == null) {
@@ -629,7 +629,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (!CollectionUtils.isEmpty(nodeInfoList)) {
             return ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
-            return ResponseData.operationFailure("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("10033");
         }
     }
 
@@ -655,9 +655,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 return ResponseData.operationSuccessWithData(nodeInfoList);
             }
         } else if (nodeInfoList == null) {
-            return ResponseData.operationFailure("任务不存在，可能已经被处理！");
+            return ResponseData.operationFailure("10033");
         } else {
-            return ResponseData.operationFailure("当前规则找不到符合条件的分支！");
+            return ResponseData.operationFailure("10079");
         }
     }
 
@@ -668,7 +668,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (nodeInfoList != null && !nodeInfoList.isEmpty()) {
             return ResponseData.operationSuccessWithData(nodeInfoList);
         } else {
-            return ResponseData.operationFailure("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("10033");
         }
     }
 
@@ -679,7 +679,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (approvalHeaderVO != null) {
             return ResponseData.operationSuccessWithData(approvalHeaderVO);
         } else {
-            return ResponseData.operationFailure("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("10033");
         }
     }
 
@@ -689,7 +689,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (approvalHeaderVO != null) {
             return ResponseData.operationSuccessWithData(approvalHeaderVO);
         } else {
-            return ResponseData.operationFailure("任务不存在，可能已经被处理");
+            return ResponseData.operationFailure("10033");
         }
     }
 
@@ -710,7 +710,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData findTasksByBusinessIdList(List<String> businessIdLists) {
         if (businessIdLists == null || businessIdLists.size() == 0) {
-            return ResponseData.operationFailure("请求参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         Map<String, List<FlowTask>> map = new HashMap<>();
         businessIdLists.forEach(businessId -> {
@@ -723,7 +723,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     @Override
     public ResponseData getExecutorsByBusinessIdList(List<String> businessIdLists) {
         if (businessIdLists == null || businessIdLists.size() == 0) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         Map<String, List<Executor>> map = new HashMap<>();
         businessIdLists.forEach(businessId -> {
@@ -739,7 +739,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
     public ResponseData getExecutorsByBusinessId(String businessId) {
         if (StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         //通过业务单据id查询没有结束并且没有挂起的流程实例
         List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
@@ -758,16 +758,16 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                 });
                 return ResponseData.operationSuccessWithData(listExecutors);
             }
-            return ResponseData.operationFailure("未找到执行人！");
+            return ResponseData.operationFailure("10080");
         }
-        return ResponseData.operationFailure("单据未在流程中！");
+        return ResponseData.operationFailure("10081");
     }
 
 
     @Override
     public ResponseData getWhetherLastByBusinessId(String businessId) {
         if (StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         //通过业务单据id查询没有结束并且没有挂起的流程实例
         List<FlowInstance> flowInstanceList = flowInstanceDao.findNoEndByBusinessIdOrder(businessId);
@@ -786,7 +786,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                             firstKey = task.getActTaskDefKey();
                         } else {
                             if (!firstKey.equals(task.getActTaskDefKey())) {
-                                return OperateResultWithData.operationFailure("查询出多节点待办，不能进行判断");
+                                return OperateResultWithData.operationFailure("10082");
                             }
                         }
                     }
@@ -798,23 +798,23 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask.getId(), "true", null);
                 } catch (Exception e) {
                     LogUtil.error("查询是否为最后节点，通过任务获取下一节点信息错误！", e);
-                    return OperateResultWithData.operationFailure("查询是否为最后节点，通过任务获取下一节点信息错误:" + e.getMessage());
+                    return OperateResultWithData.operationFailure("10083" , e.getMessage());
                 }
 
                 if (!CollectionUtils.isEmpty(nodeInfoList)) {
                     if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
-                        return OperateResultWithData.operationSuccessWithData("最后节点！");
+                        return OperateResultWithData.operationSuccessWithData("10084");
                     } else {
-                        return OperateResultWithData.operationFailure("不是最后一个节点");
+                        return OperateResultWithData.operationFailure("10085");
                     }
                 } else if (nodeInfoList == null) {
-                    return OperateResultWithData.operationFailure("任务不存在，可能已经被处理！");
+                    return OperateResultWithData.operationFailure("10033");
                 } else {
-                    return OperateResultWithData.operationFailure("当前规则找不到符合条件的分支！");
+                    return OperateResultWithData.operationFailure("10079");
                 }
             }
-            return ResponseData.operationFailure("未找到符合条件的待办信息！");
+            return ResponseData.operationFailure("10086");
         }
-        return ResponseData.operationFailure("单据未在流程中！");
+        return ResponseData.operationFailure("10081");
     }
 }

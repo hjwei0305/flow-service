@@ -115,7 +115,7 @@ public class CommonConditionService implements ICommonConditionService {
             }
         }else{
           if(content==null){
-             throw new RuntimeException("business.id do not exist, can not start or complete the process!");
+             throw new RuntimeException(ContextUtil.getMessage("10013"));
            }
             content.setFlowStatus(status);
             appModuleDao.save(content);
@@ -156,7 +156,7 @@ public class CommonConditionService implements ICommonConditionService {
             list.forEach(a->megList.add("【是否已处理："+a.getTaskStatus()+"-id="+a.getId()+"】"));
         }
         LogUtil.bizLog("推动待办成功到达："+ JsonUtils.toJson(megList));
-        return ResponseData.operationSuccessWithData("推送成功！");
+        return ResponseData.operationSuccessWithData("10023");
     }
 
 

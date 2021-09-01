@@ -1,21 +1,17 @@
 package com.ecmp.flow.service;
 
-import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchFilter;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IFlowDefVersionService;
-import com.ecmp.flow.api.IFlowDefinationService;
 import com.ecmp.flow.constant.FlowDefinationStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.entity.FlowDefination;
 import com.ecmp.flow.entity.FlowInstance;
 import com.ecmp.flow.entity.FlowType;
-import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.util.XmlUtil;
 import com.ecmp.flow.vo.SaveEntityVo;
@@ -25,7 +21,6 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
-import net.sf.json.JSONObject;
 import org.activiti.engine.ProcessEngine;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -140,19 +134,10 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         }
         flowDefVersion.setFlowDefinationStatus(status);
         flowDefVersionDao.save(flowDefVersion);
-        //10018=冻结成功
-        //10019=激活成功
         return OperateResultWithData.operationSuccess(status == FlowDefinationStatus.Freeze ? "10018" : "10019");
     }
 
     public PageResult<FlowDefVersion> findByPage(Search searchConfig) {
-//        List<SearchFilter> filters = searchConfig.getFilters();
-//        SearchFilter  filter =new SearchFilter();
-//        filter.setFieldName("versionCode");
-//        filter.setOperator(SearchFilter.Operator.GE);
-//        filter.setValue(1);
-//        filter.setFieldType("Integer");
-//        filters.add(filter);
         return super.findByPage(searchConfig);
     }
 
@@ -177,7 +162,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
         Integer earlyWarningTime = definition.getEarlyWarningTime();
         FlowDefination flowDefination = flowDefinationDao.findByDefKey(process.getId());
         if (StringUtils.isEmpty(definition.getId()) && flowDefination != null) {  //新增的流程定义
-            return OperateResultWithData.operationFailure("流程代码重复！");
+            return OperateResultWithData.operationFailure("10109");
         }
         String defBpm = XmlUtil.serialize(definition);
         FlowDefVersion entity = null;
@@ -450,7 +435,7 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     redisTemplate.expire("releaseByAllOrIds", 30 * 60, TimeUnit.SECONDS);
                     remainingTime = 1800L;
                 }
-                return ResponseData.operationFailure("流程定义正在统一发布中，请不要重复请求！剩余锁定时间：" + remainingTime + "秒！");
+                return ResponseData.operationFailure("10110", remainingTime);
             }
 
             //异步统一发布数据
@@ -489,9 +474,9 @@ public class FlowDefVersionService extends BaseEntityService<FlowDefVersion> imp
                     }
                 }
             }).start();
-            return ResponseData.operationSuccess("正在发布，发布详情请查看日志！");
+            return ResponseData.operationSuccess("10111");
         } else {
-            return ResponseData.operationFailure("没有需要发布的流程定义！");
+            return ResponseData.operationFailure("10112");
         }
     }
 }

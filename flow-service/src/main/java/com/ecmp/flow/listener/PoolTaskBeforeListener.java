@@ -161,7 +161,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 }
 
             } else {
-                throw new FlowException("工作池任务未配置服务事件！");
+                throw new FlowException(ContextUtil.getMessage("10361"));
             }
         }
     }

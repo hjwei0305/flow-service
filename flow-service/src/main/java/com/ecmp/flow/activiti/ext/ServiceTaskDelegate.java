@@ -1,5 +1,6 @@
 package com.ecmp.flow.activiti.ext;
 
+import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowDefVersionDao;
@@ -159,7 +160,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
                     //初始化下一步任务信息
                     flowListenerTool.initNextAllTask(nextNodes, taskEntity, flowHistory);
                 } else {
-                    throw new FlowException("服务任务未配置服务事件！");
+                    throw new FlowException(ContextUtil.getMessage("10369"));
                 }
             }
         } catch (Exception e) {

@@ -58,7 +58,7 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
      */
     @SuppressWarnings("unchecked")
     public OperateResultWithData<AppModule> save(AppModule entity) {
-        Validation.notNull(entity, "持久化对象不能为空");
+        Validation.notNull(entity, ContextUtil.getMessage("10001"));
         OperateResultWithData<AppModule> operateResultWithData;
         boolean isNew = isNew(entity);
         if (isNew) {
@@ -127,7 +127,6 @@ public class AppModuleService extends BaseEntityService<AppModule> implements IA
             if (!CollectionUtils.isEmpty(appModuleCodeList)) {
                 result = appModuleDao.findByCodes(appModuleCodeList);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             result = appModuleDao.findAll();

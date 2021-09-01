@@ -145,7 +145,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Override
     public ResponseData listUserByOrg(UserQueryVo userQueryVo) {
         if (StringUtils.isEmpty(userQueryVo.getOrganizationId())) {
-            return ResponseData.operationFailure("组织机构ID不能为空！");
+            return ResponseData.operationFailure("10089");
         }
         UserQueryParamVo vo = new UserQueryParamVo();
         vo.setOrganizationId(userQueryVo.getOrganizationId());
@@ -157,7 +157,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         vo.setQuickSearchProperties(properties);
         vo.setQuickSearchValue(userQueryVo.getQuickSearchValue() == null ? "" : userQueryVo.getQuickSearchValue());
         //排序
-        List<SearchOrder> listOrder = new ArrayList<SearchOrder>();
+        List<SearchOrder> listOrder = new ArrayList<>();
         listOrder.add(new SearchOrder("createdDate", SearchOrder.Direction.DESC));
         vo.setSortOrders(listOrder);
         //分页
@@ -428,7 +428,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                     conditionText.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessModelMap);
                             if (boo == null) {
-                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(businessModelMap) + "】");
+                                throw new FlowException(ContextUtil.getMessage("10090", conditonFinal, JsonUtils.toJson(businessModelMap)));
                             } else if (boo) {
                                 if (flowDefination.getFlowDefinationStatus() == FlowDefinationStatus.Activate) {
                                     finalFlowDefination = flowDefination;
@@ -479,7 +479,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(startCheckServiceUrlId);
                 if (flowServiceUrl == null) {
                     LogUtil.error("获取启动前事件失败，可能已经被删除，serviceId = " + startCheckServiceUrlId);
-                    throw new FlowException("获取启动前事件失败，可能已经被删除，详情请查看日志!");
+                    throw new FlowException(ContextUtil.getMessage("10091"));
                 }
                 String checkUrl = flowServiceUrl.getUrl();
                 if (StringUtils.isNotEmpty(checkUrl)) {
@@ -488,8 +488,6 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     String checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
-                    String msg = "启动前事件【" + flowServiceUrl.getName() + "】";
-                    String urlAndData = "-请求地址：" + checkUrlPath + "，参数：" + JsonUtils.toJson(flowInvokeParams);
                     if (startCheckServiceAync != null && startCheckServiceAync == true) {
                         new Thread(new Runnable() {//模拟异步
                             @Override
@@ -498,28 +496,28 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                     ResponseData result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                                     }, flowInvokeParams);
                                     if (!result.successful()) {
-                                        LogUtil.error(msg + "异步调用报错!" + urlAndData + ",返回错误信息【" + JsonUtils.toJson(result) + "】");
+                                        LogUtil.error("启动前事件【{}】异步调用报错!-请求地址：【{}】，参数：【{}】,返回错误信息【{}】", flowServiceUrl.getName(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(result));
                                     }
                                 } catch (Exception e) {
-                                    LogUtil.error(msg + "异步调用内部报错!" + urlAndData, e);
+                                    LogUtil.error("启动前事件【{}】异步调用内部报错!-请求地址：【{}】，参数：【{}】", flowServiceUrl.getName(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
                                 }
                             }
                         }).start();
-                        flowOpreateResult = new FlowOperateResult(true, "事件已异步调用！");
+                        flowOpreateResult = new FlowOperateResult(true, ContextUtil.getMessage("10092"));
                     } else {
                         try {
                             ResponseData result = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                             }, flowInvokeParams);
                             if (result.successful()) {
-                                LogUtil.bizLog(msg + urlAndData + ",【返回信息：" + JsonUtils.toJson(result) + "】");
+                                LogUtil.bizLog("启动前事件【{}】-请求地址：【{}】，参数：【{}】,返回信息【{}】", flowServiceUrl.getName(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(result));
                                 flowOpreateResult = new FlowOperateResult(true, result.getMessage());
                             } else {
-                                LogUtil.error(msg + "返回信息：【" + JsonUtils.toJson(result) + "】" + urlAndData);
-                                flowOpreateResult = new FlowOperateResult(false, msg + "返回信息：【" + result.getMessage() + "】");
+                                LogUtil.bizLog("启动前事件【{}】，返回错误信息【{}】-请求地址：【{}】，参数：【{}】", flowServiceUrl.getName(), JsonUtils.toJson(result), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
+                                flowOpreateResult = new FlowOperateResult(false, ContextUtil.getMessage("10094", flowServiceUrl.getName(), result.getMessage()));
                             }
                         } catch (Exception e) {
-                            LogUtil.error(msg + "内部报错!" + urlAndData, e);
-                            throw new FlowException(msg + "内部报错，详情请查看日志！");
+                            LogUtil.error("启动前事件【{}】，内部报错!-请求地址：【{}】，参数：【{}】", flowServiceUrl.getName(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
+                            throw new FlowException(ContextUtil.getMessage("10093", flowServiceUrl.getName()));
                         }
                     }
                 }
@@ -539,7 +537,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 redisTemplate.expire("flowStart_" + businessKey, 10 * 60, TimeUnit.SECONDS);
                 remainingTime = 600L;
             }
-            throw new FlowException("流程已经在启动中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
+            throw new FlowException(ContextUtil.getMessage("10095", remainingTime));
         }
 
         try {
@@ -547,7 +545,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             redisTemplate.expire("flowStart_" + businessKey, 10 * 60, TimeUnit.SECONDS);
 
             if (checkFlowInstanceActivate(businessKey)) {
-                throw new FlowException("该单据已经启动，请不要重复启动！");
+                throw new FlowException(ContextUtil.getMessage("10096"));
             }
 
             variables.put(Constants.OPINION, ContextUtil.getMessage("10050"));//所有流程启动描述暂时都设计为“流程启动”
@@ -588,7 +586,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     }
                 }
             } else {
-                throw new FlowException("流程定义未找到！");
+                throw new FlowException(ContextUtil.getMessage("10003"));
             }
 
             return flowInstance;
@@ -614,7 +612,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
         } else {
-            throw new FlowException("business's id is null");
+            throw new FlowException(ContextUtil.getMessage("10043"));
         }
         return result;
     }
@@ -622,9 +620,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public OperateResultWithData<FlowStartResultVO> startByVO(FlowStartVO flowStartVO) throws NoSuchMethodException, SecurityException {
         if (checkFlowInstanceActivate(flowStartVO.getBusinessKey())) {
-            String message = ContextUtil.getMessage("该单据已经在流程中，请不要重复启动！");
             LogUtil.error("该单据已经在流程中，请不要重复启动！单据ID=" + flowStartVO.getBusinessKey());
-            return OperateResultWithData.operationFailure(message);
+            return OperateResultWithData.operationFailure("10097");
         }
         OperateResultWithData resultWithData = OperateResultWithData.operationSuccess();
         try {
@@ -633,12 +630,12 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             Map<String, Object> userMap = flowStartVO.getUserMap();
             BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
             if (businessModel == null) {
-                return OperateResultWithData.operationFailure("业务实体未进行配置！");
+                return OperateResultWithData.operationFailure("10098");
             }
             String businessId = flowStartVO.getBusinessKey();
             Map<String, Object> businessV = ExpressionUtil.getPropertiesValuesMap(businessModel, businessId, true);
             if (CollectionUtils.isEmpty(businessV)) {
-                return OperateResultWithData.operationFailure("条件属性接口返回为空！");
+                return OperateResultWithData.operationFailure("10099");
             }
 
             if (CollectionUtils.isEmpty(flowStartVO.getVariables())) {
@@ -829,7 +826,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         if (!CollectionUtils.isEmpty(executor)) {
             String userType = executor.get("userType") + "";
             String ids = executor.get("ids") + "";
-            Set<Executor> employeeSet = new HashSet<Executor>();
+            Set<Executor> employeeSet = new HashSet<>();
             List<Executor> employees = null;
             nodeInfo.setUiUserType(userType);
             if ("StartUser".equalsIgnoreCase(userType)) {//获取流程实例启动者
@@ -852,22 +849,19 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                             flowInvokeParams.setId(flowStartVO.getBusinessKey());
                             flowInvokeParams.setOrgId("" + flowStartVO.getVariables().get("orgId"));
                             flowInvokeParams.setJsonParam(param);
-                            String nodeCode = "";
                             try {
                                 JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject("normal");
-                                nodeCode = normal.getString("nodeCode");
+                                String nodeCode = normal.getString("nodeCode");
                                 if (StringUtils.isNotEmpty(nodeCode)) {
-                                    Map<String, String> map = new HashMap<String, String>();
+                                    Map<String, String> map = new HashMap<>();
                                     map.put("nodeCode", nodeCode);
                                     flowInvokeParams.setParams(map);
                                 }
                             } catch (Exception e) {
                             }
-//                            employees = ApiClient.postViaProxyReturnResult(appModuleCode, path, new GenericType<List<Executor>>() {
-//                            }, flowInvokeParams);
                             employees = flowCommonUtil.getExecutorsBySelfDef(appModuleCode, flowExecutorConfig.getName(), path, flowInvokeParams);
                         } else {
-                            throw new FlowException("自定义执行人配置参数为空!");
+                            throw new FlowException(ContextUtil.getMessage("10100"));
                         }
                     } else {
                         //岗位或者岗位类型（Position、PositionType、AnyOne）、组织机构都改为单据的组织机构
@@ -1002,7 +996,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                     groovyUel.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessV);
                             if (boo == null) {
-                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(businessV) + "】");
+                                throw new FlowException(ContextUtil.getMessage("10090", conditonFinal, JsonUtils.toJson(businessV)));
                             } else if (boo) {
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
@@ -1100,7 +1094,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                                     groovyUel.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, businessV);
                             if (boo == null) {
-                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(businessV) + "】");
+                                throw new FlowException(ContextUtil.getMessage("10090", conditonFinal, JsonUtils.toJson(businessV)));
                             } else if (boo) {
                                 if (checkGateway(busType2)) {
                                     this.findXunFanNodesInfo(resultCurrent, flowStartVO, flowDefination, definition, nextNode, businessVName);
@@ -1136,7 +1130,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             }
 
         } else if ("ManualExclusiveGateway".equalsIgnoreCase(busType)) {//如果是人工排他网关
-            throw new RuntimeException("开始节点不允许直接配置人工排他网关节点！");
+            throw new RuntimeException(ContextUtil.getMessage("10108"));
         } else if ("ServiceTask".equalsIgnoreCase(type)) {//服务任务
             NodeInfo nodeInfo = new NodeInfo();
             nodeInfo.setId(nodeId);
@@ -1381,11 +1375,11 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     public ResponseData resetPosition(String id) {
         if (StringUtils.isEmpty(id)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         FlowDefination flowDefination = flowDefinationDao.findOne(id);
         if (flowDefination == null) {
-            return ResponseData.operationFailure("未找到流程定义！");
+            return ResponseData.operationFailure("10107");
         }
         FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefination.getLastVersionId());
         String defJson = flowDefVersion.getDefJson();
@@ -1399,9 +1393,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             flowDefVersionDao.save(flowDefVersion);
         } catch (Exception e) {
             LogUtil.error("重置位置报错！", e);
-            return ResponseData.operationFailure("重置失败，请查看日志！");
+            return ResponseData.operationFailure("10106");
         }
-        return ResponseData.operationSuccess("重置成功！");
+        return ResponseData.operationSuccess("10105");
     }
 
 
@@ -1409,17 +1403,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
         JSONObject defObj = JSONObject.fromObject(defJson);
         Object pocessKey = defObj.keySet().stream().filter(obj -> "process".equals(obj.toString())).findFirst().orElse(null);
         if (pocessKey == null) {
-            return ResponseData.operationFailure("数据格式1存在问题，转换失败！");
+            return ResponseData.operationFailure("10104", 1);
         }
         JSONObject pocessObj = JSONObject.fromObject(defObj.get(pocessKey));
         Object nodesKey = pocessObj.keySet().stream().filter(obj -> "nodes".equals(obj.toString())).findFirst().orElse(null);
         if (nodesKey == null) {
-            return ResponseData.operationFailure("数据格式2存在问题，转换失败！");
+            return ResponseData.operationFailure("10104", 2);
         }
         JSONObject nodeObj = JSONObject.fromObject(pocessObj.get(nodesKey));
 
-        List<Integer> xList = new ArrayList<Integer>();
-        List<Integer> yList = new ArrayList<Integer>();
+        List<Integer> xList = new ArrayList<>();
+        List<Integer> yList = new ArrayList<>();
         nodeObj.keySet().forEach(obj -> {
             JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
             FlowNodeVO node = (FlowNodeVO) JSONObject.toBean(positionObj, FlowNodeVO.class);
@@ -1522,7 +1516,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             deploymentBuilder.addString(name + ".bpmn", xml);
             deploy = deploymentBuilder.deploy();
         } catch (Exception e) {
-            throw new FlowException("发布流程定义失败！", e);
+            throw new FlowException(ContextUtil.getMessage("10103"), e);
         }
         return deploy;
     }
@@ -1560,7 +1554,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 return null;
             result = getProcessDefinitionByDefId(proDefinition.getId());
         } catch (Exception e) {
-            throw new FlowException("通过流程版本发布流程失败！", e);
+            throw new FlowException(ContextUtil.getMessage("10102"), e);
         }
         return result;
     }
@@ -1746,7 +1740,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
         } else {
-            throw new FlowException("找不到子流程,或子流程处于挂起状态");
+            throw new FlowException(ContextUtil.getMessage("10101"));
         }
         return result;
     }

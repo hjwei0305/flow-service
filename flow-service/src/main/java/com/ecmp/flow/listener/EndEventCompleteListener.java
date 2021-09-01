@@ -90,7 +90,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 FlowInstance flowInstanceP = flowInstance.getParent();
                 ResponseData result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.COMPLETED);
                 if (!result.getSuccess()) {
-                    throw new FlowException("流程结束-调用重置表单状态失败：" + result.getMessage());
+                    throw new FlowException(ContextUtil.getMessage("10360",result.getMessage()));
                 }
                 if (flowInstanceP != null) {
                     ExecutionEntity parent = taskEntity.getSuperExecution();

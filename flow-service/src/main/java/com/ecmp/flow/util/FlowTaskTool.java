@@ -111,7 +111,6 @@ public class FlowTaskTool {
     private DisagreeReasonService disagreeReasonService;
 
     public FlowTaskTool() {
-        System.out.println("FlowTaskTool init------------------------------------------");
     }
 
     /**
@@ -382,7 +381,7 @@ public class FlowTaskTool {
                     PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[0];
                     if (!CollectionUtils.isEmpty(includeNodeIds)) {
                         if (!includeNodeIds.contains(tempActivity.getId())) {
-                            throw new RuntimeException("惟一分支未选中");
+                            throw new RuntimeException(ContextUtil.getMessage("10328"));
                         }
                     }
                     NodeInfo tempNodeInfo = new NodeInfo();
@@ -599,7 +598,7 @@ public class FlowTaskTool {
                     PvmActivity tempActivity = (PvmActivity) nextNodesKeyArray[0];
                     if (!CollectionUtils.isEmpty(includeNodeIds)) {
                         if (!includeNodeIds.contains(tempActivity.getId())) {
-                            throw new RuntimeException("惟一分支未选中");
+                            throw new RuntimeException(ContextUtil.getMessage("10328"));
                         }
                     }
                     NodeInfo tempNodeInfo = new NodeInfo();
@@ -753,7 +752,7 @@ public class FlowTaskTool {
             tempNodeInfo.setUiType("radiobox");
             tempNodeInfo.setFlowTaskType("poolTask");
         } else {
-            throw new RuntimeException("流程任务节点配置有错误");
+            throw new RuntimeException(ContextUtil.getMessage("10329"));
         }
         return tempNodeInfo;
     }
@@ -815,7 +814,7 @@ public class FlowTaskTool {
                                     conditionText.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, v);
                             if (boo == null) {
-                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(v) + "】");
+                                throw new FlowException(ContextUtil.getMessage("10090", conditonFinal, JsonUtils.toJson(v)));
                             } else if (boo) {
                                 pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
                                 break;
@@ -838,7 +837,7 @@ public class FlowTaskTool {
                                     conditionText.lastIndexOf("}"));
                             Boolean boo = ConditionUtil.groovyTest(conditonFinal, v);
                             if (boo == null) {
-                                throw new FlowException("验证表达式失败！表达式：【" + conditonFinal + "】,带入参数：【" + JsonUtils.toJson(v) + "】");
+                                throw new FlowException(ContextUtil.getMessage("10090", conditonFinal, JsonUtils.toJson(v)));
                             } else if (boo) {
                                 pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
                             }
@@ -986,31 +985,31 @@ public class FlowTaskTool {
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskRollBack(FlowHistory flowHistory, String opinion) {
         // 流程成功撤回！
-        OperateResult result = OperateResult.operationSuccess("撤回成功！");
+        OperateResult result = OperateResult.operationSuccess("10330");
         String taskId = flowHistory.getActHistoryId();
         try {
             // 取得当前任务
             HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
             if (currTask.getEndTime() == null) {// 当前任务可能已经被还原成待办（表示已经撤回了）
-                return OperateResult.operationFailure("撤回失败：当前任务已经还原！");
+                return OperateResult.operationFailure("10331");
             }
 
             // 取得流程实例
             ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
             if (instance == null) {
-                return OperateResult.operationFailure("撤回失败：流程实例不存在或者已经结束！");
+                return OperateResult.operationFailure("10332");
             }
 
             // 取得流程定义
             ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
             if (definition == null) {
-                return OperateResult.operationFailure("撤回失败：流程定义未找到！");
+                return OperateResult.operationFailure("10333");
             }
 
             String executionId = currTask.getExecutionId();
             Execution execution = runtimeService.createExecutionQuery().executionId(executionId).singleResult();
             if (execution == null) {
-                return OperateResult.operationFailure("撤回失败：当前任务已经流转，不允许撤回！");
+                return OperateResult.operationFailure("10334");
             }
 
             // 取得下一步活动
@@ -1044,7 +1043,7 @@ public class FlowTaskTool {
             }
 
             if (historicActivityInstance == null) {
-                return OperateResult.operationFailure("撤回失败：当前任务找不到！");//当前任务找不到
+                return OperateResult.operationFailure("10335");//当前任务找不到
             }
             if (!currTask.getTaskDefinitionKey().equalsIgnoreCase(execution.getActivityId())) {
                 if (execution.getActivityId() != null) {
@@ -1122,7 +1121,7 @@ public class FlowTaskTool {
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             LogUtil.error("撤回失败：" + e.getMessage(), e);
-            return OperateResult.operationFailure("撤回失败：详情请查看日志！");
+            return OperateResult.operationFailure("10336", e.getMessage());
         }
     }
 
@@ -1388,13 +1387,13 @@ public class FlowTaskTool {
                 if (!CollectionUtils.isEmpty(taskList)) {//待办不等于空表达下一步还在（默认服务任务和接收任务是不可逆的）
                     return OperateResult.operationSuccess();
                 } else {
-                    return OperateResult.operationFailure("撤回失败：下一步为不可逆节点！");
+                    return OperateResult.operationFailure("10337");
                 }
             } else {
-                return OperateResult.operationFailure("撤回失败：下一步已经执行！");
+                return OperateResult.operationFailure("10338");
             }
         } else {
-            return OperateResult.operationFailure("撤回失败：流程实例为空!");
+            return OperateResult.operationFailure("10339");
         }
     }
 
@@ -1419,18 +1418,18 @@ public class FlowTaskTool {
                 //判断服务任务是否已经执行
                 Boolean boo = this.serviceTaskHasExecute(instance, nextActivity);
                 if (boo) {
-                    return OperateResult.operationFailure("撤回失败：服务任务已执行，不允许撤回！");
+                    return OperateResult.operationFailure("10340");
                 }
             }
             if ("ReceiveTask".equalsIgnoreCase(type)) { //接收任务（说明撤回任务连接有接收任务，判断接收任务是否执行）
                 //判断接收任务是否已经执行
                 Boolean boo = this.receiveTaskHasExecute(instance, nextActivity);
                 if (boo) {
-                    return OperateResult.operationFailure("撤回失败：接收任务已执行或执行中，不允许撤回！");
+                    return OperateResult.operationFailure("10341");
                 }
             }
             if ("callActivity".equalsIgnoreCase(type)) { //子流程程（撤回任务连接有子流程，直接不允许撤回，先不判断）
-                return OperateResult.operationFailure("撤回失败：撤回节点连接有子流程，不允许撤回！");
+                return OperateResult.operationFailure("10342");
             }
             if (ifGateWay || "ManualTask".equalsIgnoreCase(type)) {
                 result = checkNextNodeNotCompleted(nextActivity, instance, destnetionTask);
@@ -1442,7 +1441,7 @@ public class FlowTaskTool {
                     .processInstanceId(instance.getId()).taskDefinitionKey(nextActivity.getId()).finished().list();
             for (HistoricTaskInstance h : completeTasks) {
                 if (h.getEndTime().after(destnetionTask.getEndTime())) {
-                    return OperateResult.operationFailure("撤回失败：下一节点已执行，不允许撤回！");
+                    return OperateResult.operationFailure("10343");
                 }
             }
             if (ifMultiInstance(currActivity)) {// 如果是多实例任务,判断当前任务是否已经流转到下一节点
@@ -1510,19 +1509,19 @@ public class FlowTaskTool {
 
     public static ResponseData checkCanReject(PvmActivity currActivity, PvmActivity preActivity) {
         if (preActivity == null) {
-            return ResponseData.operationFailure("驳回失败：前置节点参数为空!");
+            return ResponseData.operationFailure("10344");
         }
         String type = preActivity.getProperty("type") + "";
         if ("callActivity".equalsIgnoreCase(type)) {
-            return ResponseData.operationFailure("驳回失败：前置节点是子任务，不能驳回!");
+            return ResponseData.operationFailure("10345");
         } else if ("ServiceTask".equalsIgnoreCase(type)) {
-            return ResponseData.operationFailure("驳回失败：前置节点是服务任务，不能驳回!");
+            return ResponseData.operationFailure("10346");
         } else if ("ReceiveTask".equalsIgnoreCase(type)) {
-            return ResponseData.operationFailure("驳回失败：前置节点是接收任务，不能驳回!");
+            return ResponseData.operationFailure("10347");
         }
         boolean result = ifMultiInstance(currActivity);
         if (result) {//多任务实例不允许驳回
-            return ResponseData.operationFailure("驳回失败：前置节点是多任务实例，不能驳回!");
+            return ResponseData.operationFailure("10348");
         }
         List<PvmTransition> currentInTransitionList = currActivity.getIncomingTransitions();
         for (PvmTransition currentInTransition : currentInTransitionList) {
@@ -1538,7 +1537,7 @@ public class FlowTaskTool {
                 }
             }
         }
-        return ResponseData.operationFailure("驳回失败：没有找到符合的驳回条件！");
+        return ResponseData.operationFailure("10349");
     }
 
     private void taskPropertityInit(FlowTask flowTask, FlowHistory preTask, JSONObject currentNode, Map<String, Object> variables) {
@@ -1556,7 +1555,7 @@ public class FlowTaskTool {
                 String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
                 String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
                 LogUtil.error("节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！【workPageId=" + workPageUrlId + "】");
-                throw new FlowException("节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！");
+                throw new FlowException(ContextUtil.getMessage("10350",errorName,workPageName));
             }
             flowTask.setWorkPageUrl(workPageUrl);
         }
@@ -1722,7 +1721,7 @@ public class FlowTaskTool {
             if (workPageUrl == null) {
                 String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
                 String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
-                throw new FlowException("生产虚拟待办失败：节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！");
+                throw new FlowException(ContextUtil.getMessage("10351",errorName,workPageName));
             }
             virtualTask.setWorkPageUrl(workPageUrl); //处理表单页面
 
@@ -1778,7 +1777,7 @@ public class FlowTaskTool {
                 }).start();
             }
         } else {
-            throw new FlowException("生产虚拟待办失败：该流程实例不存在！");
+            throw new FlowException(ContextUtil.getMessage("10352"));
         }
     }
 
@@ -2086,7 +2085,7 @@ public class FlowTaskTool {
                                     pushTaskList.add(flowTask);
                                 }
                             } else {
-                                throw new RuntimeException("id=" + identityLink.getUserId() + "的用户找不到！");
+                                throw new RuntimeException(ContextUtil.getMessage("10353",identityLink.getUserId()));
                             }
                         }
                     }
@@ -2283,7 +2282,7 @@ public class FlowTaskTool {
                 }
             }
         } else {
-            throw new RuntimeException("找不到子流程");
+            throw new RuntimeException(ContextUtil.getMessage("10354"));
         }
         return result;
     }
@@ -2466,7 +2465,7 @@ public class FlowTaskTool {
         }
         if (this.checkSystemExclusiveGateway(flowTask)) {//判断是否存在系统排他网关、系统包容网关
             if (StringUtils.isEmpty(businessId)) {
-                throw new RuntimeException("任务出口节点包含条件表达式，请指定业务ID");
+                throw new RuntimeException(ContextUtil.getMessage("10355"));
             }
             if (!CollectionUtils.isEmpty(includeNodeIdsNew)) {
                 result = getNodeInfo(includeNodeIdsNew, flowTask);
@@ -2723,7 +2722,7 @@ public class FlowTaskTool {
             String disagreeReasonCode = (String) variables.get("disagreeReasonCode");
             DisagreeReason disagreeReason = disagreeReasonService.getDisagreeReasonByCode(disagreeReasonCode);
             if (disagreeReason == null) {
-                throw new FlowException("不同意原因代码错误：【" + disagreeReasonCode + "】");
+                throw new FlowException(ContextUtil.getMessage("10356",disagreeReasonCode));
             } else {
                 flowHistory.setDisagreeReasonId(disagreeReason.getId());
                 flowHistory.setDisagreeReasonCode(disagreeReason.getCode());

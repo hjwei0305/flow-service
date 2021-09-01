@@ -48,7 +48,6 @@ import org.springframework.util.CollectionUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -304,7 +303,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     public Set<String> getLastNodeIdsByBusinessId(String businessId) {
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
-        Set<String> nodeIds = new HashSet<String>();
+        Set<String> nodeIds = new HashSet<>();
         List<FlowTask> flowTaskList = null;
         if (flowInstance != null && !flowInstance.isEnded()) {
             flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
@@ -521,7 +520,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         ProcessTrackVO pv = new ProcessTrackVO();
         pv.setFlowInstance(flowInstance);
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
-        List<FlowTask> newFlowTaskList = new ArrayList<FlowTask>();
+        List<FlowTask> newFlowTaskList = new ArrayList<>();
         for (FlowTask bean : flowTaskList) {
             if (bean.getTrustState() == null) {
                 newFlowTaskList.add(bean);
@@ -722,13 +721,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Transactional(propagation = Propagation.REQUIRED)
     public ResponseData checkAndEndByBusinessId(String businessId) {
         if (StringUtils.isEmpty(businessId)) {
-            return ResponseData.operationFailure("参数单据ID不能为空！");
+            return ResponseData.operationFailure("10119");
         }
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance == null) {
-            return ResponseData.operationFailure("该单据未发起过流程！");
+            return ResponseData.operationFailure("10120");
         } else if (flowInstance.isEnded() == true) {
-            return ResponseData.operationFailure("该单据没有流程中数据！");
+            return ResponseData.operationFailure("10121");
         } else {
             ResponseData res = checkEnd(flowInstance);
             if (!res.getSuccess()) {
@@ -768,7 +767,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             if (canStartEnd) {
                 continue;
             } else {
-                return ResponseData.operationFailure("流程已到达【" + defObj.getString("name") + "】，不允许发起人终止流程！");
+                return ResponseData.operationFailure("10122", defObj.getString("name"));
             }
         }
         return ResponseData.operationSuccess();
@@ -779,7 +778,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public OperateResult endByBusinessId(String businessId) {
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance == null) {
-            return OperateResult.operationFailure("不存在流程中的数据，请检查参数和单据状态！");
+            return OperateResult.operationFailure("10123");
         }
         return this.end(flowInstance.getId());
     }
@@ -806,13 +805,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                 } catch (FlowException e) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    return ResponseData.operationFailure("终止失败！", e);
+                    return ResponseData.operationFailure("10124", e);
                 }
-                return ResponseData.operationSuccess("已全部终止！");
+                return ResponseData.operationSuccess("10125");
             }
-            return ResponseData.operationFailure("未找到没有终止的流程！");
+            return ResponseData.operationFailure("10126");
         }
-        return ResponseData.operationFailure("需要终止的ID集合不能为空！");
+        return ResponseData.operationFailure("10127");
     }
 
 
@@ -917,10 +916,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 }
                 return ResponseData.operationSuccessWithData(needAddList);
             } else {
-                return ResponseData.operationFailure("未查询到相应节点的待办!");
+                return ResponseData.operationFailure("10128");
             }
         } else {
-            return ResponseData.operationFailure("执行人列表查询结果为空!");
+            return ResponseData.operationFailure("10129");
         }
 
     }
@@ -1005,7 +1004,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 result = OperateResultWithData.operationSuccess();
                 result.setData(newFlowTask);
             } else {
-                result = OperateResultWithData.operationFailure("未查询到相应的流程节点待办！");
+                result = OperateResultWithData.operationFailure("10130");
             }
         } else {
             result = OperateResultWithData.operationFailure("10038");
@@ -1016,16 +1015,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Transactional(propagation = Propagation.REQUIRED)
     public ResponseData signalPoolTaskByBusinessIdAndUserList(SignalPoolTaskVO signalPoolTaskVO) {
         if (signalPoolTaskVO == null) {
-            return ResponseData.operationFailure("工作池任务设置多执行人失败，参数不能为空！");
+            return ResponseData.operationFailure("10140");
         }
         if (StringUtils.isEmpty(signalPoolTaskVO.getBusinessId())) {
-            return ResponseData.operationFailure("工作池任务设置多执行人失败，单据ID未传入！");
+            return ResponseData.operationFailure("10141");
         }
         if (StringUtils.isEmpty(signalPoolTaskVO.getPoolTaskActDefId())) {
-            return ResponseData.operationFailure("工作池任务设置多执行人失败,工作池节点ID未传入！");
+            return ResponseData.operationFailure("10142");
         }
         if (signalPoolTaskVO.getUserIds() == null || signalPoolTaskVO.getUserIds().size() == 0) {
-            return ResponseData.operationFailure("工作池任务设置多执行人失败,用户ID未传入！");
+            return ResponseData.operationFailure("10143");
         }
 
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(signalPoolTaskVO.getBusinessId());
@@ -1036,19 +1035,19 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap());
                 return ResponseData.operationSuccess();
             } else {
-                return ResponseData.operationFailure("工作池任务设置多执行人失败,当前节点不存在！");
+                return ResponseData.operationFailure("10144");
             }
         } else {
-            return ResponseData.operationFailure("工作池任务设置多执行人失败,流程实例找不到，或者已经结束！");
+            return ResponseData.operationFailure("10145");
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult signalPoolTaskByBusinessId(String businessId, String poolTaskActDefId, String userId, Map<String, Object> v) {
         if (StringUtils.isEmpty(poolTaskActDefId)) {
-            return OperateResult.operationFailure("工作池任务设置执行人失败,请传入工作池节点ID");
+            return OperateResult.operationFailure("10146");
         }
-        OperateResult result = null;
+        OperateResult result;
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance != null && !flowInstance.isEnded()) {
             String actInstanceId = flowInstance.getActInstanceId();
@@ -1061,10 +1060,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     result = OperateResult.operationFailure(operateResultWithData.getMessage());
                 }
             } else {
-                result = OperateResult.operationFailure("工作池任务设置执行人失败,当前节点不存在！");
+                result = OperateResult.operationFailure("10147");
             }
         } else {
-            result = OperateResult.operationFailure("工作池任务设置执行人失败,流程实例找不到，或者已经结束！");
+            result = OperateResult.operationFailure("10148");
         }
         return result;
     }
@@ -1074,7 +1073,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (StringUtils.isEmpty(poolTaskActDefId)) {
             return OperateResultWithData.operationFailure("10032");
         }
-        OperateResultWithData<FlowTask> result = null;
+        OperateResultWithData<FlowTask> result ;
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance != null && !flowInstance.isEnded()) {
             String actInstanceId = flowInstance.getActInstanceId();
@@ -1095,7 +1094,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (StringUtils.isEmpty(poolTaskActDefId)) {
             return OperateResultWithData.operationFailure("10032");
         }
-        OperateResultWithData<FlowStatus> result = null;
+        OperateResultWithData<FlowStatus> result ;
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance != null && !flowInstance.isEnded()) {
             OperateResultWithData<FlowTask> resultSignal = signalPoolTaskByBusinessIdWithResult(businessId, poolTaskActDefId, userId, flowTaskCompleteVO.getVariables());
@@ -1123,11 +1122,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         OperateResult result = OperateResult.operationSuccess("10010");
         try {
             FlowInstance flowInstance = flowInstanceDao.findOne(id);
-            Map<String, FlowInstance> flowInstanceMap = new HashMap<String, FlowInstance>();
+            Map<String, FlowInstance> flowInstanceMap = new HashMap<>();
             flowInstanceMap = initAllGulianInstance(flowInstanceMap, flowInstance, force);
 
             if (flowInstanceMap != null && !flowInstanceMap.isEmpty()) {
-                List<FlowInstance> flowInstanceList = new ArrayList<FlowInstance>();
+                List<FlowInstance> flowInstanceList = new ArrayList<>();
                 flowInstanceList.addAll(flowInstanceMap.values());//加入排序，按照创建时候倒序，保证子流程先终止
                 Collections.sort(flowInstanceList, new Comparator<FlowInstance>() {
                     @Override
@@ -1181,8 +1180,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
 
                     String actInstanceId = fTemp.getActInstanceId();
-                    String deleteReason = null;
-                    int endSign = 0;
+                    String deleteReason;
+                    int endSign;
                     if (force) {
                         deleteReason = "10035";//"被管理员强制终止流程";
                         endSign = 2;
@@ -1392,7 +1391,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             return ResponseData.operationSuccessWithData(list);
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            return ResponseData.operationFailure("操作失败！");
+            return ResponseData.operationFailure("10118");
         }
     }
 
@@ -1465,7 +1464,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
             responseData = this.getMyBills(search);
         } else {
-            return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
+            return ResponseData.operationFailure("10134","search");
         }
         if (responseData.getSuccess()) {
             PageResult<MyBillVO> results = (PageResult<MyBillVO>) responseData.getData();
@@ -1494,7 +1493,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
                 return this.getMyBills(search);
             } else {
-                return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
+                return ResponseData.operationFailure("10134","search");
             }
         }
     }
@@ -1628,7 +1627,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 return ResponseData.operationFailure(e.getMessage());
             }
         } else {
-            return ResponseData.operationFailure("获取我的单据时，search 对象不能为空。");
+            return ResponseData.operationFailure("10134","search");
         }
     }
 
@@ -1815,7 +1814,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             result = this.getProcessTrackVO(businessId);
         }
         if (result == null || result.isEmpty()) {
-            return ResponseData.operationFailure("历史记录为空！");
+            return ResponseData.operationFailure("10133");
         } else {
             return ResponseData.operationSuccessWithData(result);
         }
@@ -1876,13 +1875,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     @Override
     public ResponseData updateRemarkByBusinessId(UpdateInstanceRemarkVo updateInstanceRemarkVo) {
         if (Objects.isNull(updateInstanceRemarkVo)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         if (StringUtils.isEmpty(updateInstanceRemarkVo.getBusinessId())) {
-            return ResponseData.operationFailure("单据ID不能为空！");
+            return ResponseData.operationFailure("10119");
         }
         if (StringUtils.isEmpty(updateInstanceRemarkVo.getUpdateRemark())) {
-            return ResponseData.operationFailure("修改说明不能为空！");
+            return ResponseData.operationFailure("10135");
         }
         if (BooleanUtils.isNotTrue(updateInstanceRemarkVo.getCoverAdditionalRemark())) {
             updateInstanceRemarkVo.setCoverAdditionalRemark(false);
@@ -1902,35 +1901,35 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newRemark = updateInstanceRemarkVo.getUpdateRemark();
                 }
                 if (StringUtils.isNotEmpty(newRemark) && newRemark.length() > 2000) {
-                    return ResponseData.operationFailure("工作说明限定长度2000，实际长度为：" + newRemark.length());
+                    return ResponseData.operationFailure("10136" , newRemark.length());
                 }
                 flowInstance.setBusinessModelRemark(newRemark);
             }
             this.save(flowInstance);
-            return ResponseData.operationSuccess("修改成功");
+            return ResponseData.operationSuccess("10137");
         }
-        return ResponseData.operationFailure("该单据没有处于流程中的实例数据！");
+        return ResponseData.operationFailure("10138");
     }
 
 
     @Override
     public ResponseData updateRemarkByInstaceId(UpdateRemarkByInstanceVo updateRemarkByInstanceVo) {
         if (Objects.isNull(updateRemarkByInstanceVo)) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         if (StringUtils.isEmpty(updateRemarkByInstanceVo.getInstanceId())) {
-            return ResponseData.operationFailure("流程实例ID不能为空！");
+            return ResponseData.operationFailure("10139");
         }
         if (StringUtils.isEmpty(updateRemarkByInstanceVo.getUpdateRemark())) {
-            return ResponseData.operationFailure("修改说明不能为空！");
+            return ResponseData.operationFailure("10135");
         }
         FlowInstance flowInstance = flowInstanceDao.findOne(updateRemarkByInstanceVo.getInstanceId());
         if (flowInstance != null) {
             flowInstance.setBusinessModelRemark(updateRemarkByInstanceVo.getUpdateRemark());
             this.save(flowInstance);
-            return ResponseData.operationSuccess("修改成功");
+            return ResponseData.operationSuccess("10137");
         }
-        return ResponseData.operationFailure("流程实例ID错误！");
+        return ResponseData.operationFailure("10131");
 
     }
 
@@ -1950,7 +1949,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 redisTemplate.expire("taskCompensation_" + instanceId, 10 * 60, TimeUnit.SECONDS);
                 remainingTime = 600L;
             }
-            throw new FlowException("待办补偿已经在处理中，请不要重复提交！剩余锁定时间：" + remainingTime + "秒！");
+            throw new FlowException(ContextUtil.getMessage("10132",remainingTime));
         }
 
         try {
@@ -1958,20 +1957,20 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             redisTemplate.expire("taskCompensation_" + instanceId, 10 * 60, TimeUnit.SECONDS);
 
             if (StringUtils.isEmpty(instanceId)) {
-                return ResponseData.operationFailure("补偿失败：参数【流程实例ID】为空！");
+                return ResponseData.operationFailure("10149");
             }
             FlowInstance flowInstance = flowInstanceDao.findOne(instanceId);
             if (flowInstance == null) {
-                return ResponseData.operationFailure("补偿失败：找不到对应的流程实例！");
+                return ResponseData.operationFailure("10150");
             }
             if (flowInstance.isEnded()) {
-                return ResponseData.operationFailure("补偿失败：当前流程实例已结束！");
+                return ResponseData.operationFailure("10151");
             }
             List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(instanceId);
             if (!CollectionUtils.isEmpty(flowTaskList)) {
                 for (FlowTask flowTask : flowTaskList) {
                     if (flowTask.getTrustState() == null || flowTask.getTrustState() != 1) {
-                        return ResponseData.operationFailure("补偿失败：当前待办任务已存在！");
+                        return ResponseData.operationFailure("10152");
                     }
                 }
             }
@@ -1983,10 +1982,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
             //重新生产待办任务
             flowTaskTool.initTask(flowInstance, preTask, null, variables);
-            return ResponseData.operationSuccess("补偿成功，新的待办已生成！");
+            return ResponseData.operationSuccess("10153");
         } catch (Exception e) {
             LogUtil.error("补偿失败：程序报错--" + e.getMessage(), e);
-            return ResponseData.operationFailure("补偿失败：程序报错，详情请查看日志！");
+            return ResponseData.operationFailure("10154");
         } finally {
             //启动的时候设置的检查参数
             redisTemplate.delete("taskCompensation_" + instanceId);
@@ -2034,13 +2033,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         return ResponseData.operationFailure(responseData.getMessage());
                     }
                 } else {
-                    return ResponseData.operationFailure("获取跳转节点信息失败：流程实例已结束！");
+                    return ResponseData.operationFailure("10155");
                 }
             } else {
-                return ResponseData.operationFailure("获取跳转节点信息失败：获取不到流程实例！");
+                return ResponseData.operationFailure("10156");
             }
         } else {
-            return ResponseData.operationFailure("获取跳转节点信息失败：参数不能为空！");
+            return ResponseData.operationFailure("10157");
         }
     }
 
@@ -2086,10 +2085,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     if (completeCounter + 1 == instanceOfNumbers) {
                         return ResponseData.operationSuccessWithData(flowTask.getActTaskDefKey());
                     } else {
-                        return ResponseData.operationFailure("获取跳转节点信息失败：当前是串行任务，非最后一个执行人！");
+                        return ResponseData.operationFailure("10158");
                     }
                 } else {
-                    return ResponseData.operationFailure("获取跳转节点信息失败：单任务类型验证失败！");
+                    return ResponseData.operationFailure("10159");
                 }
             } else {
                 FlowTask noSameTask = flowTaskList.stream().filter(task -> !flowTaskList.get(0).getActTaskDefKey().equals(task.getActTaskDefKey())).findFirst().orElse(null);
@@ -2102,16 +2101,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         return ResponseData.operationSuccessWithData(flowTask.getActTaskDefKey());
                     } else if ("CounterSign".equalsIgnoreCase(nodeType) || "ParallelTask".equalsIgnoreCase(nodeType)) {
                         //会签并行CounterSign或者并行任务ParallelTask
-                        return ResponseData.operationFailure("获取跳转节点信息失败：当前是并行任务，非最后一个执行人！");
+                        return ResponseData.operationFailure("10160");
                     } else {
-                        return ResponseData.operationFailure("获取跳转节点信息失败：多任务类型验证失败！");
+                        return ResponseData.operationFailure("10161");
                     }
                 } else {
-                    return ResponseData.operationFailure("获取跳转节点信息失败：流程存在不同的任务，可能处于并行网关中，不能进行跳转！");
+                    return ResponseData.operationFailure("10162");
                 }
             }
         } else {
-            return ResponseData.operationFailure("获取跳转节点信息失败：流程待办不存在，请先进行待办补偿！");
+            return ResponseData.operationFailure("10163");
         }
     }
 
@@ -2131,20 +2130,20 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             targetNodeInfoVo = this.findTargetNodeInfo(flowInstance, flowTask, targetNodeId);
                         } catch (Exception e) {
                             LogUtil.error("获取目标节点信息错误，详情请查看日志！", e);
-                            return ResponseData.operationFailure("获取目标节点信息错误，详情请查看日志！");
+                            return ResponseData.operationFailure("10164");
                         }
                         return ResponseData.operationSuccessWithData(targetNodeInfoVo);
                     } else {
-                        return ResponseData.operationFailure("获取目标节点信息失败：流程待办不存在，可能已经被处理！");
+                        return ResponseData.operationFailure("10165");
                     }
                 } else {
-                    return ResponseData.operationFailure("获取目标节点信息失败：流程实例已结束！");
+                    return ResponseData.operationFailure("10166");
                 }
             } else {
-                return ResponseData.operationFailure("获取目标节点信息失败：获取不到流程实例！");
+                return ResponseData.operationFailure("10167");
             }
         } else {
-            return ResponseData.operationFailure("获取目标节点信息失败：参数不能为空！");
+            return ResponseData.operationFailure("10168");
         }
     }
 
@@ -2407,13 +2406,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         approved = "true";
                     }
                 } else {
-                    return ResponseData.operationFailure("跳转节点失败：流程待办不存在，可能已经被处理！");
+                    return ResponseData.operationFailure("10169");
                 }
             } else {
-                return ResponseData.operationFailure("跳转节点失败：获取流程实例失败！");
+                return ResponseData.operationFailure("10170");
             }
         } else {
-            return ResponseData.operationFailure("跳转节点失败：参数流程实例ID不能为空！");
+            return ResponseData.operationFailure("10171");
         }
 
         //获取节点跳转的提交参数
@@ -2434,7 +2433,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 return flowTaskService.jumpToTarget(currentTask, jumpTaskVo.getTargetNodeId(), properties, opinion);
             } catch (Exception e) {
                 LogUtil.error("跳转失败:" + e.getMessage(), e);
-                return ResponseData.operationFailure("跳转失败，详情请查看日志!");
+                return ResponseData.operationFailure("10172");
             }
         } else {
             return responseData;
@@ -2496,7 +2495,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 } else {
                     //如果不是工作池任务，又没有选择用户的，提示错误
                     if (!"poolTask".equalsIgnoreCase(flowTaskType) && (StringUtils.isEmpty(f.getUserIds()) || "null".equalsIgnoreCase(f.getUserIds()))) {
-                        return ResponseData.operationFailure("请选择下一节点用户！");
+                        return ResponseData.operationFailure("10076");
                     }
 
                     if (f.getUserIds() == null) {

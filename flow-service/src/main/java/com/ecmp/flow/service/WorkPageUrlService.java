@@ -63,7 +63,7 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
             List<WorkPageUrl> list = this.findNotSelectEdByAppModuleId(appModuleId, businessModelId);
             return ResponseData.operationSuccessWithData(list);
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -83,7 +83,7 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
             List<WorkPageUrl> list = this.findSelectEdByBusinessModelId(businessModelId);
             return ResponseData.operationSuccessWithData(list);
         } else {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
     }
 
@@ -97,7 +97,7 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
     public OperateResult delete(String id) {
         List<BusinessWorkPageUrl> list = businessWorkPageUrlDao.findListByProperty("workPageUrlId", id);
         if (!CollectionUtils.isEmpty(list)) {
-            return OperateResult.operationFailure("已分配的界面，不能进行删除！");
+            return OperateResult.operationFailure("10276");
         }
         return super.delete(id);
     }

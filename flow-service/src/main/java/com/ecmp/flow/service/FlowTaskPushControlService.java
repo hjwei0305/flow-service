@@ -60,7 +60,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         if (flowTaskPushControl != null) {
             responseData = this.pushAgainByControl(flowTaskPushControl);
         } else {
-            responseData = ResponseData.operationFailure("推送控制表不存在！");
+            responseData = ResponseData.operationFailure("10181");
         }
         return responseData;
     }
@@ -74,23 +74,23 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
     public ResponseData pushAgainByControl(FlowTaskPushControl flowTaskPushControl) {
         String pushType = flowTaskPushControl.getPushType();
         if (StringUtils.isEmpty(pushType)) {
-            return ResponseData.operationFailure("推送类型不能为空！");
+            return ResponseData.operationFailure("10182");
         }
         String PushStatus = flowTaskPushControl.getPushStatus();
         if (StringUtils.isEmpty(PushStatus)) {
-            return ResponseData.operationFailure("推送类状态不能为空！");
+            return ResponseData.operationFailure("10183");
         }
         try {
             //得到需要推送的任务集合
             List<FlowTaskPush> pushList = flowTaskControlAndPushService.getChildrenFromParentId(flowTaskPushControl.getId());
             List<FlowTask> taskList = this.copyPushTaskToFlowTask(pushList);
             if (taskList == null || taskList.size() == 0) {
-                return ResponseData.operationFailure("推送任务不存在！");
+                return ResponseData.operationFailure("10184");
             }
             return this.pushAgainByTypeAndStatus(pushType, PushStatus, taskList);
         } catch (Exception e) {
             LogUtil.error("重新推送任务获取参数失败！", e);
-            return ResponseData.operationFailure("重新推送获取参数失败，详情请查看日志！");
+            return ResponseData.operationFailure("10185",e.getMessage());
         }
     }
 
@@ -108,7 +108,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         if (TYPE_BASIC.equals(pushType)) { //推送到basic
             responseData = this.pushAgainToBasic(pushStatus, flowTaskList);
         } else {
-            responseData = ResponseData.operationFailure("推送类型不能识别!");
+            responseData = ResponseData.operationFailure("10186");
         }
         return responseData;
     }
@@ -130,13 +130,13 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         } else if (STATUS_BASIC_END.equals(pushStatus)) { //归档（终止）
             boo = flowTaskService.pushToBasic(null, null, null, flowTaskList.get(0));
         } else {
-            return ResponseData.operationFailure("推送状态不能识别！");
+            return ResponseData.operationFailure("10187");
         }
 
         if (boo) {
-            return ResponseData.operationSuccess("重推成功，状态：【成功】！");
+            return ResponseData.operationSuccess("10188");
         } else {
-            return ResponseData.operationFailure("重推成功，状态：【失败】！");
+            return ResponseData.operationFailure("10189");
         }
     }
 
@@ -387,10 +387,10 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
     @Override
     public ResponseData cleaningPushHistoryData(CleaningPushHistoryVO cleaningPushHistoryVO) {
         if (cleaningPushHistoryVO == null) {
-            return ResponseData.operationFailure("参数不能为空！");
+            return ResponseData.operationFailure("10006");
         }
         if (cleaningPushHistoryVO.getRecentDate() == null) {
-            return ResponseData.operationFailure("参数【保留最近时间段】不能为空！");
+            return ResponseData.operationFailure("10190");
         }
         String redisKey = ContextUtil.getTenantCode();
         Search search = new Search();
@@ -421,7 +421,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
                     redisTemplate.expire("pushCleaning_" + redisKey, 30 * 60, TimeUnit.SECONDS);
                     remainingTime = 1800L;
                 }
-                return ResponseData.operationFailure("数据已经在清理中，请不要重复操作！剩余锁定时间：" + remainingTime + "秒！");
+                return ResponseData.operationFailure("10191" , remainingTime );
             } else {
                 //异步清理历史数据
                 String finalRedisKey = redisKey;
@@ -431,10 +431,10 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
                         flowTaskControlAndPushService.cleaningPushHistoryData(list, finalRedisKey);
                     }
                 }).start();
-                return ResponseData.operationSuccess("数据正在清理中，可能需要一会，请稍后再进行查看！");
+                return ResponseData.operationSuccess("10192");
             }
         } else {
-            return ResponseData.operationSuccess("没有满足条件的数据需要清理！");
+            return ResponseData.operationSuccess("10193");
         }
     }
 
@@ -463,9 +463,9 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
             for (FlowTaskPushControl bean : list) {
                 this.pushAgainByControl(bean);
             }
-            return ResponseData.operationSuccess("重新推送成功！");
+            return ResponseData.operationSuccess("10194");
         } else {
-            return ResponseData.operationSuccess("没有满足条件的数据需要重新推送！");
+            return ResponseData.operationSuccess("10195");
         }
     }
 }

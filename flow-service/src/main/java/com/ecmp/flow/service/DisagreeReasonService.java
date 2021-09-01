@@ -32,7 +32,7 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
     @Override
     public ResponseData getDisagreeReasonByTypeId(String typeId) {
         if (StringUtils.isEmpty(typeId)) {
-            return ResponseData.operationFailure("参数流程类型ID不能为空！");
+            return ResponseData.operationFailure("10059");
         }
         List<DisagreeReason> list = disagreeReasonDao.findByFlowTypeIdAndTenantCode(typeId, ContextUtil.getTenantCode());
         if ("commonReason".equals(typeId)) { //全局通用意见中默认添加其他选项
@@ -61,7 +61,7 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
         OperateResultWithData<DisagreeReason> resultWithData;
         try {
             if("common_else".equals(bean.getCode()) && !"其它".equals(bean.getName())){
-                return OperateResultWithData.operationFailure("原因其他为系统默认创建，不能更改！");
+                return OperateResultWithData.operationFailure("10087");
             }
             resultWithData = super.save(bean);
         } catch (org.springframework.dao.DataIntegrityViolationException e) {
@@ -69,7 +69,7 @@ public class DisagreeReasonService extends BaseEntityService<DisagreeReason> imp
             cause = cause.getCause();
             SQLException sqlException = (SQLException) cause;
             if (sqlException != null && sqlException.getSQLState().equals("23000")) {
-                resultWithData = OperateResultWithData.operationFailure("原因代码重复，请检查！");
+                resultWithData = OperateResultWithData.operationFailure("10088");
             } else {
                 resultWithData = OperateResultWithData.operationFailure(e.getMessage());
             }

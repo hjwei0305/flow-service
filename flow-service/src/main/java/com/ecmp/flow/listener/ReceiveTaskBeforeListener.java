@@ -163,7 +163,7 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
 
                     flowTaskDao.save(flowTask);
                 } else {
-                    throw new FlowException("接收任务未配置服务事件!");
+                    throw new FlowException(ContextUtil.getMessage("10362"));
                 }
             }
 
