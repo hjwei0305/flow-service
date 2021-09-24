@@ -1200,7 +1200,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     //重置客户端表单流程状态
                     String businessId = fTemp.getBusinessId();
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                    ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INIT);
+                    ResponseData resetResult =   ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INIT);
+                    if(!resetResult.getSuccess()){
+                        throw new FlowException(ContextUtil.getMessage("10360",result.getMessage()));
+                    }
+
                     //查看是否为固化流程（如果是固化流程删除固化执行人列表）
                     flowSolidifyExecutorDao.deleteByBusinessId(businessId);
 
