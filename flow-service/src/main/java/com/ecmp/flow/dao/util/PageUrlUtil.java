@@ -45,4 +45,28 @@ public class PageUrlUtil {
         }
         return address + "?" + params;
     }
+
+
+    /**
+     * 判断地址里面是否带了应用模块相对地址
+     * @param pageUrl  需要判断的url
+     * @return  返回是否带有应用模块相对地址的布尔值
+     */
+    public static boolean isAppModelUrl(String pageUrl) {
+        String checkUrl = pageUrl;
+        if (StringUtils.startsWith(checkUrl, "/")) {
+            checkUrl = StringUtils.substringAfter(checkUrl, "/");
+        }
+        int count = 0;
+        while (checkUrl.contains("/")) {
+            checkUrl = checkUrl.substring(checkUrl.indexOf("/") + 1);
+            count++;
+        }
+        if (count > 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

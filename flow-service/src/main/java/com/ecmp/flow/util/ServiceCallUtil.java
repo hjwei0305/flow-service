@@ -46,8 +46,6 @@ public class ServiceCallUtil {
             FlowServiceUrlDao flowServiceUrlDao = (FlowServiceUrlDao) applicationContext.getBean(Constants.FLOW_SERVICE_URL_DAO);
             FlowServiceUrl flowServiceUrl = flowServiceUrlDao.findOne(serviceUrlId);
             if (flowServiceUrl != null) {
-                String clientUrl = flowServiceUrl.getUrl();
-                AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
 
                 Map<String, String> paramMap = new HashMap<>();
                 FlowInvokeParams params = new FlowInvokeParams();
@@ -125,9 +123,17 @@ public class ServiceCallUtil {
 
                 params.setId(businessId);
                 params.setParams(paramMap);
-                String apiBaseAddressConfig = appModule.getApiBaseAddress();
-                String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                String url = PageUrlUtil.buildUrl(clientApiBaseUrl, clientUrl);
+                String url;
+                String clientUrl = flowServiceUrl.getUrl();
+                if (PageUrlUtil.isAppModelUrl(clientUrl)) {
+                    url = PageUrlUtil.buildUrl(Constants.getBaseApi(), clientUrl);
+                } else {
+                    AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
+                    String apiBaseAddressConfig = appModule.getApiBaseAddress();
+                    String clientApiBaseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
+                    url = PageUrlUtil.buildUrl(clientApiBaseUrl, clientUrl);
+                }
+
                 Date startDate = new Date();
                 SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
                 try {
@@ -135,7 +141,7 @@ public class ServiceCallUtil {
                     }, params);
                     Date endDate = new Date();
                     if (res.successful()) {
-                        LogUtil.bizLog("[{}]开始请求节点【{}】的事件【{}】,请求地址：{},请求参数：{},返回信息时间：[{}],返回信息：[{}]", sim.format(startDate), flowTaskName, flowServiceUrl.getName(), url, JsonUtils.toJson(params), sim.format(endDate) ,JsonUtils.toJson(res));
+                        LogUtil.bizLog("[{}]开始请求节点【{}】的事件【{}】,请求地址：{},请求参数：{},返回信息时间：[{}],返回信息：[{}]", sim.format(startDate), flowTaskName, flowServiceUrl.getName(), url, JsonUtils.toJson(params), sim.format(endDate), JsonUtils.toJson(res));
                         result = new FlowOperateResult(true, res.getMessage());
                         //FlowOperateResult可以直接返回执行人（工作池任务）
                         if (res.getData() != null && StringUtils.isNotEmpty(res.getData().toString())) {

@@ -241,10 +241,16 @@ public class StartEventCompleteListener implements ExecutionListener {
                     throw new FlowException(ContextUtil.getMessage("10366"));
                 }
                 String checkUrl = flowServiceUrl.getUrl();
+                String checkUrlPath;
                 if (StringUtils.isNotEmpty(checkUrl)) {
-                    String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
-                    String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
-                    String checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
+                    if (PageUrlUtil.isAppModelUrl(checkUrl)) {
+                        checkUrlPath = PageUrlUtil.buildUrl(Constants.getBaseApi(), checkUrl);
+                    } else {
+                        String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
+                        String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
+                        checkUrlPath = PageUrlUtil.buildUrl(baseUrl, checkUrl);
+                    }
+
                     FlowInvokeParams flowInvokeParams = new FlowInvokeParams();
                     flowInvokeParams.setId(businessKey);
 
