@@ -467,28 +467,9 @@ public class FlowListenerTool {
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 
                     if (flowTaskList.isEmpty() && flowHistoryList.isEmpty()) { //如果是开始节点，手动回滚
-                        AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-                        new Thread() {
-                            public void run() {
-                                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                Boolean result = false;
-                                int index = 5;
-                                while (!result && index > 0) {
-                                    try {
-                                        Thread.sleep(1000 * (6 - index));
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    try {
-                                        ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
-                                        result = responseData.getSuccess();
-                                    } catch (Exception e) {
-                                        LogUtil.error(e.getMessage(), e);
-                                    }
-                                    index--;
-                                }
-                            }
-                        }.start();
+                        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                        //轮询修改状态为：初始化
+                        ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
                     }
                     throw new FlowException(callMessage);//抛出异常
                 }

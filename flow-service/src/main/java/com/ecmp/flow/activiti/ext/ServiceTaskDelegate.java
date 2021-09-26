@@ -15,11 +15,9 @@ import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
-import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,7 +148,7 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
 
                     //选择下一步执行人，默认选择第一个(会签、单签、串、并行选择全部)
                     List<NodeInfo> results;
-                    if (flowDefVersion != null && flowDefVersion.getSolidifyFlow() == true) { //固化流程
+                    if (flowDefVersion.getSolidifyFlow()) { //固化流程
                         results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask, true);
                     } else {
                         results = flowListenerTool.nextNodeInfoList(flowTask, delegateTask, false);
@@ -166,27 +164,9 @@ public class ServiceTaskDelegate implements org.activiti.engine.delegate.JavaDel
         } catch (Exception e) {
 
             if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList)) { //如果是开始节点，手动回滚
-                new Thread() {
-                    public void run() {
-                        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                        Boolean result = false;
-                        int index = 5;
-                        while (!result && index > 0) {
-                            try {
-                                Thread.sleep(1000 * (6 - index));
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
-                                result = responseData.getSuccess();
-                            } catch (Exception e) {
-                                LogUtil.error(e.getMessage(), e);
-                            }
-                            index--;
-                        }
-                    }
-                }.start();
+                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                //轮询修改状态为：初始化
+                ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
             }
 
             if (e.getClass() != FlowException.class) {

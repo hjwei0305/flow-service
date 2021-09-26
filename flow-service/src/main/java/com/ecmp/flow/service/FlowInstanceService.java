@@ -1212,8 +1212,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     try {
                         this.callEndServiceAndSon(flowInstance, endSign);
                     } catch (Exception e) {
-                        //重新让单据回到流程中
-                        ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INPROCESS);
+                        //轮询修改状态为：流程中
+                        ExpressionUtil.pollingResetState(businessModel, businessId, FlowStatus.INPROCESS);
                         throw e;
                     }
 

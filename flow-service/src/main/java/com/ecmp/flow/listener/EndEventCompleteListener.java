@@ -10,7 +10,6 @@ import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
 import com.ecmp.flow.vo.FlowOperateResult;
-import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -22,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Map;
 
@@ -56,7 +54,7 @@ public class EndEventCompleteListener implements ExecutionListener {
     private FlowListenerTool flowListenerTool;
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void notify(DelegateExecution delegateTask) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public void notify(DelegateExecution delegateTask) {
         ExecutionEntity taskEntity = (ExecutionEntity) delegateTask;
         Map<String, Object> variables = delegateTask.getVariables();
         ProcessInstance processInstance = taskEntity.getProcessInstance();
@@ -90,7 +88,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                 FlowInstance flowInstanceP = flowInstance.getParent();
                 ResponseData result = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.COMPLETED);
                 if (!result.getSuccess()) {
-                    throw new FlowException(ContextUtil.getMessage("10360",result.getMessage()));
+                    throw new FlowException(ContextUtil.getMessage("10360", result.getMessage()));
                 }
                 if (flowInstanceP != null) {
                     ExecutionEntity parent = taskEntity.getSuperExecution();
@@ -109,52 +107,14 @@ public class EndEventCompleteListener implements ExecutionListener {
                 try {
                     callEndResult = flowListenerTool.callEndService(businessId, flowInstance.getFlowDefVersion(), endSign, variables);
                 } catch (Exception e) {
-                    new Thread() {
-                        public void run() {
-                            BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                            Boolean result = false;
-                            int index = 5;
-                            while (!result && index > 0) {
-                                try {
-                                    Thread.sleep(1000 * (6 - index));
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
-                                    result = responseData.getSuccess();
-                                } catch (Exception e) {
-                                    LogUtil.error(e.getMessage(), e);
-                                }
-                                index--;
-                            }
-                        }
-                    }.start();
+                    //轮询修改状态为：流程中
+                    ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
                     throw e;
                 }
 
                 if (callEndResult != null && !callEndResult.isSuccess()) {
-                    new Thread() {
-                        public void run() {
-                            BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                            Boolean result = false;
-                            int index = 5;
-                            while (!result && index > 0) {
-                                try {
-                                    Thread.sleep(1000 * (6 - index));
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
-                                    result = responseData.getSuccess();
-                                } catch (Exception e) {
-                                    LogUtil.error(e.getMessage(), e);
-                                }
-                                index--;
-                            }
-                        }
-                    }.start();
+                    //轮询修改状态为：流程中
+                    ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
                     throw new FlowException(callEndResult.getMessage());
                 }
             }

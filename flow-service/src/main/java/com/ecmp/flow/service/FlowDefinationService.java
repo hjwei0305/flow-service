@@ -585,7 +585,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         LogUtil.error(e.getMessage(), e);
                         if (flowInstance != null) {
                             BusinessModel businessModel = businessModelDao.findByProperty("className", flowStartVO.getBusinessModelCode());
-                            ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
+                            //轮询修改状态为：初始化
+                            ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
                         }
                         throw new FlowException(e.getMessage());
                     }

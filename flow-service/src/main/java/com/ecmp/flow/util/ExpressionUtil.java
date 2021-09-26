@@ -11,13 +11,14 @@ import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import org.apache.commons.lang.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.GenericType;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * *************************************************************************************************
@@ -213,6 +214,36 @@ public class ExpressionUtil {
             LogUtil.error("调用【重置单据状态】，接口调用异常：{}，地址=[{}]，参数=[{}]", e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
             return ResponseData.operationFailure(ContextUtil.getMessage("10284", e.getMessage()));
         }
+    }
+
+
+    /**
+     * 轮询设置单据状态
+     *
+     * @param businessModel
+     * @param businessId
+     * @param status
+     */
+    public static void pollingResetState(BusinessModel businessModel, String businessId, FlowStatus status) {
+        //进行异步轮询
+        Calendar startTreadTime = Calendar.getInstance();
+        ScheduledExecutorService service = Executors
+                .newSingleThreadScheduledExecutor();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                Calendar nowTime = Calendar.getInstance();
+                nowTime.add(Calendar.SECOND, -74);//不超过74秒，总共4次，另14秒为调用方法时间预留
+                if (nowTime.after(startTreadTime)) {
+                    service.shutdown();
+                }
+                ResponseData resultData = resetState(businessModel, businessId, status);
+                if (resultData.successful()) {
+                    service.shutdown();
+                }
+            }
+        };
+        // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
+        service.scheduleWithFixedDelay(runnable, 15, 15, TimeUnit.SECONDS);
     }
 
 

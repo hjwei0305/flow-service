@@ -15,9 +15,7 @@ import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
-import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
-import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -130,32 +128,14 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                     callMessage = e.getMessage();
                 }
 
-                if ((flowOperateResult == null || !flowOperateResult.isSuccess())) {
+                if (flowOperateResult == null || !flowOperateResult.isSuccess()) {
                     List<FlowTask> flowTaskList = flowTaskService.findByInstanceIdNoVirtual(flowInstance.getId());
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 
                     if (CollectionUtils.isEmpty(flowTaskList) && CollectionUtils.isEmpty(flowHistoryList)) { //如果是开始节点，手动回滚
-                        new Thread() {
-                            public void run() {
-                                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                                Boolean result = false;
-                                int index = 5;
-                                while (!result && index > 0) {
-                                    try {
-                                        Thread.sleep(1000 * (6 - index));
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    try {
-                                        ResponseData responseData = ExpressionUtil.resetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
-                                        result = responseData.getSuccess();
-                                    } catch (Exception e) {
-                                        LogUtil.error(e.getMessage(), e);
-                                    }
-                                    index--;
-                                }
-                            }
-                        }.start();
+                        BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                        //轮询修改状态为：初始化
+                        ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INIT);
                     }
                     throw new FlowException(callMessage);//抛出异常
                 }
