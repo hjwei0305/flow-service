@@ -123,6 +123,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     @Override
     public ResponseData<Boolean> resetState(String businessModelCode, String id, FlowStatus status) {
         DefaultBusinessModel bean = defaultBusinessModelDao.findOne(id);
+        bean.setWorkCaption(bean.getWorkCaption()+"-"+status.getValue());
         bean.setFlowStatus(status);
         this.save(bean);
         return ResponseData.operationSuccessWithData(true);
