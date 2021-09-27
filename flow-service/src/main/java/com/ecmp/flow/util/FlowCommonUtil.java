@@ -12,7 +12,6 @@ import com.ecmp.flow.entity.FlowDefVersion;
 import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
-import com.ecmp.util.DateUtils;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
 import net.sf.json.JSONObject;
@@ -276,7 +275,12 @@ public class FlowCommonUtil implements Serializable {
 
 
     public List<Executor> getExecutorsBySelfDef(String appModuleCode, String selfName, String path, FlowInvokeParams flowInvokeParams) {
-        String url = PageUrlUtil.buildUrl(Constants.getConfigValueByApi(appModuleCode), path);
+        String url;
+        if (PageUrlUtil.isAppModelUrl(path)) {
+            url = PageUrlUtil.buildUrl(Constants.getBaseApi(), path);
+        } else {
+            url = PageUrlUtil.buildUrl(Constants.getConfigValueByApi(appModuleCode), path);
+        }
         ResponseData<List<Executor>> result;
         List<Executor> executors;
         try {
@@ -289,7 +293,7 @@ public class FlowCommonUtil implements Serializable {
                 throw new FlowException(ContextUtil.getMessage("10303", selfName, result.getMessage()));
             }
         } catch (Exception e) {
-            LogUtil.error("开始调用【自定义执行人-{}】，调用异常:{}，接口url={}，参数值:{}", selfName, e.getMessage(), url, JsonUtils.toJson(flowInvokeParams),e);
+            LogUtil.error("开始调用【自定义执行人-{}】，调用异常:{}，接口url={}，参数值:{}", selfName, e.getMessage(), url, JsonUtils.toJson(flowInvokeParams), e);
             throw new FlowException(ContextUtil.getMessage("10304", selfName, e.getMessage()));
         }
 
@@ -370,11 +374,11 @@ public class FlowCommonUtil implements Serializable {
             if (result.successful()) {
                 return result.getData();
             } else {
-                LogUtil.error("开始调用【获取指定节点的父组织机构列表】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url,JsonUtils.toJson(params));
+                LogUtil.error("开始调用【获取指定节点的父组织机构列表】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url, JsonUtils.toJson(params));
                 throw new FlowException(ContextUtil.getMessage("10310", result.getMessage()));
             }
         } catch (Exception e) {
-            LogUtil.error("开始调用【获取指定节点的父组织机构列表】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url,JsonUtils.toJson(params), e);
+            LogUtil.error("开始调用【获取指定节点的父组织机构列表】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url, JsonUtils.toJson(params), e);
             throw new FlowException(ContextUtil.getMessage("10311", e.getMessage()));
         }
     }
@@ -402,11 +406,11 @@ public class FlowCommonUtil implements Serializable {
             if (result.successful()) {
                 return result.getData();
             } else {
-                LogUtil.error("开始调用【根据组织机构ID获取员工集合】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url,JsonUtils.toJson(params));
+                LogUtil.error("开始调用【根据组织机构ID获取员工集合】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url, JsonUtils.toJson(params));
                 throw new FlowException(ContextUtil.getMessage("10312", result.getMessage()));
             }
         } catch (Exception e) {
-            LogUtil.error("开始调用【根据组织机构ID获取员工集合】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url,JsonUtils.toJson(params), e);
+            LogUtil.error("开始调用【根据组织机构ID获取员工集合】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url, JsonUtils.toJson(params), e);
             throw new FlowException(ContextUtil.getMessage("10313", e.getMessage()));
         }
     }
@@ -426,11 +430,11 @@ public class FlowCommonUtil implements Serializable {
             if (result.successful()) {
                 return result.getData();
             } else {
-                LogUtil.error("开始调用【根据组织机构ID获取员工集合】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url,JsonUtils.toJson(userQueryParamVo));
+                LogUtil.error("开始调用【根据组织机构ID获取员工集合】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url, JsonUtils.toJson(userQueryParamVo));
                 throw new FlowException(ContextUtil.getMessage("10312", result.getMessage()));
             }
         } catch (Exception e) {
-            LogUtil.error("开始调用【根据组织机构ID获取员工集合】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url,JsonUtils.toJson(userQueryParamVo), e);
+            LogUtil.error("开始调用【根据组织机构ID获取员工集合】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url, JsonUtils.toJson(userQueryParamVo), e);
             throw new FlowException(ContextUtil.getMessage("10313", e.getMessage()));
         }
     }
@@ -447,11 +451,11 @@ public class FlowCommonUtil implements Serializable {
             if (result.successful()) {
                 return result.getData();
             } else {
-                LogUtil.error("开始调用【获取所有岗位】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url,JsonUtils.toJson(search));
+                LogUtil.error("开始调用【获取所有岗位】，接口返回错误信息:{}，接口url={}，参数：{}", result.getMessage(), url, JsonUtils.toJson(search));
                 throw new FlowException(ContextUtil.getMessage("10314", result.getMessage()));
             }
         } catch (Exception e) {
-            LogUtil.error("开始调用【获取所有岗位】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url,JsonUtils.toJson(search), e);
+            LogUtil.error("开始调用【获取所有岗位】，调用异常:{}，接口url={}，参数：{}", e.getMessage(), url, JsonUtils.toJson(search), e);
             throw new FlowException(ContextUtil.getMessage("10315", e.getMessage()));
         }
     }
