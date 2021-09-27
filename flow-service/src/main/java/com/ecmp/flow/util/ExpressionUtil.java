@@ -232,7 +232,7 @@ public class ExpressionUtil {
         Runnable runnable = new Runnable() {
             public void run() {
                 Calendar nowTime = Calendar.getInstance();
-                nowTime.add(Calendar.SECOND, -74);//不超过74秒，总共4次，另14秒为调用方法时间预留
+                nowTime.add(Calendar.MINUTE, -2);//不能超过2分钟
                 if (nowTime.after(startTreadTime)) {
                     service.shutdown();
                 }
@@ -243,7 +243,7 @@ public class ExpressionUtil {
             }
         };
         // 第二个参数为首次执行的延时时间，第三个参数为定时执行的间隔时间
-        service.scheduleWithFixedDelay(runnable, 15, 15, TimeUnit.SECONDS);
+        service.scheduleWithFixedDelay(runnable, 1, 20, TimeUnit.SECONDS);
     }
 
 
