@@ -152,8 +152,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     public ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
-//        return ResponseData.operationFailure("10042");
-        return ResponseData.operationSuccess();
+        DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
+        if(entity.getCount()==99){
+            return ResponseData.operationSuccess();
+        }
+        return ResponseData.operationFailure("10042");
     }
 
 
