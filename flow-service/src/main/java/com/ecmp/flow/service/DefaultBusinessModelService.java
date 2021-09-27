@@ -152,7 +152,8 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      * @return
      */
     public ResponseData newServiceCallFailure(FlowInvokeParams flowInvokeParams) {
-        return ResponseData.operationFailure("10042");
+//        return ResponseData.operationFailure("10042");
+        return ResponseData.operationSuccess();
     }
 
 
