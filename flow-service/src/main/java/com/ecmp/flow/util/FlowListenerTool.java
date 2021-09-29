@@ -255,7 +255,7 @@ public class FlowListenerTool {
                 String endCallServiceUrlPath;
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     if (PageUrlUtil.isAppModelUrl(checkUrl)) {
-                        endCallServiceUrlPath = PageUrlUtil.buildUrl(Constants.getBaseApi(), checkUrl);
+                        endCallServiceUrlPath = PageUrlUtil.buildUrl(PageUrlUtil.getBaseApiUrl(), checkUrl);
                     } else {
                         String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                         String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);
@@ -343,7 +343,7 @@ public class FlowListenerTool {
                 String checkUrlPath;
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     if (PageUrlUtil.isAppModelUrl(checkUrl)) {
-                        checkUrlPath = PageUrlUtil.buildUrl(Constants.getBaseApi(), checkUrl);
+                        checkUrlPath = PageUrlUtil.buildUrl(PageUrlUtil.getBaseApiUrl(), checkUrl);
                     } else {
                         String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                         String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);

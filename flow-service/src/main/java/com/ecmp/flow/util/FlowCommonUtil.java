@@ -277,7 +277,7 @@ public class FlowCommonUtil implements Serializable {
     public List<Executor> getExecutorsBySelfDef(String appModuleCode, String selfName, String path, FlowInvokeParams flowInvokeParams) {
         String url;
         if (PageUrlUtil.isAppModelUrl(path)) {
-            url = PageUrlUtil.buildUrl(Constants.getBaseApi(), path);
+            url = PageUrlUtil.buildUrl(PageUrlUtil.getBaseApiUrl(), path);
         } else {
             url = PageUrlUtil.buildUrl(Constants.getConfigValueByApi(appModuleCode), path);
         }

@@ -244,7 +244,7 @@ public class StartEventCompleteListener implements ExecutionListener {
                 String checkUrlPath;
                 if (StringUtils.isNotEmpty(checkUrl)) {
                     if (PageUrlUtil.isAppModelUrl(checkUrl)) {
-                        checkUrlPath = PageUrlUtil.buildUrl(Constants.getBaseApi(), checkUrl);
+                        checkUrlPath = PageUrlUtil.buildUrl(PageUrlUtil.getBaseApiUrl(), checkUrl);
                     } else {
                         String apiBaseAddressConfig = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                         String baseUrl = Constants.getConfigValueByApi(apiBaseAddressConfig);

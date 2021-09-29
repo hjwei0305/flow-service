@@ -1,5 +1,6 @@
 package com.ecmp.flow.dao.util;
 
+import com.ecmp.flow.common.util.Constants;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -67,6 +68,22 @@ public class PageUrlUtil {
             count++;
         }
         return count > 1;
+    }
+
+
+    public static String getBaseApiUrl() {
+        String baseApiUrl = Constants.getBaseApi();
+        //K8S配置文件中base_api地址为空
+        if (StringUtils.isEmpty(baseApiUrl)) {
+            String baseWebUrl = Constants.getBaseWeb();
+            String gatewayUrl = Constants.getFlowPropertiesByKey("GATEWAY_NAME");
+            if (StringUtils.isEmpty(gatewayUrl)) {
+                baseApiUrl = buildUrl(baseWebUrl, "/api-gateway");
+            } else {
+                baseApiUrl = buildUrl(baseWebUrl, gatewayUrl);
+            }
+        }
+        return baseApiUrl;
     }
 
 }
