@@ -161,6 +161,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     @Autowired
     private FlowTaskPushDao flowTaskPushDao;
 
+    @Autowired
+    private FlowInstanceService flowInstanceService;
+
 
     /**
      * 保存推送信息
@@ -4411,6 +4414,161 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return result;
     }
+
+
+
+
+
+    /**
+     * 通过业务单据ID自动执行单据中的待办
+     * 注解：1、只考虑普通任务和审批任务   2、执行不成功待办的标注为紧急
+     *
+     * @param businessId
+     * @return
+     */
+    @Override
+    public ResponseData automatingTaskByBusinessId(String businessId) {
+        if (StringUtils.isNotEmpty(businessId)) {
+            FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
+            if (flowInstance != null && !flowInstance.isEnded()) {//只考虑还在流程中的流程实例
+                List<FlowTask> list = this.findByInstanceId(flowInstance.getId());
+                if (list != null && list.size() == 1) {
+                    FlowTask flowTask = list.get(0);
+                    String defJson = flowTask.getTaskJsonDef();
+                    JSONObject defObj = JSONObject.fromObject(defJson);
+                    String nodeType = defObj.getString("nodeType");
+                    String approved = "true";
+                    String opinion = "同意【自动执行】";
+                    if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType)) {
+                        if ("Normal".equalsIgnoreCase(nodeType)) {
+                            approved = null;
+                            opinion = "【自动执行】";
+                        }
+                        //模拟请求下一步，如果需要人为选择的情况，返回false
+                        ResponseData responseData;
+                        try {
+                            responseData = this.simulationNodesInfo(flowTask.getId(), approved);
+                        } catch (Exception e) {
+                            //模拟下一步失败，将待办设置为紧急
+                            flowTask.setPriority(3);
+                            this.save(flowTask);
+                            return ResponseData.operationFailure("10376");
+                        }
+
+                        if (responseData.getSuccess()) {
+                            String taskListString;
+                            String endEventId = null;
+                            if ("CounterSignNotEnd".equalsIgnoreCase(responseData.getData().toString())) { //会签未结束
+                                taskListString = "[]";
+                            } else if ("EndEvent".equalsIgnoreCase(responseData.getData().toString())) { //结束节点
+                                taskListString = "[]";
+                                endEventId = "true";
+                            } else {
+                                List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
+                                List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<>();
+                                for (NodeInfo nodeInfo : nodeInfoList) {
+                                    FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
+                                    taskWebVO.setNodeId(nodeInfo.getId());
+                                    taskWebVO.setUserVarName(nodeInfo.getUserVarName());
+                                    taskWebVO.setFlowTaskType(nodeInfo.getFlowTaskType());
+                                    taskWebVO.setSolidifyFlow(false);
+                                    taskWebVO.setCallActivityPath(null);
+                                    if (nodeInfo.getExecutorSet() != null && nodeInfo.getExecutorSet().size() == 1) {
+                                        taskWebVO.setUserIds(nodeInfo.getExecutorSet().iterator().next().getId());
+                                    } else if ("poolTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
+                                        taskWebVO.setUserIds(null);
+                                    } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getFlowTaskType()) || "receiveTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
+                                        taskWebVO.setUserIds(ContextUtil.getUserId());
+                                    } else {
+                                        flowTask.setPriority(3);
+                                        this.save(flowTask);
+                                        return ResponseData.operationFailure("10377");
+                                    }
+                                    flowTaskCompleteList.add(taskWebVO);
+                                }
+                                JSONArray jsonArray = JSONArray.fromObject(flowTaskCompleteList);
+                                taskListString = jsonArray.toString();
+                            }
+
+                            try {
+                                //自动执行待办
+                                long currentTime = System.currentTimeMillis();
+                                defaultFlowBaseService.completeTask(flowTask.getId(), businessId,
+                                        opinion, taskListString, endEventId,null,false,
+                                        approved, currentTime);
+                                return ResponseData.operationSuccess("10378");
+                            } catch (Exception e) {
+                                LogUtil.error("批量上传自动执行待办报错：" + e.getMessage(), e);
+                                //处理下一步失败，将待办设置为紧急
+                                flowTask.setPriority(3);
+                                this.save(flowTask);
+                                return ResponseData.operationFailure("10379" , e.getMessage());
+                            }
+                        } else {
+                            //模拟下一步失败，将待办设置为紧急
+                            flowTask.setPriority(3);
+                            this.save(flowTask);
+                            return responseData;
+                        }
+                    } else {
+                        return ResponseData.operationFailure("10380");
+                    }
+                } else {
+                    return ResponseData.operationFailure("10381");
+                }
+            } else {
+                return ResponseData.operationFailure("10382");
+            }
+        } else {
+            return ResponseData.operationFailure("10383");
+        }
+    }
+
+
+
+
+    /**
+     * 模拟请求下一步数据：参考simulationGetSelectedNodesInfo
+     *
+     * @param taskId
+     * @return
+     */
+    public ResponseData simulationNodesInfo(String taskId, String approved) {
+        try {
+            //所有可能路径（人工网关默认选择一条路径）
+            List<NodeInfo> list = this.findNextNodes(taskId);
+            List<NodeInfo> nodeInfoList = null;
+            if (!CollectionUtils.isEmpty(list) && list.size() == 1) {
+                nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
+            } else if (!CollectionUtils.isEmpty(list)) {
+                String gateWayName = list.get(0).getGateWayName();
+                if (StringUtils.isNotEmpty(gateWayName) && "人工排他网关".equals(gateWayName)) {
+                    return ResponseData.operationFailure("存在人工排他网关，无法自动执行！");
+                } else {
+                    nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
+                }
+            }
+
+            if (!CollectionUtils.isEmpty(nodeInfoList)) {
+                if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
+                    return ResponseData.operationSuccessWithData("EndEvent");
+                } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
+                    return ResponseData.operationSuccessWithData("CounterSignNotEnd");
+                } else {
+                    return ResponseData.operationSuccessWithData(nodeInfoList);
+                }
+            } else if (nodeInfoList == null) {
+                return ResponseData.operationFailure("任务不存在，可能已经被处理！");
+            } else {
+                return ResponseData.operationFailure("当前表单规则找不到符合条件的分支！");
+            }
+
+        } catch (Exception e) {
+            LogUtil.error("模拟请求下一步错误[simulationNodesInfo]：" + e.getMessage(), e);
+            return ResponseData.operationFailure("模拟请求下一步错误[simulationNodesInfo]：" + e.getMessage());
+        }
+    }
+
 
 
 }

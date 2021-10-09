@@ -931,4 +931,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     ResponseData haveReadTaskByTaskId(@QueryParam("taskId") String taskId);
 
 
+
+    /**
+     * 通过业务单据ID自动执行单据中的待办
+     * 注解：（只考虑普通任务和审批任务）（执行不成功待办的标注为紧急）
+     *
+     * @param businessId
+     * @return
+     */
+    @GET
+    @Path("automatingTaskByBusinessId")
+    @ApiOperation(value = "通过业务单据ID自动执行单据中的待办", notes = "通过业务单据ID自动执行单据中的待办")
+    ResponseData automatingTaskByBusinessId(@QueryParam("businessId") String businessId);
+
+
 }
