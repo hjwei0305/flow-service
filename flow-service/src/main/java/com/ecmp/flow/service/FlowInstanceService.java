@@ -1191,6 +1191,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                     callBeforeEndAndSon(flowInstance, endSign);
 
+                    //保证在并行网关中终止的时候，也能获取到终止的参数
+                    Map<String, Object> variables = new HashMap<>();
+                    variables.put("deleteReason",deleteReason);
+                    runtimeService.setVariables(actInstanceId, variables);
+                    //在并行网关中终止原因传不到监听器，导致终止时要调用节点后事件
                     this.deleteActiviti(actInstanceId, deleteReason);
 
                     fTemp.setEndDate(new Date());

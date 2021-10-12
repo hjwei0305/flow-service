@@ -46,13 +46,17 @@ public class CommonUserTaskCompleteListener implements ExecutionListener {
     public void notify(DelegateExecution delegateTask) {
         try {
             String deleteReason = ((ExecutionEntity) delegateTask).getDeleteReason();
-            if (StringUtils.isNotEmpty(deleteReason)) {//流程结束不触发事件
+            if (StringUtils.isNotEmpty(deleteReason)) {//流程结束不触发事件（但是在并行网关中，这个参数没传进来）
                 return;
             }
             String actTaskDefKey = delegateTask.getCurrentActivityId();
             String actProcessDefinitionId = delegateTask.getProcessDefinitionId();
             String businessId = delegateTask.getProcessBusinessKey();
             Map<String, Object> tempV = delegateTask.getVariables();
+            deleteReason = (String)tempV.get("deleteReason");
+            if (StringUtils.isNotEmpty(deleteReason)) {//并行网关中终止单独传递的参数
+                return;
+            }
             Boolean currentNodeAfterEvent = (Boolean) tempV.get(actTaskDefKey + "currentNodeAfterEvent");
             FlowDefVersion flowDefVersion = flowDefVersionDao.findByActDefId(actProcessDefinitionId);
             String flowDefJson = flowDefVersion.getDefJson();
