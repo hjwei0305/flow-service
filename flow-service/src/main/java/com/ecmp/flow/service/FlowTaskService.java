@@ -2909,8 +2909,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isEmpty(taskId)) {
             return ResponseData.operationFailure("10385");
         }
-        List<Employee> employeeList = taskTrustInfoVo.getEmployeeList();
-        if (CollectionUtils.isEmpty(employeeList)) {
+        List<String> userIds = taskTrustInfoVo.getUserIds();
+        if (CollectionUtils.isEmpty(userIds)) {
             return ResponseData.operationFailure("10386");
         }
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTrust_" + taskId, taskId);
@@ -2942,45 +2942,49 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
 
                 String employeeNameStr = "";
-                for (Employee employee : employeeList) {
+
+
+                //通过用户ID获取执行人
+                List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userIds);
+                for (Executor executor : executorList) {
                     if (StringUtils.isEmpty(employeeNameStr)) {
-                        employeeNameStr += employee.getUserName();
+                        employeeNameStr += executor.getName();
                     } else {
-                        employeeNameStr += "," + employee.getUserName();
+                        employeeNameStr += "," + executor.getName();
                     }
                     FlowTask newFlowTask = new FlowTask();
                     BeanUtils.copyProperties(flowTask, newFlowTask);
                     newFlowTask.setId(null);
                     //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
-                    TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(employee.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                    TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(executor.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                     String taskDepict = flowTask.getDepict() == null ? "" : flowTask.getDepict();
                     if (taskMakeOverPower != null) {
                         newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
                         newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
                         newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
-                        newFlowTask.setDepict("【由-" + flowTask.getExecutorName() + "委托】【转授权-" + employee.getUserName() + "授权】" + taskDepict);
+                        newFlowTask.setDepict("【由-" + flowTask.getExecutorName() + "委托】【转授权-" + executor.getName() + "授权】" + taskDepict);
                         //添加组织机构信息
                         newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
                         newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
                         newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
                     } else {
-                        newFlowTask.setExecutorId(employee.getId());
-                        newFlowTask.setExecutorAccount(employee.getCode());
-                        newFlowTask.setExecutorName(employee.getUserName());
+                        newFlowTask.setExecutorId(executor.getId());
+                        newFlowTask.setExecutorAccount(executor.getCode());
+                        newFlowTask.setExecutorName(executor.getName());
                         newFlowTask.setDepict("【由-" + flowTask.getExecutorName() + "委托】" + taskDepict);
                         //添加组织机构信息
-                        newFlowTask.setExecutorOrgId(employee.getOrganizationId());
-                        newFlowTask.setExecutorOrgCode(employee.getOrganizationCode());
-                        newFlowTask.setExecutorOrgName(employee.getOrganizationName());
+                        newFlowTask.setExecutorOrgId(executor.getOrganizationId());
+                        newFlowTask.setExecutorOrgCode(executor.getOrganizationCode());
+                        newFlowTask.setExecutorOrgName(executor.getOrganizationName());
                     }
-                    newFlowTask.setOwnerId(employee.getId());
-                    newFlowTask.setOwnerAccount(employee.getCode());
-                    newFlowTask.setOwnerName(employee.getUserName());
+                    newFlowTask.setOwnerId(executor.getId());
+                    newFlowTask.setOwnerAccount(executor.getCode());
+                    newFlowTask.setOwnerName(executor.getName());
 
                     //添加组织机构信息
-                    newFlowTask.setOwnerOrgId(employee.getOrganizationId());
-                    newFlowTask.setOwnerOrgCode(employee.getOrganizationCode());
-                    newFlowTask.setOwnerOrgName(employee.getOrganizationName());
+                    newFlowTask.setOwnerOrgId(executor.getOrganizationId());
+                    newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
+                    newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                     newFlowTask.setPreId(flowHistory.getId());
                     newFlowTask.setTrustState(2);
                     newFlowTask.setTrustOwnerTaskId(flowTask.getId());

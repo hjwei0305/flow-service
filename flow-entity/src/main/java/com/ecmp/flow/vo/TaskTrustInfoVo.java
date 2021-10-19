@@ -1,6 +1,5 @@
 package com.ecmp.flow.vo;
 
-import com.ecmp.flow.basic.vo.Employee;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,10 +14,9 @@ public class TaskTrustInfoVo implements Serializable {
 
 
     /**
-     * 委托的员工集合
+     * 选择的用户ID集合
      */
-    private List<Employee> employeeList;
-
+    private List<String>  userIds;
 
     public String getTaskId() {
         return taskId;
@@ -28,11 +26,11 @@ public class TaskTrustInfoVo implements Serializable {
         this.taskId = taskId;
     }
 
-    public List<Employee> getEmployeeList() {
-        return employeeList;
+    public List<String> getUserIds() {
+        return userIds;
     }
 
-    public void setEmployeeList(List<Employee> employeeList) {
-        this.employeeList = employeeList;
+    public void setUserIds(List<String> userIds) {
+        this.userIds = userIds;
     }
 }
