@@ -2946,6 +2946,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 //通过用户ID获取执行人
                 List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userIds);
+                if(CollectionUtils.isEmpty(executorList)){
+                    return   ResponseData.operationFailure("10038");
+                }
                 for (Executor executor : executorList) {
                     if (StringUtils.isEmpty(employeeNameStr)) {
                         employeeNameStr += executor.getName();
