@@ -7,6 +7,7 @@ import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.flow.api.IFlowTaskService;
+import com.ecmp.flow.basic.vo.Employee;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.basic.vo.UserEmailAlert;
 import com.ecmp.flow.common.util.Constants;
@@ -2893,6 +2894,137 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
     }
 
+
+    /**
+     * 委托多人
+     *
+     * @param taskTrustInfoVo 任务委托信息
+     * @return
+     */
+    public ResponseData taskTrustToEmployees(TaskTrustInfoVo taskTrustInfoVo) {
+        if (taskTrustInfoVo == null) {
+            return ResponseData.operationFailure("10384");
+        }
+        String taskId = taskTrustInfoVo.getTaskId();
+        if (StringUtils.isEmpty(taskId)) {
+            return ResponseData.operationFailure("10385");
+        }
+        List<Employee> employeeList = taskTrustInfoVo.getEmployeeList();
+        if (CollectionUtils.isEmpty(employeeList)) {
+            return ResponseData.operationFailure("10386");
+        }
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTrust_" + taskId, taskId);
+        if (!setValue) {
+            Long remainingTime = redisTemplate.getExpire("taskTrust_" + taskId, TimeUnit.SECONDS);
+            if (remainingTime == -1) {  //说明时间未设置进去
+                redisTemplate.expire("taskTrust_" + taskId, 2 * 60, TimeUnit.SECONDS);
+                remainingTime = 120L;
+            }
+            throw new FlowException(ContextUtil.getMessage("10231", remainingTime));
+        }
+
+        try {
+            //如果设置成功，redis检查设置2分钟过期
+            redisTemplate.expire("taskTrust_" + taskId, 2 * 60, TimeUnit.SECONDS);
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            if (flowTask != null) {
+                if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
+                    return ResponseData.operationFailure("10201");
+                }
+                if (flowTask.getTrustState() != null && flowTask.getTrustState() == 1) {
+                    return ResponseData.operationFailure("10232");
+                }
+                HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
+                FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
+                //是否推送信息到baisc
+                Boolean pushBasic = this.getBooleanPushTaskToBasic();
+                List<FlowTask> needDelList = new ArrayList<>(); //需要删除的待办
+                List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
+
+                String employeeNameStr = "";
+                for (Employee employee : employeeList) {
+                    if (StringUtils.isEmpty(employeeNameStr)) {
+                        employeeNameStr += employee.getUserName();
+                    } else {
+                        employeeNameStr += "," + employee.getUserName();
+                    }
+                    FlowTask newFlowTask = new FlowTask();
+                    BeanUtils.copyProperties(flowTask, newFlowTask);
+                    newFlowTask.setId(null);
+                    //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
+                    TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(employee.getId(), flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
+                    String taskDepict = flowTask.getDepict() == null ? "" : flowTask.getDepict();
+                    if (taskMakeOverPower != null) {
+                        newFlowTask.setExecutorId(taskMakeOverPower.getPowerUserId());
+                        newFlowTask.setExecutorAccount(taskMakeOverPower.getPowerUserAccount());
+                        newFlowTask.setExecutorName(taskMakeOverPower.getPowerUserName());
+                        newFlowTask.setDepict("【由-" + flowTask.getExecutorName() + "委托】【转授权-" + employee.getUserName() + "授权】" + taskDepict);
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(taskMakeOverPower.getPowerUserOrgId());
+                        newFlowTask.setExecutorOrgCode(taskMakeOverPower.getPowerUserOrgCode());
+                        newFlowTask.setExecutorOrgName(taskMakeOverPower.getPowerUserOrgName());
+                    } else {
+                        newFlowTask.setExecutorId(employee.getId());
+                        newFlowTask.setExecutorAccount(employee.getCode());
+                        newFlowTask.setExecutorName(employee.getUserName());
+                        newFlowTask.setDepict("【由-" + flowTask.getExecutorName() + "委托】" + taskDepict);
+                        //添加组织机构信息
+                        newFlowTask.setExecutorOrgId(employee.getOrganizationId());
+                        newFlowTask.setExecutorOrgCode(employee.getOrganizationCode());
+                        newFlowTask.setExecutorOrgName(employee.getOrganizationName());
+                    }
+                    newFlowTask.setOwnerId(employee.getId());
+                    newFlowTask.setOwnerAccount(employee.getCode());
+                    newFlowTask.setOwnerName(employee.getUserName());
+
+                    //添加组织机构信息
+                    newFlowTask.setOwnerOrgId(employee.getOrganizationId());
+                    newFlowTask.setOwnerOrgCode(employee.getOrganizationCode());
+                    newFlowTask.setOwnerOrgName(employee.getOrganizationName());
+                    newFlowTask.setPreId(flowHistory.getId());
+                    newFlowTask.setTrustState(2);
+                    newFlowTask.setTrustOwnerTaskId(flowTask.getId());
+                    flowTaskDao.save(newFlowTask);
+                    if (pushBasic) {
+                        needAddList.add(newFlowTask);
+                    }
+                }
+                //如果是转授权转办模式（获取转授权记录信息）
+                String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                flowHistory.setDepict(overPowerStr + "【委托给：" + employeeNameStr + "】");
+                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.ENTRUST.getCode());//委托
+                flowHistoryDao.save(flowHistory);
+
+                //修改委托任务状态
+                flowTask.setTrustState(1);
+                flowTaskDao.save(flowTask);
+                if (pushBasic) {
+                    needDelList.add(flowTask);
+                }
+
+                //新增和删除待办
+                if (pushBasic) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushToBasic(needAddList, null, needDelList, null);
+                        }
+                    }).start();
+                }
+                return ResponseData.operationSuccess();
+            } else {
+                return ResponseData.operationFailure("10033");//任务不存在，可能已经被处理
+            }
+        } catch (Exception e) {
+            LogUtil.error("任务委托报错：" + e.getMessage(), e);
+            throw e;
+        } finally {
+            //委托开始的时候设置的检查参数
+            redisTemplate.delete("taskTrust_" + taskId);
+        }
+    }
+
+
     public OperateResult taskTrustToDo(String taskId, String userId) throws Exception {
 
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTrust_" + taskId, taskId);
@@ -2914,7 +3046,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (flowTask != null) {
 
                 if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
-                    OperateResult.operationFailure("10201");
+                    return OperateResult.operationFailure("10201");
                 }
 
                 if (flowTask.getTrustState() != null && flowTask.getTrustState() == 1) {

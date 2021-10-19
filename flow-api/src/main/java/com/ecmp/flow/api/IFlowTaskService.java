@@ -685,7 +685,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      */
     @POST
     @Path("taskTurnToDo")
-    @ApiOperation(value = "将任务转办给指定用户", notes = "测试")
+    @ApiOperation(value = "将任务转办给指定用户", notes = "将任务转办给指定用户")
     OperateResult taskTurnToDo(@QueryParam("taskId") String taskId, @QueryParam("userId") String userId);
 
     /**
@@ -697,8 +697,21 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      */
     @POST
     @Path("taskTrustToDo")
-    @ApiOperation(value = "将任务委托给指定用户", notes = "测试")
+    @ApiOperation(value = "将任务委托给指定用户", notes = "将任务委托给指定用户")
     OperateResult taskTrustToDo(@QueryParam("taskId") String taskId, @QueryParam("userId") String userId) throws Exception;
+
+
+    /**
+     * 将任务委托给其他用户
+     *
+     * @param taskTrustInfoVo 任务委托信息
+     * @return 是否委托成功
+     */
+    @POST
+    @Path("taskTrustToEmployees")
+    @ApiOperation(value = "将任务委托给其他用户", notes = "将任务委托给其他用户")
+    ResponseData taskTrustToEmployees(TaskTrustInfoVo taskTrustInfoVo);
+
 
     /**
      * 会签任务加签
@@ -929,7 +942,6 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("haveReadTaskByTaskId")
     @ApiOperation(value = "已阅任务（抄送/呈报）", notes = "已阅任务（抄送/呈报）")
     ResponseData haveReadTaskByTaskId(@QueryParam("taskId") String taskId);
-
 
 
     /**
