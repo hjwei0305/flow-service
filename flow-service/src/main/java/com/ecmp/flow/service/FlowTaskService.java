@@ -3186,6 +3186,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<FlowTask> flowTaskList = flowTaskDao.findListByProperty("trustOwnerTaskId", flowTask.getTrustOwnerTaskId());
             if (flowTaskList.size() > 1) { //还有其他委托任务
                 flowHistory.setDepict(overPowerStr + "【委托任务完成】" + opinion);
+                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.SUBMIT.getCode());
                 //是否推送信息到basic
                 Boolean pushBasic = this.getBooleanPushTaskToBasic();
                 if (pushBasic) {
@@ -3205,6 +3206,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 FlowTask oldFlowTask = flowTaskDao.findOne(flowTask.getTrustOwnerTaskId());
                 if (oldFlowTask != null) {
                     flowHistory.setDepict(overPowerStr + "【办理完成返回委托方】" + opinion);
+                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.SUBMIT.getCode());
                     //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
                     TaskMakeOverPower taskMakeOverPower = taskMakeOverPowerService.getMakeOverPowerByTypeAndUserId(oldFlowTask.getExecutorId(), oldFlowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getId());
                     if (taskMakeOverPower != null) {
