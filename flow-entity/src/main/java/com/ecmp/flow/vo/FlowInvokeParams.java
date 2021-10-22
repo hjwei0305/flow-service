@@ -17,6 +17,7 @@ import java.util.Map;
  * *************************************************************************************************
  */
 public class FlowInvokeParams implements Serializable{
+    private static final long serialVersionUID = -2606069558391492466L;
     private String id;//业务单据id
     private Map<String,String> params;//其他参数
     private Boolean isAgree;  //是否同意
