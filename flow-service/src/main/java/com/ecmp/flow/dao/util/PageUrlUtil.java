@@ -48,6 +48,23 @@ public class PageUrlUtil {
     }
 
 
+
+
+    /**
+     * 判断地址是否为全路径
+     *
+     * @param pageUrl 需要判断的url
+     * @return 返回是否全路径的布尔值
+     */
+    public static boolean isFullPath(String pageUrl) {
+        if (StringUtils.isEmpty(pageUrl)) {
+            return false;
+        }
+        return StringUtils.startsWith(pageUrl, "http");
+    }
+
+
+
     /**
      * 判断地址里面是否带了应用模块相对地址
      *

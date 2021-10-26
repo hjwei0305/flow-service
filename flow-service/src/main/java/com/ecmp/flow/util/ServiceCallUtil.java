@@ -125,7 +125,9 @@ public class ServiceCallUtil {
                 params.setParams(paramMap);
                 String url;
                 String clientUrl = flowServiceUrl.getUrl();
-                if (PageUrlUtil.isAppModelUrl(clientUrl)) {
+                if (PageUrlUtil.isFullPath(clientUrl)) {
+                    url = clientUrl;
+                } else if (PageUrlUtil.isAppModelUrl(clientUrl)) {
                     url = PageUrlUtil.buildUrl(PageUrlUtil.getBaseApiUrl(), clientUrl);
                 } else {
                     AppModule appModule = flowServiceUrl.getBusinessModel().getAppModule();
