@@ -138,7 +138,7 @@ public class ServiceCallUtil {
                 SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
                 try {
                     ResponseData res = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
-                    }, JsonUtils.toJson(params));
+                    }, params);
                     Date endDate = new Date();
                     if (res.successful()) {
                         LogUtil.bizLog("[{}]开始请求节点【{}】的事件【{}】,请求地址：{},请求参数：{},返回信息时间：[{}],返回信息：[{}]", sim.format(startDate), flowTaskName, flowServiceUrl.getName(), url, JsonUtils.toJson(params), sim.format(endDate), JsonUtils.toJson(res));
