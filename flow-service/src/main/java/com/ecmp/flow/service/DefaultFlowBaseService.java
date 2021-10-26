@@ -8,6 +8,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.*;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
@@ -22,8 +23,10 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import sun.rmi.runtime.Log;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * *************************************************************************************************
@@ -87,8 +90,13 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (!flowDefVersion.getSolidifyFlow()) {
             return ResponseData.operationFailure("10051");
         }
-        Map<String, SolidifyStartExecutorVo> map =
-                this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
+        Map<String, SolidifyStartExecutorVo> map;
+        try {
+            map = this.checkAndgetSolidifyExecutorsInfo(flowDefVersion, businessModelCode, businessId);
+        } catch (Exception e) {
+            return ResponseData.operationFailure(e.getMessage());
+        }
+
         if (map.containsKey("humanIntervention")) {  //存在需要人为干涉的情况
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("humanIntervention", true);
@@ -205,17 +213,20 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         JSONObject pocessObj = JSONObject.fromObject(defObj.get("process"));
         JSONObject nodeObj = JSONObject.fromObject(pocessObj.get("nodes"));
 
+
         nodeObj.keySet().forEach(obj -> {
             JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
             String id = (String) positionObj.get("id");
             String nodeType = (String) positionObj.get("nodeType");
+            String nodeName = (String) positionObj.get("name");
             if (id.contains("UserTask")) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
                 List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
-                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<RequestExecutorsVo>();
+                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<>();
                 executorList.forEach(list -> {
                     RequestExecutorsVo bean = new RequestExecutorsVo();
                     String userType = list.get("userType");
+                    bean.setUserType(userType);
                     if (!"AnyOne".equals(userType)) {
                         String ids;
                         if (userType.contains("SelfDefinition")) {
@@ -223,13 +234,21 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         } else {
                             ids = list.get("ids");
                         }
-                        bean.setUserType(userType);
                         bean.setIds(ids);
-                        requestExecutorsList.add(bean);
                     }
+                    requestExecutorsList.add(bean);
                 });
-
-                ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                ResponseData responseData;
+                try {
+                    responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                } catch (Exception e) {
+                    LogUtil.error("固化启动检查【{}】节点请求执行人失败：{}", nodeName, e.getMessage(), e);
+                    throw new FlowException(ContextUtil.getMessage("10387", nodeName, e.getMessage()));
+                }
+                if (!responseData.getSuccess()) {
+                    LogUtil.error("固化启动检查【{}】节点请求执行人失败：{}", nodeName, responseData.getMessage());
+                    throw new FlowException(ContextUtil.getMessage("10387", nodeName, responseData.getMessage()));
+                }
                 Set<Executor> setExecutors = (Set<Executor>) responseData.getData();
                 List<Executor> executors = null;
                 if (setExecutors != null) {
@@ -242,23 +261,26 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         bean.setExecutorIds(executors.get(0).getId());
                         bean.setNodeType(nodeType);
                         map.put(id, bean);
-                    } else if (executors.size() > 1 && "SingleSign".equalsIgnoreCase(nodeType)) { //单签任务默认全选
-                        String userIds = "";
-                        for (int i = 0; i < executors.size(); i++) {
-                            if (i == 0) {
-                                userIds += executors.get(i).getId();
-                            } else {
-                                userIds += "," + executors.get(i).getId();
+                    } else if (executors.size() > 1) {
+                        if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务默认全选
+                            String userIds = "";
+                            for (int i = 0; i < executors.size(); i++) {
+                                if (i == 0) {
+                                    userIds += executors.get(i).getId();
+                                } else {
+                                    userIds += "," + executors.get(i).getId();
+                                }
                             }
+                            SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                            bean.setActTaskDefKey(id);
+                            bean.setExecutorIds(userIds);
+                            bean.setNodeType(nodeType);
+                            map.put(id, bean);
+                        } else {
+                            //需要人工干涉
+                            map.put("humanIntervention", null);
                         }
-                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
-                        bean.setActTaskDefKey(id);
-                        bean.setExecutorIds(userIds);
-                        bean.setNodeType(nodeType);
-                        map.put(id, bean);
-                    } else {
-                        //需要人工干涉
-                        map.put("humanIntervention", null);
+
                     }
                 } else {
                     //需要人工干涉
@@ -798,7 +820,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask.getId(), "true", null);
                 } catch (Exception e) {
                     LogUtil.error("查询是否为最后节点，通过任务获取下一节点信息错误！", e);
-                    return OperateResultWithData.operationFailure("10083" , e.getMessage());
+                    return OperateResultWithData.operationFailure("10083", e.getMessage());
                 }
 
                 if (!CollectionUtils.isEmpty(nodeInfoList)) {

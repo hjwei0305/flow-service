@@ -1275,7 +1275,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
     }
 
     public FlowDefVersion getFlowDefVersion(String id, Integer versionCode, String businessModelCode, String businessId) {
-        FlowDefVersion flowDefVersion = null;
+        FlowDefVersion flowDefVersion;
         if (versionCode > -1) {
             flowDefVersion = flowDefVersionDao.findByDefIdAndVersionCode(id, versionCode);
         } else {
@@ -1318,27 +1318,40 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
             String id = (String) positionObj.get("id");
             String nodeType = (String) positionObj.get("nodeType");
-            if (id.indexOf("UserTask") != -1) {
+            String nodeName = (String) positionObj.get("name");
+            if (id.contains("UserTask")) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
                 List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
-                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<RequestExecutorsVo>();
+                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<>();
                 executorList.forEach(list -> {
                     RequestExecutorsVo bean = new RequestExecutorsVo();
                     String userType = list.get("userType");
+                    bean.setUserType(userType);
                     if (!"AnyOne".equals(userType)) {
-                        String ids = "";
-                        if (userType.indexOf("SelfDefinition") != -1) {
+                        String ids;
+                        if (userType.contains("SelfDefinition")) {
                             ids = (list.get("selfDefId") != null ? list.get("selfDefId") : list.get("selfDefOfOrgAndSelId"));
                         } else {
                             ids = list.get("ids");
                         }
-                        bean.setUserType(userType);
                         bean.setIds(ids);
-                        requestExecutorsList.add(bean);
                     }
+                    requestExecutorsList.add(bean);
                 });
 
-                ResponseData responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                //如果报错前面启动固化检查的时候报过
+                ResponseData responseData;
+                try {
+                    responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                } catch (Exception e) {
+                    LogUtil.error("【{}】节点请求执行人失败：{}", nodeName, e.getMessage(), e);
+                    throw new FlowException(ContextUtil.getMessage("10387", nodeName, e.getMessage()));
+                }
+                if (!responseData.getSuccess()) {
+                    LogUtil.error("【{}】节点请求执行人失败：{}", nodeName, responseData.getMessage());
+                    throw new FlowException(ContextUtil.getMessage("10387", nodeName, responseData.getMessage()));
+                }
+
                 Set<Executor> setExecutors = (Set<Executor>) responseData.getData();
                 List<Executor> executors = null;
                 if (setExecutors != null) {

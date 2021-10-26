@@ -2946,8 +2946,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                 //通过用户ID获取执行人
                 List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userIds);
-                if(CollectionUtils.isEmpty(executorList)){
-                    return   ResponseData.operationFailure("10038");
+                if (CollectionUtils.isEmpty(executorList)) {
+                    return ResponseData.operationFailure("10038");
                 }
                 for (Executor executor : executorList) {
                     if (StringUtils.isEmpty(employeeNameStr)) {
@@ -3779,11 +3779,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public ResponseData getExecutorsByRequestExecutorsVoAndOrg(List<RequestExecutorsVo> requestExecutorsVos, String businessId, String orgId) {
-
-        if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessId) || StringUtils.isEmpty(orgId)) {
+        if (CollectionUtils.isEmpty(requestExecutorsVos) || StringUtils.isEmpty(businessId) || StringUtils.isEmpty(orgId)) {
             return ResponseData.operationFailure("10006");
         }
-
         List<Executor> executors = null;
         if (requestExecutorsVos.size() == 1) { //流程发起人、指定岗位、指定岗位类别、自定义执行人、任意执行人
             String userType = requestExecutorsVos.get(0).getUserType();
@@ -3813,7 +3811,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return ResponseData.operationFailure("10248");
                 }
             } else if ("AnyOne".equalsIgnoreCase(userType)) { //任意执行人
-
+                return ResponseData.operationSuccess();
             }
         } else if (requestExecutorsVos.size() > 1) { //岗位+组织维度、岗位+组织维度+自定义执行人、岗位类别+组织机构
             String selfDefId = null; //自定义执行人id
@@ -3909,7 +3907,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String businessModelCode = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName();
             return getExecutorsByRequestExecutorsVo(requestExecutorsVos, businessModelCode, businessId);
         } else {
-            if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessId)) {
+            if (CollectionUtils.isEmpty(requestExecutorsVos) || StringUtils.isEmpty(businessId)) {
                 return ResponseData.operationFailure("10006");
             }
             return this.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsVos, businessId, flowInstance.getBusinessOrgId());
@@ -3918,7 +3916,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData getExecutorsByRequestExecutorsVo(List<RequestExecutorsVo> requestExecutorsVos, String businessModelCode, String businessId) {
-        if (requestExecutorsVos == null || requestExecutorsVos.size() == 0 || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
+        if (CollectionUtils.isEmpty(requestExecutorsVos) || StringUtils.isEmpty(businessModelCode) || StringUtils.isEmpty(businessId)) {
             return ResponseData.operationFailure("10006");
         }
 
