@@ -213,6 +213,15 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         JSONObject pocessObj = JSONObject.fromObject(defObj.get("process"));
         JSONObject nodeObj = JSONObject.fromObject(pocessObj.get("nodes"));
 
+        //固化启动不需要人工干涉（金风需求）
+        String solidifyFlowNoHumanIntervention = Constants.getFlowPropertiesByKey("SOLIDIFY_FLOW_NO_HUMAN_INTERVENTION");
+        boolean noHumanIntervention;
+        if (StringUtils.isNotEmpty(solidifyFlowNoHumanIntervention) && "true".equalsIgnoreCase(solidifyFlowNoHumanIntervention)) {
+            noHumanIntervention = true;
+        } else {
+            noHumanIntervention = false;
+        }
+
 
         nodeObj.keySet().forEach(obj -> {
             JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
@@ -262,29 +271,59 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                         bean.setNodeType(nodeType);
                         map.put(id, bean);
                     } else if (executors.size() > 1) {
-                        if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务默认全选
-                            String userIds = "";
-                            for (int i = 0; i < executors.size(); i++) {
-                                if (i == 0) {
-                                    userIds += executors.get(i).getId();
-                                } else {
-                                    userIds += "," + executors.get(i).getId();
+                        if (noHumanIntervention) {//固化启动不需要人工干涉
+                            //多任务都全选，单任务的如果有多人报错
+                            if ("SingleSign".equalsIgnoreCase(nodeType)
+                                    || "CounterSign".equalsIgnoreCase(nodeType)
+                                    || "ParallelTask".equalsIgnoreCase(nodeType)
+                                    || "SerialTask".equalsIgnoreCase(nodeType)) {
+                                String userIds = "";
+                                for (int i = 0; i < executors.size(); i++) {
+                                    if (i == 0) {
+                                        userIds += executors.get(i).getId();
+                                    } else {
+                                        userIds += "," + executors.get(i).getId();
+                                    }
                                 }
+                                SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                                bean.setActTaskDefKey(id);
+                                bean.setExecutorIds(userIds);
+                                bean.setNodeType(nodeType);
+                                map.put(id, bean);
+                            } else {
+                                List<String> userNames = executors.stream().map(e -> e.getName()).collect(Collectors.toList());
+                                LogUtil.error("固化启动检查【{}】节点请求执行人失败：{}", nodeName, "单执行人节点返回了多执行人为" + userNames.toString() + "！");
+                                throw new FlowException(ContextUtil.getMessage("10387", nodeName, "单执行人节点返回了多执行人为" + userNames.toString() + "！"));
                             }
-                            SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
-                            bean.setActTaskDefKey(id);
-                            bean.setExecutorIds(userIds);
-                            bean.setNodeType(nodeType);
-                            map.put(id, bean);
                         } else {
-                            //需要人工干涉
-                            map.put("humanIntervention", null);
+                            if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务默认全选
+                                String userIds = "";
+                                for (int i = 0; i < executors.size(); i++) {
+                                    if (i == 0) {
+                                        userIds += executors.get(i).getId();
+                                    } else {
+                                        userIds += "," + executors.get(i).getId();
+                                    }
+                                }
+                                SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                                bean.setActTaskDefKey(id);
+                                bean.setExecutorIds(userIds);
+                                bean.setNodeType(nodeType);
+                                map.put(id, bean);
+                            } else {
+                                //需要人工干涉
+                                map.put("humanIntervention", null);
+                            }
                         }
-
                     }
                 } else {
-                    //需要人工干涉
-                    map.put("humanIntervention", null);
+                    if (noHumanIntervention) {//固化启动不需要人工干涉
+                        LogUtil.error("固化启动检查【{}】节点请求执行人失败：执行人为空！", nodeName);
+                        throw new FlowException(ContextUtil.getMessage("10387", nodeName, "执行人为空！"));
+                    } else {
+                        //需要人工干涉
+                        map.put("humanIntervention", null);
+                    }
                 }
             }
         });
