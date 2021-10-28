@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.flow.dto.PortalFlowHistory;
 import com.ecmp.flow.dto.PortalFlowTask;
 import com.ecmp.flow.dto.PortalFlowTaskParam;
@@ -12,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -40,8 +42,12 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
     @Test
     public void getPortalFlowTask() {
         PortalFlowTaskParam param = new PortalFlowTaskParam();
-        param.setModelId("838651D7-325F-11E8-BE29-0242C0A84204");
+        param.setModelId("6C0B8FB-D993-11E7-BD3F-6C498F234A3D");
         param.setRecordCount(10);
+        List<SearchOrder> searchOrders = new ArrayList<>();
+        SearchOrder s = new SearchOrder("createdDate", SearchOrder.Direction.ASC);
+        searchOrders.add(s);
+        param.setSearchOrders(searchOrders);
         List<PortalFlowTask> tasks = service.getPortalFlowTask(param);
         Assert.assertTrue(CollectionUtils.isNotEmpty(tasks));
         System.out.println(JsonUtils.toJson(tasks));

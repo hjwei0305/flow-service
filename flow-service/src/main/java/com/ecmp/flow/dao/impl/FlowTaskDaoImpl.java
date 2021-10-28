@@ -131,12 +131,10 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         if (StringUtils.isNotEmpty(businessModelId)) {
             hqlCount += "and ft.flowDefinitionId " +
                     "in (select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
-                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
-                    "in (select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId))) ";
+                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId )) ";
             hqlQuery += "and ft.flowDefinitionId " +
                     "in (select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
-                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
-                    "in ( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId))) ";
+                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId )) ";
         }
 
         if (!CollectionUtils.isEmpty(powerList)) { //共同查看模式转授权信息不为空
@@ -340,12 +338,10 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
         if (StringUtils.isNotEmpty(businessModelId)) {
             hqlCount += "and ft.flowDefinitionId " +
                     "in (select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
-                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
-                    "in (select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId))) ";
+                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId )) ";
             hqlQuery += "and ft.flowDefinitionId " +
                     "in (select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id " +
-                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id " +
-                    "in ( select bm.id from com.ecmp.flow.entity.BusinessModel bm where bm.id = :businessModelId))) ";
+                    "in (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId)) ";
         }
 
         if (!CollectionUtils.isEmpty(powerList)) { //共同查看模式转授权信息不为空
