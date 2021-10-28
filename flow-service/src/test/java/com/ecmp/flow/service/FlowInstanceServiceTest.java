@@ -30,9 +30,17 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     private FlowInstanceService service;
 
     @Test
+    public void getCanToHistoryNodeInfos(){
+        ResponseData responseData = service.getCanToHistoryNodeInfos("3417325C-BC6B-11EB-87A2-0242C0A8462A");
+        System.out.println(JsonUtils.toJson(responseData));
+    }
+
+
+    @Test
     public void endCommon() {
         service.endCommon("D4D4FE95-A884-11EB-AD06-0242C0A8462A", false);
     }
+
 
     @Test
     public void jumpToTargetNode() {

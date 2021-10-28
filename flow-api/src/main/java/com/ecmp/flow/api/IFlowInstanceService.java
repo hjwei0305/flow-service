@@ -4,6 +4,7 @@ import com.ecmp.core.search.PageResult;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dto.CanToHistoryNode;
 import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.entity.FlowInstance;
@@ -125,6 +126,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过业务单据id获取单据最近一次流程实例的流程历史记录", notes = "通过业务单据id获取单据最近一次流程实例的流程历史记录")
     List<FlowHistory> findLastHisByBusinessId(@QueryParam("businessId") String businessId);
+
+
+    /**
+     * 能到达的历史节点信息集合
+     * @param businessId 业务单据ID
+     * @return 流程执行历史
+     */
+    @GET
+    @Path("getCanToHistoryNodeInfos")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "能到达的历史节点信息集合", notes = "能到达的历史节点信息集合")
+    ResponseData<List<CanToHistoryNode>>  getCanToHistoryNodeInfos(@QueryParam("businessId") String businessId);
+
 
 
     /**

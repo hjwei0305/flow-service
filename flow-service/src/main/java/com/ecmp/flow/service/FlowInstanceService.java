@@ -10,6 +10,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dto.CanToHistoryNode;
 import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
@@ -19,6 +20,7 @@ import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.DateUtils;
+import com.ecmp.util.IdGenerator;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -231,6 +233,115 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         return flowHistoryList;
     }
+
+
+    @Override
+    public ResponseData<List<CanToHistoryNode>> getCanToHistoryNodeInfos(String businessId) {
+        //流程中如果存在未终止的实例，肯定是最后一个
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if (flowInstance != null) {
+            if (flowInstance.isEnded()) {
+                //流程实例已结束！
+                return ResponseData.operationFailure("10389");
+            }
+            String currentNodeKey;
+            List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+            if (CollectionUtils.isEmpty(flowTaskList)) {
+                //未获取到流程待办！
+                return ResponseData.operationFailure("10390");
+            } else if (flowTaskList.size() == 1) {
+                currentNodeKey = flowTaskList.get(0).getActTaskDefKey();
+            } else {
+                FlowTask noSameTask = flowTaskList.stream().filter(task -> !flowTaskList.get(0).getActTaskDefKey().equals(task.getActTaskDefKey())).findFirst().orElse(null);
+                if (noSameTask == null) {
+                    currentNodeKey = flowTaskList.get(0).getActTaskDefKey();
+                } else {
+                    //流程存在不同的任务，可能处于并行网关中！
+                    return ResponseData.operationFailure("10388");
+                }
+            }
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+            String flowDefJson = flowInstance.getFlowDefVersion().getDefJson();
+            JSONObject defObj = JSONObject.fromObject(flowDefJson);
+            Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+            JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentNodeKey);
+            List<NodeInfo> allExitNodeInfo = new ArrayList<>();
+            findAllExitNodesInfo(allExitNodeInfo,definition,currentNode);
+            List<CanToHistoryNode> resultList = new ArrayList<>();
+            allExitNodeInfo.forEach(node ->{
+                FlowHistory history = flowHistoryList.stream().filter(his->node.getId().equalsIgnoreCase(his.getActTaskDefKey())).findFirst().orElse(null);
+                if(history!=null){
+                    CanToHistoryNode canToHistoryNode = new CanToHistoryNode();
+                    canToHistoryNode.setId(history.getId());
+                    canToHistoryNode.setFlowName(history.getFlowName());
+                    canToHistoryNode.setFlowTaskName(history.getFlowTaskName());
+                    canToHistoryNode.setCreatedDate(history.getCreatedDate());
+                    canToHistoryNode.setDepict(history.getDepict());
+                    canToHistoryNode.setExecutorId(history.getExecutorId());
+                    canToHistoryNode.setExecutorName(history.getExecutorName());
+                    canToHistoryNode.setExecutorAccount(history.getExecutorAccount());
+                    try{
+                        JSONObject jsonObject = JSONObject.fromObject(history.getTaskJsonDef());
+                        JSONObject normalInfo = jsonObject.getJSONObject("nodeConfig").getJSONObject("normal");
+                        String nodeCode = normalInfo.getString("poolTaskCode");
+                        canToHistoryNode.setPoolTaskCode(nodeCode);
+                    }catch (Exception e){
+                    }
+                    resultList.add(canToHistoryNode);
+                }else{
+                    if("StartUser".equalsIgnoreCase(node.getUiUserType())){ // 执行人为发起人
+                        CanToHistoryNode canToHistoryNode = new CanToHistoryNode();
+                        canToHistoryNode.setId(IdGenerator.uuid());
+                        canToHistoryNode.setFlowName(flowInstance.getFlowName());
+                        canToHistoryNode.setFlowTaskName(node.getName());
+                        canToHistoryNode.setCreatedDate(new Date());
+                        canToHistoryNode.setDepict("【执行人为流程发起人的节点】");
+                        canToHistoryNode.setExecutorId(flowInstance.getCreatorId());
+                        canToHistoryNode.setExecutorName(flowInstance.getCreatorName());
+                        canToHistoryNode.setExecutorAccount(flowInstance.getCreatorAccount());
+                        resultList.add(canToHistoryNode);
+                    }
+                }
+            });
+          return ResponseData.operationSuccessWithData(resultList);
+        } else {
+            //通过参数获取流程实例失败！
+            return ResponseData.operationFailure("10249");
+        }
+    }
+
+
+    public List<NodeInfo> findAllExitNodesInfo(List<NodeInfo> result, Definition definition, JSONObject jsonObjectNode) {
+        JSONArray targetNodes = jsonObjectNode.getJSONArray("target"); //获取所有出口信息
+        for (int j = 0; j < targetNodes.size(); j++) {
+            JSONObject jsonObject = targetNodes.getJSONObject(j);
+            String targetId = jsonObject.getString("targetId");
+            JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(targetId);
+            if (targetId.contains("Gateway")) {
+                 List<NodeInfo> resultGateway = new ArrayList<>();
+                 this.findAllExitNodesInfo(resultGateway, definition, currentNode);
+                 result.addAll(resultGateway);
+            } else {
+                NodeInfo newNode = new NodeInfo();
+                newNode.setId(currentNode.get("id")+"");
+                newNode.setName(currentNode.get("name")+"");
+                try {
+                    JSONArray executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
+                    if (executorList != null && executorList.size() == 1) {
+                        JSONObject executor = executorList.getJSONObject(0);
+                        String userType =  (String)executor.get("userType");
+                        if("StartUser".equalsIgnoreCase(userType)){
+                            newNode.setUiUserType("StartUser");
+                        }
+                    }
+                } catch (Exception e2) {
+                }
+                result.add(newNode);
+            }
+        }
+        return  result;
+    }
+
 
     //因为中泰时间服务器问题，所以不能按照时间倒序查询
     public FlowInstance findLastInstanceByBusinessId(String businessId) {
@@ -1073,7 +1184,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (StringUtils.isEmpty(poolTaskActDefId)) {
             return OperateResultWithData.operationFailure("10032");
         }
-        OperateResultWithData<FlowTask> result ;
+        OperateResultWithData<FlowTask> result;
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance != null && !flowInstance.isEnded()) {
             String actInstanceId = flowInstance.getActInstanceId();
@@ -1094,7 +1205,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (StringUtils.isEmpty(poolTaskActDefId)) {
             return OperateResultWithData.operationFailure("10032");
         }
-        OperateResultWithData<FlowStatus> result ;
+        OperateResultWithData<FlowStatus> result;
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance != null && !flowInstance.isEnded()) {
             OperateResultWithData<FlowTask> resultSignal = signalPoolTaskByBusinessIdWithResult(businessId, poolTaskActDefId, userId, flowTaskCompleteVO.getVariables());
@@ -1193,7 +1304,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
                     //保证在并行网关中终止的时候，也能获取到终止的参数
                     Map<String, Object> variables = new HashMap<>();
-                    variables.put("deleteReason",deleteReason);
+                    variables.put("deleteReason", deleteReason);
                     runtimeService.setVariables(actInstanceId, variables);
                     //在并行网关中终止原因传不到监听器，导致终止时要调用节点后事件
                     this.deleteActiviti(actInstanceId, deleteReason);
@@ -1205,8 +1316,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     //重置客户端表单流程状态
                     String businessId = fTemp.getBusinessId();
                     BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-                    ResponseData resetResult =   ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INIT);
-                    if(!resetResult.getSuccess()){
+                    ResponseData resetResult = ExpressionUtil.resetState(businessModel, businessId, FlowStatus.INIT);
+                    if (!resetResult.getSuccess()) {
                         throw new FlowException(ContextUtil.getMessage("10360", resetResult.getMessage()));
                     }
 
@@ -1473,7 +1584,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
             responseData = this.getMyBills(search);
         } else {
-            return ResponseData.operationFailure("10134","search");
+            return ResponseData.operationFailure("10134", "search");
         }
         if (responseData.getSuccess()) {
             PageResult<MyBillVO> results = (PageResult<MyBillVO>) responseData.getData();
@@ -1502,7 +1613,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 listFilter.add(new SearchFilter("flowDefVersion.flowDefination.flowType.businessModel.id", modelId, SearchFilter.Operator.EQ));
                 return this.getMyBills(search);
             } else {
-                return ResponseData.operationFailure("10134","search");
+                return ResponseData.operationFailure("10134", "search");
             }
         }
     }
@@ -1636,7 +1747,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 return ResponseData.operationFailure(e.getMessage());
             }
         } else {
-            return ResponseData.operationFailure("10134","search");
+            return ResponseData.operationFailure("10134", "search");
         }
     }
 
@@ -1910,7 +2021,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newRemark = updateInstanceRemarkVo.getUpdateRemark();
                 }
                 if (StringUtils.isNotEmpty(newRemark) && newRemark.length() > 2000) {
-                    return ResponseData.operationFailure("10136" , newRemark.length());
+                    return ResponseData.operationFailure("10136", newRemark.length());
                 }
                 flowInstance.setBusinessModelRemark(newRemark);
             }
@@ -1958,7 +2069,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 redisTemplate.expire("taskCompensation_" + instanceId, 10 * 60, TimeUnit.SECONDS);
                 remainingTime = 600L;
             }
-            throw new FlowException(ContextUtil.getMessage("10132",remainingTime));
+            throw new FlowException(ContextUtil.getMessage("10132", remainingTime));
         }
 
         try {
