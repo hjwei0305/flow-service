@@ -168,6 +168,17 @@ public interface IBusinessModelService extends IBaseService<BusinessModel, Strin
 
 
     /**
+     * 通过流程实例ID获取表单明细（移动端专用）
+     *
+     */
+    @POST
+    @Path("getPropertiesByInsIdOfModile")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过流程实例ID获取表单明细（移动端专用）", notes = "通过流程实例ID获取表单明细（移动端专用）")
+    ResponseData getPropertiesByInsIdOfModile(@QueryParam("instanceId")String instanceId);
+
+    /**
      * 通过历史ID获取表单明细（移动端专用）
      *
      */
