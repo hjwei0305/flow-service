@@ -4765,5 +4765,37 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             return ResponseData.operationFailure("10006");
         }
     }
+
+
+    @Override
+    public ResponseData returnToSpecifiedNode(ReturnToSpecifiedNode params) {
+        if(params==null){
+            //请求参数不能为空！
+            return ResponseData.operationFailure("10006");
+        }
+        String nodeId = params.getNodeId();
+        if(StringUtils.isEmpty(nodeId)){
+            //需要退回的节点ID不能为空！
+            return ResponseData.operationFailure("10391");
+        }
+        String taskId =  params.getTaskId();
+        if(StringUtils.isEmpty(taskId)){
+            //参数任务ID不能为空！
+            return ResponseData.operationFailure("10392");
+        }
+        String opinion = params.getOpinion();
+        if(StringUtils.isEmpty(opinion)){
+            //参数退回原因不能为空！
+            return ResponseData.operationFailure("10393");
+        }
+        boolean  allowJumpBack = false;
+        if(BooleanUtils.isTrue(params.getAllowJumpBack())){
+            allowJumpBack = true;
+        }
+
+
+
+        return ResponseData.operationSuccess();
+    }
 }
 

@@ -970,5 +970,15 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     ResponseData<List<FlowNodeVO>> getCanReturnNodeInfos(@QueryParam("taskId") String taskId);
 
 
-
+    /**
+     * 退回到指定节点
+     * @param params
+     * @return  是否退回成功
+     */
+    @POST
+    @Path("returnToSpecifiedNode")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "退回到指定节点", notes = "退回到指定节点")
+    ResponseData  returnToSpecifiedNode(ReturnToSpecifiedNode params);
 }
