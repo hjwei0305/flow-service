@@ -3123,6 +3123,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     flowTask.setTrustState(1);
                     newFlowTask.setTrustState(2);
                     newFlowTask.setTrustOwnerTaskId(flowTask.getId());
+
+
+                    //委托任务不能退回
+                    String taskJsonDef = newFlowTask.getTaskJsonDef();
+                    JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                    JSONObject nodeConfig = taskJsonDefObj.getJSONObject("nodeConfig");
+                    JSONObject normalInfo = nodeConfig.getJSONObject("normal");
+                    normalInfo.put("allowReturn",false);
+                    nodeConfig.put("normal",normalInfo);
+                    taskJsonDefObj.put("nodeConfig",nodeConfig);
+                    newFlowTask.setTaskJsonDef(taskJsonDefObj.toString());
+
+
                     //是否推送信息到baisc
                     Boolean pushBasic = this.getBooleanPushTaskToBasic();
                     List<FlowTask> needDelList = new ArrayList<>(); //需要删除的待办
