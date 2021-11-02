@@ -697,8 +697,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             String OverPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowTask.getDepict());
             flowTask.setDepict(OverPowerStr + opinion);
             Integer reject = null;
+            Integer returnS = null;
             Boolean manageSolidifyFlow = false;
             if (variables != null) {
+                //驳回
                 Object rejectO = variables.get("reject");
                 if (rejectO != null) {
                     try {
@@ -706,6 +708,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     } catch (Exception e) {
                     }
                 }
+                //退回
+                Object returnSo = variables.get("return");
+                if (returnSo != null) {
+                    try {
+                        returnS = Integer.parseInt(returnSo.toString());
+                    } catch (Exception e) {
+                    }
+                }
+
                 Object manageSolidifyFlowO = variables.get("manageSolidifyFlow");
                 if (manageSolidifyFlowO != null) {
                     manageSolidifyFlow = Boolean.parseBoolean(manageSolidifyFlowO.toString());
@@ -714,6 +725,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (reject != null && reject == 1) {
                 flowTask.setDepict("【被驳回】" + flowTask.getDepict());
                 flowTask.setTaskStatus(TaskStatus.REJECT.toString());
+                flowTask.setPriority(1);
+            } else if (returnS != null && returnS == 1) {
+                flowTask.setDepict("【被退回】" + flowTask.getDepict());
+                flowTask.setTaskStatus(TaskStatus.RETURN.toString());
                 flowTask.setPriority(1);
             } else {
                 flowTask.setTaskStatus(TaskStatus.COMPLETED.toString());
@@ -4846,7 +4861,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             variables.putAll(variablesTask);
         }
 
-        variables.put("allowJumpBack", allowJumpBack);
+        variables.put("return", 1); //退回
+        variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
         //完成任务
         this.complete(currentTask.getId(), opinion, variables);
 

@@ -39,7 +39,9 @@ public enum FlowExecuteStatus implements Serializable {
 
     AUTO("auto", "自动执行"),
 
-    HAVEREAD("haveRead", "已阅");
+    HAVEREAD("haveRead", "已阅"),
+
+    RETURN("return", "退回");
 
 
     private String code;

@@ -24,7 +24,8 @@ public enum TaskStatus {
     REJECT("reject"),
     SUSPEND("suspend"),
     DELETE("delete"),
-    VIRTUAL("virtual");
+    VIRTUAL("virtual"),
+    RETURN("return");
 
     private String value;
 

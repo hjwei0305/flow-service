@@ -2694,6 +2694,8 @@ public class FlowTaskTool {
 
         if (TaskStatus.REJECT.toString().equalsIgnoreCase(flowTask.getTaskStatus())) { //驳回
             flowHistory.setFlowExecuteStatus(FlowExecuteStatus.REJECT.getCode());
+        } else if(TaskStatus.RETURN.toString().equalsIgnoreCase(flowTask.getTaskStatus())){ //退回
+            flowHistory.setFlowExecuteStatus(FlowExecuteStatus.RETURN.getCode());
         } else { //其他就是TaskStatus.COMPLETED.toString()
             try {
                 String approved = (String) variables.get("approved");
