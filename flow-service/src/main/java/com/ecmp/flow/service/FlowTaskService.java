@@ -4801,8 +4801,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (StringUtils.isEmpty(opinion)) {
             //参数退回原因不能为空！
             return ResponseData.operationFailure("10393");
-        } else {
-            opinion = "【退回：" + opinion + "】";
         }
         boolean allowJumpBack = false;
         if (BooleanUtils.isTrue(params.getAllowJumpBack())) {
@@ -4852,14 +4850,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         newTransition.setDestination(targetActivity);
 
         Map<String, Object> variables = new HashMap<>();
-        Map variablesProcess = instance.getProcessVariables();
-        Map variablesTask = currTask.getTaskLocalVariables();
-        if (!CollectionUtils.isEmpty(variablesProcess)) {
-            variables.putAll(variablesProcess);
-        }
-        if (!CollectionUtils.isEmpty(variablesTask)) {
-            variables.putAll(variablesTask);
-        }
+//        Map variablesProcess = instance.getProcessVariables();
+//        Map variablesTask = currTask.getTaskLocalVariables();
+//        if (!CollectionUtils.isEmpty(variablesProcess)) {
+//            variables.putAll(variablesProcess);
+//        }
+//        if (!CollectionUtils.isEmpty(variablesTask)) {
+//            variables.putAll(variablesTask);
+//        }
 
         variables.put("return", 1); //退回
         variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
