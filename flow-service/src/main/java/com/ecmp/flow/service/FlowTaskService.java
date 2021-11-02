@@ -2964,6 +2964,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (CollectionUtils.isEmpty(executorList)) {
                     return ResponseData.operationFailure("10038");
                 }
+
+                //委托任务不能退回
+                String taskJsonDef = flowTask.getTaskJsonDef();
+                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                JSONObject nodeConfig = taskJsonDefObj.getJSONObject("nodeConfig");
+                JSONObject normalInfo = nodeConfig.getJSONObject("normal");
+                normalInfo.put("allowReturn",false);
+                nodeConfig.put("normal",normalInfo);
+                taskJsonDefObj.put("nodeConfig",nodeConfig);
+
+
                 for (Executor executor : executorList) {
                     if (StringUtils.isEmpty(employeeNameStr)) {
                         employeeNameStr += executor.getName();
@@ -3006,6 +3017,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setPreId(flowHistory.getId());
                     newFlowTask.setTrustState(2);
                     newFlowTask.setTrustOwnerTaskId(flowTask.getId());
+                    //委托任务去掉退回按钮
+                    newFlowTask.setTaskJsonDef(taskJsonDefObj.toString());
+
                     flowTaskDao.save(newFlowTask);
                     if (pushBasic) {
                         needAddList.add(newFlowTask);
