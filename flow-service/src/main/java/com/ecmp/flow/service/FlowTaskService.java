@@ -4727,5 +4727,43 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+    @Override
+    public ResponseData<List<FlowNodeVO>> getCanReturnNodeInfos(String taskId) {
+        if (StringUtils.isNotEmpty(taskId)) {
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            if (flowTask != null) {
+                List<FlowNodeVO> returnList = new ArrayList<>();
+                String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
+                if (defJson.contains("ParallelGateway") || defJson.contains("InclusiveGateway")) {
+                    return ResponseData.operationFailure("系统暂不支持包含并行网关或包容网关的退回操作！");
+                } else {
+                    List<FlowHistory> historyList = flowHistoryService.findByInstanceId(flowTask.getFlowInstance().getId());
+                    if (!CollectionUtils.isEmpty(historyList)) {
+                        for (FlowHistory history : historyList) {
+                            String actTaskDefKey = history.getActTaskDefKey();
+                            //历史的人工节点(非本节点)
+                            if (actTaskDefKey.contains("UserTask") && !actTaskDefKey.equals(flowTask.getActTaskDefKey())) {
+                                if (CollectionUtils.isEmpty(returnList)) {
+                                    returnList.add(new FlowNodeVO(actTaskDefKey, history.getFlowTaskName(), ""));
+                                } else {
+                                    FlowNodeVO nodeVO = returnList.stream().filter(node -> node.getId().equals(actTaskDefKey)).findFirst().orElse(null);
+                                    if (nodeVO == null) {
+                                        returnList.add(new FlowNodeVO(actTaskDefKey, history.getFlowTaskName(), ""));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return ResponseData.operationSuccessWithData(returnList);
+                }
+            } else {
+                //任务不存在，可能已经被处理!
+                return ResponseData.operationFailure("10033");
+            }
+        } else {
+            //请求参数不能为空！
+            return ResponseData.operationFailure("10006");
+        }
+    }
 }
 

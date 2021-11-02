@@ -30,6 +30,15 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowDefinationService flowDefinationService;
 
+
+
+    @Test
+    public void getCanReturnNodeInfos(){
+        ResponseData<List<FlowNodeVO>> responseData =   service.getCanReturnNodeInfos("7F020E25-3B7B-11EC-BB4A-0242C0A84611");
+        System.out.println(ApiJsonUtils.toJson(responseData));
+    }
+
+
     @Test
     public void findNextNodes() {
         try {

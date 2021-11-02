@@ -957,4 +957,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     ResponseData automatingTaskByBusinessId(@QueryParam("businessId") String businessId);
 
 
+
+    /**
+     * 获取可以退回的节点信息
+     *
+     * @param taskId 待办任务ID
+     * @return 可以退回的节点信息集合
+     */
+    @GET
+    @Path("getCanReturnNodeInfos")
+    @ApiOperation(value = "获取可以退回的节点信息", notes = "获取可以退回的节点信息")
+    ResponseData<List<FlowNodeVO>> getCanReturnNodeInfos(@QueryParam("taskId") String taskId);
+
+
+
 }
