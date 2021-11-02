@@ -4818,10 +4818,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Transactional(propagation = Propagation.REQUIRED)
     public ResponseData returnToNode(String taskId, boolean allowJumpBack, String opinion, String nodeId) throws Exception {
-        FlowTask currentTask = flowTaskDao.findOne(taskId);
+        FlowTask flowTask = flowTaskDao.findOne(taskId);
+
+        String taskJsonDef = flowTask.getTaskJsonDef();
+        JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+        JSONObject normalInfo = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal");
+        String nodeType = taskJsonDefObj.get("nodeType") + "";
 
         // 取得当前任务
-        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId()).singleResult();
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult();
+
+        if ("CounterSign".equalsIgnoreCase(nodeType)) {//会签任务做处理判断
+            String executionId = currTask.getExecutionId();
+            Map<String, VariableInstance> processVariables = runtimeService.getVariableInstances(executionId);
+            //总循环次数
+            Integer instanceOfNumbers = (Integer) processVariables.get("nrOfInstances").getValue();
+            //并串行会签（false为并行：并行将已生成的待办转已办，串行在最后人审批中记录）
+            Boolean isSequential = normalInfo.getBoolean("isSequential");
+            //清除其他会签执行人
+            flowTaskTool.counterSignImmediatelyEnd(flowTask, flowTask.getFlowInstance(), null, isSequential, executionId, instanceOfNumbers);
+        }
+
+
         // 取得流程实例
         ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
         if (instance == null) {
@@ -4834,8 +4852,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             //退回失败：流程定义获取失败！
             return OperateResult.operationFailure("10395");
         }
+
         // 取得当前任务节点的活动
-        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition).findActivity(currentTask.getActTaskDefKey());
+        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition).findActivity(flowTask.getActTaskDefKey());
         ActivityImpl targetActivity = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
         //取活动，清除活动方向
         List<PvmTransition> oriPvmTransitionList = new ArrayList<>();
@@ -4850,19 +4869,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         newTransition.setDestination(targetActivity);
 
         Map<String, Object> variables = new HashMap<>();
-//        Map variablesProcess = instance.getProcessVariables();
-//        Map variablesTask = currTask.getTaskLocalVariables();
-//        if (!CollectionUtils.isEmpty(variablesProcess)) {
-//            variables.putAll(variablesProcess);
-//        }
-//        if (!CollectionUtils.isEmpty(variablesTask)) {
-//            variables.putAll(variablesTask);
-//        }
+
 
         variables.put("return", 1); //退回
         variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
         //完成任务
-        this.complete(currentTask.getId(), opinion, variables);
+        this.complete(flowTask.getId(), opinion, variables);
 
         //恢复方向
         targetActivity.getIncomingTransitions().remove(newTransition);
