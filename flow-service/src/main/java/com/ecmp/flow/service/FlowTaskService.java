@@ -4462,7 +4462,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         TransitionImpl newTransition = currentActivity.createOutgoingTransition();
         //取得转向的目标
         newTransition.setDestination(targetActivity);
-
         //完成任务
         this.complete(currentTask.getId(), jumpOpinion, variables);
 
@@ -4769,33 +4768,98 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData returnToSpecifiedNode(ReturnToSpecifiedNode params) {
-        if(params==null){
+        if (params == null) {
             //请求参数不能为空！
             return ResponseData.operationFailure("10006");
         }
         String nodeId = params.getNodeId();
-        if(StringUtils.isEmpty(nodeId)){
+        if (StringUtils.isEmpty(nodeId)) {
             //需要退回的节点ID不能为空！
             return ResponseData.operationFailure("10391");
         }
-        String taskId =  params.getTaskId();
-        if(StringUtils.isEmpty(taskId)){
+        String taskId = params.getTaskId();
+        if (StringUtils.isEmpty(taskId)) {
             //参数任务ID不能为空！
             return ResponseData.operationFailure("10392");
         }
         String opinion = params.getOpinion();
-        if(StringUtils.isEmpty(opinion)){
+        if (StringUtils.isEmpty(opinion)) {
             //参数退回原因不能为空！
             return ResponseData.operationFailure("10393");
+        } else {
+            opinion = "【退回：" + opinion + "】";
         }
-        boolean  allowJumpBack = false;
-        if(BooleanUtils.isTrue(params.getAllowJumpBack())){
+        boolean allowJumpBack = false;
+        if (BooleanUtils.isTrue(params.getAllowJumpBack())) {
             allowJumpBack = true;
         }
 
+        try {
+            return this.returnToNode(taskId, allowJumpBack, opinion, nodeId);
+        } catch (Exception e) {
+            LogUtil.error("退回失败:" + e.getMessage(), e);
+            return ResponseData.operationFailure("10396", e.getMessage());
+        }
+    }
 
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseData returnToNode(String taskId, boolean allowJumpBack, String opinion, String nodeId) throws Exception {
+        FlowTask currentTask = flowTaskDao.findOne(taskId);
+
+        // 取得当前任务
+        HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(currentTask.getActTaskId()).singleResult();
+        // 取得流程实例
+        ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(currTask.getProcessInstanceId()).singleResult();
+        if (instance == null) {
+            //退回失败：流程实例不存在！
+            return OperateResult.operationFailure("10394");
+        }
+        // 取得流程定义
+        ProcessDefinitionEntity definition = (ProcessDefinitionEntity) ((RepositoryServiceImpl) repositoryService).getDeployedProcessDefinition(currTask.getProcessDefinitionId());
+        if (definition == null) {
+            //退回失败：流程定义获取失败！
+            return OperateResult.operationFailure("10395");
+        }
+        // 取得当前任务节点的活动
+        ActivityImpl currentActivity = ((ProcessDefinitionImpl) definition).findActivity(currentTask.getActTaskDefKey());
+        ActivityImpl targetActivity = ((ProcessDefinitionImpl) definition).findActivity(nodeId);
+        //取活动，清除活动方向
+        List<PvmTransition> oriPvmTransitionList = new ArrayList<>();
+        List<PvmTransition> pvmTransitionList = currentActivity.getOutgoingTransitions();
+        for (PvmTransition pvmTransition : pvmTransitionList) {
+            oriPvmTransitionList.add(pvmTransition);
+        }
+        pvmTransitionList.clear();
+        //建立新方向
+        TransitionImpl newTransition = currentActivity.createOutgoingTransition();
+        //取得转向的目标
+        newTransition.setDestination(targetActivity);
+
+        Map<String, Object> variables = new HashMap<>();
+        Map variablesProcess = instance.getProcessVariables();
+        Map variablesTask = currTask.getTaskLocalVariables();
+        if (!CollectionUtils.isEmpty(variablesProcess)) {
+            variables.putAll(variablesProcess);
+        }
+        if (!CollectionUtils.isEmpty(variablesTask)) {
+            variables.putAll(variablesTask);
+        }
+
+        variables.put("allowJumpBack", allowJumpBack);
+        //完成任务
+        this.complete(currentTask.getId(), opinion, variables);
+
+        //恢复方向
+        targetActivity.getIncomingTransitions().remove(newTransition);
+        List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
+        pvmTList.clear();
+        for (PvmTransition pvmTransition : oriPvmTransitionList) {
+            pvmTransitionList.add(pvmTransition);
+        }
         return ResponseData.operationSuccess();
     }
+
+
 }
 
