@@ -4820,6 +4820,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public ResponseData returnToNode(String taskId, boolean allowJumpBack, String opinion, String nodeId) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(taskId);
 
+        if (flowTask.getTrustState() != null) {
+            if (flowTask.getTrustState() == 1) {
+                //当前任务已委托出去，等待委托方处理后才能处理！
+                return OperateResultWithData.operationFailure("10199");
+            } else if (flowTask.getTrustState() == 2) {
+                //退回失败：委托任务不能直接进行退回操作，需要先返回委托方进行处理！
+                return OperateResultWithData.operationFailure("10397");
+            }
+        }
+
         String taskJsonDef = flowTask.getTaskJsonDef();
         JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
         JSONObject normalInfo = taskJsonDefObj.getJSONObject("nodeConfig").getJSONObject("normal");
