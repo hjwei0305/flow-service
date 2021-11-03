@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import javax.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -62,10 +63,10 @@ public class FlowDesignService implements IFlowDesignService {
     @Override
     public ResponseData getEntity(String id, Integer versionCode, String businessModelCode, String businessId) {
         if (StringUtils.isEmpty(id)) {
-            return ResponseData.operationFailure("10113","id");
+            return ResponseData.operationFailure("10113", "id");
         }
         if (versionCode == null) {
-            return ResponseData.operationFailure("10113","versionCode");
+            return ResponseData.operationFailure("10113", "versionCode");
         }
         try {
             FlowDefVersion data = flowDefinationService.getFlowDefVersion(id, versionCode, businessModelCode, businessId);
@@ -77,6 +78,64 @@ public class FlowDesignService implements IFlowDesignService {
     }
 
 
+    /**
+     * 验证流程图是否合规,并且对有并行网关和包容网关的流程写标记
+     *
+     * @param def 流程图json字符串
+     * @return
+     */
+    public ResponseData checkFlowJson(String def) throws Exception {
+        JSONObject defObj = JSONObject.fromObject(def);
+        JSONObject processObj = defObj.getJSONObject("process");
+        JSONObject nodesObj = processObj.getJSONObject("nodes");
+        //找到起点节点并且检查并行网关和包容网关是否成对
+        ResponseData checkRes = getStartNodeKey(nodesObj);
+        if (checkRes.getSuccess()) {
+            String startKey = (String) checkRes.getData();
+
+
+
+
+            return  ResponseData.operationSuccessWithData(defObj.toString());
+        } else {
+            return checkRes;
+        }
+    }
+
+
+    /**
+     * 找到起点节点并且检查并行网关和包容网关是否成对
+     *
+     * @param nodesObj
+     * @return
+     */
+    public ResponseData getStartNodeKey(JSONObject nodesObj) {
+        Iterator iterator = nodesObj.keys();
+        String startNodeKey = "";
+        int parallelGateway = 0; //并行网关个数
+        int inclusiveGateway = 0;//包容网关个数
+        if (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            if (key.equalsIgnoreCase("StartEvent")) {
+                startNodeKey = key;
+            } else if (key.equalsIgnoreCase("ParallelGateway")) {
+                ++parallelGateway;
+            } else if (key.equalsIgnoreCase("InclusiveGateway")) {
+                ++inclusiveGateway;
+            }
+        }
+        if (parallelGateway % 2 != 0) {
+            //并行网关必须成对使用，当前流程定义只有【{0}】个并行网关！
+            return  ResponseData.operationFailure("10399",parallelGateway);
+        }
+        if(inclusiveGateway % 2 !=0){
+            //包容网关必须成对使用，当前流程定义只有【{0}】个包容网关！
+            return  ResponseData.operationFailure("10400",parallelGateway);
+        }
+        return ResponseData.operationSuccessWithData(startNodeKey);
+    }
+
+
     @Override
     public ResponseData save(SaveEntityVo entityVo) throws JAXBException, UnsupportedEncodingException, CloneNotSupportedException {
         String def = entityVo.getDef();
@@ -84,7 +143,7 @@ public class FlowDesignService implements IFlowDesignService {
         if (StringUtils.isNotEmpty(def) || deploy != null) {
             JSONObject defObj = JSONObject.fromObject(def);
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
-            if(StringUtils.isNotEmpty(entityVo.getFlowDefinationId())){
+            if (StringUtils.isNotEmpty(entityVo.getFlowDefinationId())) {
                 //仅用于数据同步后的统一发布
                 definition.setId(entityVo.getFlowDefinationId());
             }
@@ -93,6 +152,20 @@ public class FlowDesignService implements IFlowDesignService {
             if (!id.matches(reg)) {
                 return ResponseData.operationFailure("10115");
             }
+
+            //验证流程图是否合规,并且对有并行网关和包容网关的流程写标记
+            try {
+                ResponseData checkRes = checkFlowJson(def);
+                if (checkRes.getSuccess()) {
+                    def = (String) checkRes.getData();
+                } else {
+                    return checkRes;
+                }
+            } catch (Exception e) {
+                LogUtil.error("验证流程图合规性报错:{}", e.getMessage(), e);
+                return ResponseData.operationFailure("10398", e.getMessage());
+            }
+
             definition.setDefJson(def);
             OperateResultWithData<FlowDefVersion> result;
             if (!deploy) {
