@@ -21,6 +21,7 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.StringUtils;
@@ -85,20 +86,88 @@ public class FlowDesignService implements IFlowDesignService {
      * @return
      */
     public ResponseData checkFlowJson(String def) throws Exception {
-        JSONObject defObj = JSONObject.fromObject(def);
-        JSONObject processObj = defObj.getJSONObject("process");
-        JSONObject nodesObj = processObj.getJSONObject("nodes");
-        //找到起点节点并且检查并行网关和包容网关是否成对
-        ResponseData checkRes = getStartNodeKey(nodesObj);
-        if (checkRes.getSuccess()) {
-            String startKey = (String) checkRes.getData();
-
-
-
-
-            return  ResponseData.operationSuccessWithData(defObj.toString());
+        //有并行网关和包容网关的流程
+        if (def.contains("ParallelGateway") || def.contains("InclusiveGateway")) {
+            //清理上一次的位置信息
+            def = def.replaceAll("flowNewPosition", "flowOldPosition");
+            JSONObject defObj = JSONObject.fromObject(def);
+            JSONObject processObj = defObj.getJSONObject("process");
+            JSONObject nodesObj = processObj.getJSONObject("nodes");
+            //找到起点节点并且检查并行网关和包容网关是否成对
+            ResponseData checkRes = getStartNodeKey(nodesObj);
+            if (checkRes.getSuccess()) {
+                String startKey = (String) checkRes.getData();
+                //检查节点连接并设置定位信息（方便退回选择节点）
+                try{
+                    chackAndSetNodePosition(nodesObj, startKey, "0");
+                    processObj.put("nodes", nodesObj);
+                    defObj.put("process", processObj);
+                    return ResponseData.operationSuccessWithData(defObj.toString());
+                }catch (Exception e){
+                    if(e.getClass() != FlowException.class){
+                        LogUtil.error("验证流程图合规性报错：{}",e.getMessage(),e);
+                        return ResponseData.operationFailure("10398",e.getMessage());
+                    }
+                    return ResponseData.operationFailure(e.getMessage());
+                }
+            } else {
+                return checkRes;
+            }
         } else {
-            return checkRes;
+            return ResponseData.operationSuccessWithData(def);
+        }
+    }
+
+
+    public void chackAndSetNodePosition(JSONObject nodesObj, String checkKey, String position) {
+        JSONObject node = nodesObj.getJSONObject(checkKey);
+        String nodeId = (String) node.get("id");
+        String nodeName = (String) node.get("name");
+        if (node.has("flowOldPosition")) {
+            node.remove("flowOldPosition");
+        }
+        if (!nodeId.contains("ParallelGateway") && !nodeId.contains("InclusiveGateway")) {
+            if (node.has("flowNewPosition")) {
+                String oldPosition = (String) node.get("flowNewPosition");
+                if (StringUtils.isNotEmpty(oldPosition) && !oldPosition.equalsIgnoreCase(position)) {
+                      throw new  FlowException(ContextUtil.getMessage("10401", nodeName));
+                }else{
+                      return;
+                }
+            }
+            node.put("flowNewPosition", position);
+            nodesObj.put(checkKey, node);
+            JSONArray targetNodes = node.getJSONArray("target");
+            if (targetNodes != null) { //结束节点没有分支
+                for (int i = 0; i < targetNodes.size(); i++) {
+                    JSONObject jsonObject = targetNodes.getJSONObject(i);
+                    String targetId = jsonObject.getString("targetId");
+                    chackAndSetNodePosition(nodesObj, targetId, position);
+                }
+            }
+        } else {
+            JSONArray targetNodes = node.getJSONArray("target");
+            int outNumber =   targetNodes.size();
+            if(outNumber==1){ //聚合
+                JSONObject jsonObject = targetNodes.getJSONObject(0);
+                String targetId = jsonObject.getString("targetId");
+                if(position.contains("-")){
+                    int lastInt = position.lastIndexOf("-");
+                    chackAndSetNodePosition(nodesObj, targetId, position.substring(0,lastInt));
+                }else{
+                    if(nodeId.contains("ParallelGateWay")){
+                        throw new  FlowException(ContextUtil.getMessage("10402",nodeName));
+                    }else{
+                        throw new  FlowException(ContextUtil.getMessage("10403",nodeName));
+                    }
+                }
+            }else{ //分散
+                for (int i = 0; i < targetNodes.size(); i++) {
+                    JSONObject jsonObject = targetNodes.getJSONObject(i);
+                    String targetId = jsonObject.getString("targetId");
+                    chackAndSetNodePosition(nodesObj, targetId, position+"-"+i);
+                }
+            }
         }
     }
 
@@ -114,7 +183,7 @@ public class FlowDesignService implements IFlowDesignService {
         String startNodeKey = "";
         int parallelGateway = 0; //并行网关个数
         int inclusiveGateway = 0;//包容网关个数
-        while  (iterator.hasNext()) {
+        while (iterator.hasNext()) {
             String key = (String) iterator.next();
             if (key.contains("StartEvent")) {
                 startNodeKey = key;
@@ -126,11 +195,11 @@ public class FlowDesignService implements IFlowDesignService {
         }
         if (parallelGateway % 2 != 0) {
             //并行网关必须成对使用，当前流程定义只有【{0}】个并行网关！
-            return  ResponseData.operationFailure("10399",parallelGateway);
+            return ResponseData.operationFailure("10399", parallelGateway);
         }
-        if(inclusiveGateway % 2 !=0){
+        if (inclusiveGateway % 2 != 0) {
             //包容网关必须成对使用，当前流程定义只有【{0}】个包容网关！
-            return  ResponseData.operationFailure("10400",parallelGateway);
+            return ResponseData.operationFailure("10400", parallelGateway);
         }
         return ResponseData.operationSuccessWithData(startNodeKey);
     }
