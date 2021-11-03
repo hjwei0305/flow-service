@@ -15,6 +15,18 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     private DefaultFlowBaseService defaultFlowBaseService;
 
     @Test
+    public void getSelectedNodesInfo(){
+        try{
+            ResponseData responseData =  defaultFlowBaseService.getSelectedNodesInfo("27CBC749-3C4C-11EC-BB8D-0242C0A84611",
+                    "true",
+                    null,
+                    false);
+        }catch (Exception e){
+        }
+    }
+
+
+    @Test
     public void getWhetherLastByBusinessId() {
         ResponseData responseData = defaultFlowBaseService.getWhetherLastByBusinessId("D2203EB8-A884-11EB-AD06-0242C0A8462A");
         System.out.println(JsonUtils.toJson(responseData));
