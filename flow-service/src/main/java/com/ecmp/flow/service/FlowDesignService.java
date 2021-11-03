@@ -114,13 +114,13 @@ public class FlowDesignService implements IFlowDesignService {
         String startNodeKey = "";
         int parallelGateway = 0; //并行网关个数
         int inclusiveGateway = 0;//包容网关个数
-        if (iterator.hasNext()) {
+        while  (iterator.hasNext()) {
             String key = (String) iterator.next();
-            if (key.equalsIgnoreCase("StartEvent")) {
+            if (key.contains("StartEvent")) {
                 startNodeKey = key;
-            } else if (key.equalsIgnoreCase("ParallelGateway")) {
+            } else if (key.contains("ParallelGateway")) {
                 ++parallelGateway;
-            } else if (key.equalsIgnoreCase("InclusiveGateway")) {
+            } else if (key.contains("InclusiveGateway")) {
                 ++inclusiveGateway;
             }
         }
