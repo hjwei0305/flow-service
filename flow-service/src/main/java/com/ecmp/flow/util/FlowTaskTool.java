@@ -1618,6 +1618,15 @@ public class FlowTaskTool {
         } catch (Exception e) {
         }
 
+
+        try {
+            Boolean allowJumpBack = (Boolean) variables.get("allowJumpBack");
+            if (allowJumpBack) {
+                flowTask.setJumpBackPrevious(true);
+            }
+        } catch (Exception e) {
+        }
+
     }
 
 
@@ -1789,7 +1798,6 @@ public class FlowTaskTool {
      * @param actTaskDefKeyCurrent
      */
     public void initTask(FlowInstance flowInstance, FlowHistory preTask, String actTaskDefKeyCurrent, Map<String, Object> variables) {
-
         if (flowInstance == null || flowInstance.isEnded()) {
             return;
         }
@@ -1924,6 +1932,7 @@ public class FlowTaskTool {
                             flowTask.setTaskStatus(TaskStatus.INIT.toString());
                             flowTask.setPriority(0);
                             flowTask.setFlowInstance(flowInstance);
+
                             taskPropertityInit(flowTask, preTask, currentNode, variables);
                             flowTaskDao.save(flowTask);
                             if (pushBasic) {
@@ -2072,13 +2081,6 @@ public class FlowTaskTool {
                                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
                                 flowTask.setPriority(0);
                                 flowTask.setFlowInstance(flowInstance);
-                                try {
-                                    Boolean allowJumpBack = (Boolean) variables.get("allowJumpBack");
-                                    if (allowJumpBack) {
-                                        flowTask.setJumpBackPrevious(true);
-                                    }
-                                } catch (Exception e) {
-                                }
                                 taskPropertityInit(flowTask, preTask, currentNode, variables);
                                 flowTaskDao.save(flowTask);
                                 if (pushBasic) {
