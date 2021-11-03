@@ -40,6 +40,11 @@ public class FlowNodeVO implements Serializable {
      */
     private String busType;
 
+    /**
+     * 所处分支位置信息
+     */
+    private String flowNewPosition;
+
     public FlowNodeVO() {
     }
 
@@ -120,5 +125,13 @@ public class FlowNodeVO implements Serializable {
 
     public void setBusType(String busType) {
         this.busType = busType;
+    }
+
+    public String getFlowNewPosition() {
+        return flowNewPosition;
+    }
+
+    public void setFlowNewPosition(String flowNewPosition) {
+        this.flowNewPosition = flowNewPosition;
     }
 }
