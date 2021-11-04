@@ -2970,9 +2970,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
                 JSONObject nodeConfig = taskJsonDefObj.getJSONObject("nodeConfig");
                 JSONObject normalInfo = nodeConfig.getJSONObject("normal");
-                normalInfo.put("allowReturn",false);
-                nodeConfig.put("normal",normalInfo);
-                taskJsonDefObj.put("nodeConfig",nodeConfig);
+                normalInfo.put("allowReturn", false);
+                nodeConfig.put("normal", normalInfo);
+                taskJsonDefObj.put("nodeConfig", nodeConfig);
 
 
                 for (Executor executor : executorList) {
@@ -3144,9 +3144,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
                     JSONObject nodeConfig = taskJsonDefObj.getJSONObject("nodeConfig");
                     JSONObject normalInfo = nodeConfig.getJSONObject("normal");
-                    normalInfo.put("allowReturn",false);
-                    nodeConfig.put("normal",normalInfo);
-                    taskJsonDefObj.put("nodeConfig",nodeConfig);
+                    normalInfo.put("allowReturn", false);
+                    nodeConfig.put("normal", normalInfo);
+                    taskJsonDefObj.put("nodeConfig", nodeConfig);
                     newFlowTask.setTaskJsonDef(taskJsonDefObj.toString());
 
 
@@ -4774,11 +4774,39 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
                 List<FlowNodeVO> returnList = new ArrayList<>();
+                List<FlowHistory> historyList = flowHistoryService.findByInstanceId(flowTask.getFlowInstance().getId());
                 String defJson = flowTask.getFlowInstance().getFlowDefVersion().getDefJson();
                 if (defJson.contains("ParallelGateway") || defJson.contains("InclusiveGateway")) {
-                    return ResponseData.operationFailure("系统暂不支持包含并行网关或包容网关的退回操作！");
+                    boolean newFlow = defJson.contains("flowNewPosition");
+                    if (newFlow) {
+                        JSONObject defObj = JSONObject.fromObject(defJson);
+                        JSONObject nodesObj = defObj.getJSONObject("process").getJSONObject("nodes");
+                        JSONObject nodeInfo = nodesObj.getJSONObject(flowTask.getActTaskDefKey());
+                        String curPosition = nodeInfo.getString("flowNewPosition");
+                        for (FlowHistory history : historyList) {
+                            String hisJson = history.getTaskJsonDef();
+                            JSONObject hisNodeObj = JSONObject.fromObject(hisJson);
+                            String hisPosition = hisNodeObj.getString("flowNewPosition");
+                            if (curPosition.equals(hisPosition)) {   //同一分支的节点
+                                String actTaskDefKey = history.getActTaskDefKey();
+                                //历史的人工节点(非本节点)
+                                if (actTaskDefKey.contains("UserTask") && !actTaskDefKey.equals(flowTask.getActTaskDefKey())) {
+                                    if (CollectionUtils.isEmpty(returnList)) {
+                                        returnList.add(new FlowNodeVO(actTaskDefKey, history.getFlowTaskName(), ""));
+                                    } else {
+                                        FlowNodeVO nodeVO = returnList.stream().filter(node -> node.getId().equals(actTaskDefKey)).findFirst().orElse(null);
+                                        if (nodeVO == null) {
+                                            returnList.add(new FlowNodeVO(actTaskDefKey, history.getFlowTaskName(), ""));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        //当前流程不支持包含并行网关或包容网关的退回操作，需要重新发布流程定义已检查规则！
+                        return ResponseData.operationFailure("10404");
+                    }
                 } else {
-                    List<FlowHistory> historyList = flowHistoryService.findByInstanceId(flowTask.getFlowInstance().getId());
                     if (!CollectionUtils.isEmpty(historyList)) {
                         for (FlowHistory history : historyList) {
                             String actTaskDefKey = history.getActTaskDefKey();
@@ -4795,8 +4823,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                     }
-                    return ResponseData.operationSuccessWithData(returnList);
                 }
+                return ResponseData.operationSuccessWithData(returnList);
             } else {
                 //任务不存在，可能已经被处理!
                 return ResponseData.operationFailure("10033");
