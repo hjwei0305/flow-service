@@ -2656,4 +2656,27 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return ResponseData.operationSuccessWithData(v);
     }
 
+
+
+    @Override
+    public ResponseData getSolidifyFlowInstanceByUserId(String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            return ResponseData.operationFailure("10405");
+        }
+        //查询执行人列表中有该用户的固化数据
+        List<FlowSolidifyExecutor> list = flowSolidifyExecutorService.getFlowSolidifyExecutorInfoByUserId(userId);
+        if (CollectionUtils.isEmpty(list)) {
+            return ResponseData.operationSuccessWithData(new ArrayList<FlowInstance>());
+        }
+        //业务单据ID去重
+        Set<String> businessIdSet = new HashSet<>();
+        list.forEach(a -> {
+            businessIdSet.add(a.getBusinessId());
+        });
+        List<String> businessIdList = new ArrayList<>();
+        businessIdList.addAll(businessIdSet);
+        List<FlowInstance> flowInstanceList = flowInstanceDao.findByBusinessIdListNoEndAndSolidify(businessIdList);
+        return ResponseData.operationSuccessWithData(flowInstanceList);
+    }
+
 }

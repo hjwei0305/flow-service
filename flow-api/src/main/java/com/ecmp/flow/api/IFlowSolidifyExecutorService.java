@@ -6,6 +6,7 @@ import com.ecmp.flow.entity.FlowSolidifyExecutor;
 import com.ecmp.flow.vo.FindSolidifyExecutorVO;
 import com.ecmp.flow.vo.FlowSolidifyExecutorVO;
 import com.ecmp.flow.vo.FlowTaskCompleteWebVO;
+import com.ecmp.flow.vo.ReplaceSolidifyExecutorVo;
 import com.ecmp.vo.ResponseData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,5 +87,15 @@ public interface IFlowSolidifyExecutorService  extends IBaseService<FlowSolidify
 
 
 
-
+    /**
+     * 替换固化执行人
+     * @param
+     * @return
+     */
+    @POST
+    @Path("replaceSolidifyExecutorByVo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "替换固化执行人",notes = "替换固化执行人")
+    ResponseData  replaceSolidifyExecutorByVo(ReplaceSolidifyExecutorVo replaceSolidifyExecutorVo);
 }

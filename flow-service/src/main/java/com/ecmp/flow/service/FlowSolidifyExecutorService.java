@@ -2,9 +2,9 @@ package com.ecmp.flow.service;
 
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
-import com.ecmp.core.search.Search;
-import com.ecmp.core.search.SearchFilter;
+import com.ecmp.core.search.*;
 import com.ecmp.core.service.BaseEntityService;
+import com.ecmp.enums.UserAuthorityPolicy;
 import com.ecmp.flow.api.IFlowSolidifyExecutorService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.dao.FlowSolidifyExecutorDao;
@@ -16,6 +16,7 @@ import com.ecmp.flow.vo.*;
 import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
+import com.ecmp.vo.SessionUser;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.BooleanUtils;
@@ -507,5 +508,97 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
         }
     }
 
+
+    /**
+     * 查询执行人列表中有该用户的固化数据
+     *
+     * @param userId
+     * @return
+     */
+    public List<FlowSolidifyExecutor> getFlowSolidifyExecutorInfoByUserId(String userId) {
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(1);
+        pageInfo.setRows(1000);
+
+        List<SearchFilter> filters = new ArrayList<>();
+        SearchFilter filter = new SearchFilter("executorIds", userId, SearchFilter.Operator.LK);
+        filters.add(filter);
+
+        List<SearchOrder> sortOrders = new ArrayList<>();
+        SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.DESC);
+        sortOrders.add(searchOrder);
+
+        Search search = new Search(filters, sortOrders, pageInfo);
+
+        PageResult<FlowSolidifyExecutor> pageResult = flowSolidifyExecutorDao.findByPage(search);
+
+        return pageResult.getRows();
+    }
+
+
+    @Override
+    public ResponseData replaceSolidifyExecutorByVo(ReplaceSolidifyExecutorVo replaceSolidifyExecutorVo) {
+        SessionUser sessionUser = ContextUtil.getSessionUser();
+        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
+        if (!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
+            return ResponseData.operationFailure("10406");
+        }
+        if (replaceSolidifyExecutorVo == null) {
+            return ResponseData.operationFailure("10006");
+        }
+        String oldUserId = replaceSolidifyExecutorVo.getOldUserId();
+        if (StringUtils.isEmpty(oldUserId)) {
+            return ResponseData.operationFailure("10407");
+        }
+        String newUserId = replaceSolidifyExecutorVo.getNewUserId();
+        if (StringUtils.isEmpty(newUserId)) {
+            return ResponseData.operationFailure("10408");
+        }
+        List<String> businessIdList = replaceSolidifyExecutorVo.getBusinessIdList();
+        if (CollectionUtils.isEmpty(businessIdList)) {
+            return ResponseData.operationFailure("10409");
+        }
+        List<FlowSolidifyExecutor> list = this.getFlowSolidifyExecutorInfoByUserIdAndBusinessIdList(oldUserId, businessIdList);
+        if (CollectionUtils.isEmpty(list)) {
+            return ResponseData.operationFailure("10410");
+        }
+        list.forEach(bean -> {
+            bean.setExecutorIds(bean.getExecutorIds().replace(oldUserId, newUserId));
+        });
+        flowSolidifyExecutorDao.save(list);
+        return ResponseData.operationSuccess();
+    }
+
+
+    /**
+     * 根据执行人和业务ID查询满足条件的固化配置
+     *
+     * @param userId
+     * @return
+     */
+    public List<FlowSolidifyExecutor> getFlowSolidifyExecutorInfoByUserIdAndBusinessIdList(String userId, List<String> businessIdList) {
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPage(1);
+        pageInfo.setRows(1000);
+
+        List<SearchFilter> filters = new ArrayList<>();
+        SearchFilter filter = new SearchFilter("executorIds", userId, SearchFilter.Operator.LK);
+        filters.add(filter);
+        SearchFilter filter2 = new SearchFilter("businessId", businessIdList, SearchFilter.Operator.IN);
+        filters.add(filter2);
+
+
+        List<SearchOrder> sortOrders = new ArrayList<>();
+        SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.DESC);
+        sortOrders.add(searchOrder);
+
+        Search search = new Search(filters, sortOrders, pageInfo);
+
+        PageResult<FlowSolidifyExecutor> pageResult = flowSolidifyExecutorDao.findByPage(search);
+
+        return pageResult.getRows();
+    }
 
 }

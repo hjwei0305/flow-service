@@ -668,4 +668,16 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "跳转至目标节点", notes = "跳转至目标节点")
     ResponseData jumpToTargetNode(JumpTaskVo jumpTaskVo);
 
+
+    /**
+     * 得到固化执行人列表中有指定用户的所有固化流程实例
+     * ResponseData.data = List<FlowInstance>
+     */
+    @GET
+    @Path("getSolidifyFlowInstanceByUserId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "得到固化执行人列表中有指定用户的所有固化流程实例", notes = "得到固化执行人列表中有指定用户的所有固化流程实例")
+    ResponseData getSolidifyFlowInstanceByUserId(@QueryParam("userId") String userId);
+
 }
