@@ -166,7 +166,7 @@ public class StartEventCompleteListener implements ExecutionListener {
         String businessName = null;
         if (variables.containsKey(Constants.NAME)) {
             businessName = (String) variables.get(Constants.NAME);//业务单据名称
-            if (StringUtils.isNotEmpty(businessName) && businessName.length() > 100) {
+            if (StringUtils.isNotEmpty(businessName) && businessName.length() > 2000) {
                 throw new FlowException(ContextUtil.getMessage("10364", businessName.length()));
             }
         }
