@@ -2050,11 +2050,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 return null;
             }
         }
-        SessionUser sessionUser = ContextUtil.getSessionUser();
-        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
-        if (!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
-            return null;
-        }
+//        SessionUser sessionUser = ContextUtil.getSessionUser();
+//        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
+//        if (!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
+//            return null;
+//        }
         PageResult<FlowTask> pageResult = flowTaskDao.findByPageByTenant(appModuleId, businessModelId, flowTypeId, searchConfig);
         List<FlowTask> result = pageResult.getRows();
         initFlowTasks(result);
