@@ -539,11 +539,6 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
     @Override
     public ResponseData replaceSolidifyExecutorByVo(ReplaceSolidifyExecutorVo replaceSolidifyExecutorVo) {
-        SessionUser sessionUser = ContextUtil.getSessionUser();
-        UserAuthorityPolicy authorityPolicy = sessionUser.getAuthorityPolicy();
-        if (!authorityPolicy.equals(UserAuthorityPolicy.TenantAdmin)) {
-            return ResponseData.operationFailure("10406");
-        }
         if (replaceSolidifyExecutorVo == null) {
             return ResponseData.operationFailure("10006");
         }
