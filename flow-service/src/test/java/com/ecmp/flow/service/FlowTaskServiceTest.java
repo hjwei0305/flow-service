@@ -31,10 +31,9 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowDefinationService flowDefinationService;
 
 
-
     @Test
-    public void getCanReturnNodeInfos(){
-        ResponseData<List<FlowNodeVO>> responseData =   service.getCanReturnNodeInfos("7F020E25-3B7B-11EC-BB4A-0242C0A84611");
+    public void getCanReturnNodeInfos() {
+        ResponseData<List<FlowNodeVO>> responseData = service.getCanReturnNodeInfos("7F020E25-3B7B-11EC-BB4A-0242C0A84611");
         System.out.println(ApiJsonUtils.toJson(responseData));
     }
 
@@ -88,7 +87,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void rollBackTo() {
-        OperateResult operateResult = service.rollBackTo("7CD8A7AE-5EBF-11EB-8EFB-0242C0A84413", "测试");
+        OperateResult operateResult = service.rollBackTo("CB6C2EC2-420F-11EC-840B-0242C0A84413", "测试");
         System.out.println(ApiJsonUtils.toJson(operateResult));
     }
 

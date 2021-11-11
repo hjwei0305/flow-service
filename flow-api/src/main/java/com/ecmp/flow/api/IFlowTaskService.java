@@ -957,6 +957,21 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     ResponseData automatingTaskByBusinessId(@QueryParam("businessId") String businessId);
 
 
+    /**
+     * 通过业务单据ID和节点代码自动执行单据中的指定待办
+     * 注解：1、只考虑普通任务和审批任务
+     *      2、执行不成功待办的标注为紧急
+     *      3、不验证接口调用人
+     *
+     * @param businessId 单据ID
+     * @param nodeCode  节点code(允许为空，不控制节点)
+     * @return
+     */
+    @GET
+    @Path("automatingTaskByBusinessId")
+    @ApiOperation(value = "通过业务单据ID和节点代码自动执行单据中的指定待办", notes = "通过业务单据ID和节点代码自动执行单据中的指定待办")
+    ResponseData automatingTaskByBusinessIdAndCode(@QueryParam("businessId") String businessId,@QueryParam("nodeCode") String nodeCode);
+
 
     /**
      * 获取可以退回的节点信息

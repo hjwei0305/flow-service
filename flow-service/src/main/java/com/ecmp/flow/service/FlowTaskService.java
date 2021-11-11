@@ -4619,15 +4619,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    /**
-     * 通过业务单据ID自动执行单据中的待办
-     * 注解：1、只考虑普通任务和审批任务   2、执行不成功待办的标注为紧急
-     *
-     * @param businessId
-     * @return
-     */
     @Override
     public ResponseData automatingTaskByBusinessId(String businessId) {
+        return automatingTask(businessId,null);
+    }
+
+    @Override
+    public ResponseData automatingTaskByBusinessIdAndCode(String businessId, String nodeCode) {
+        return automatingTask(businessId,nodeCode);
+    }
+
+    public ResponseData automatingTask(String businessId, String nodeCode) {
         if (StringUtils.isNotEmpty(businessId)) {
             FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
             if (flowInstance != null && !flowInstance.isEnded()) {//只考虑还在流程中的流程实例
@@ -4636,6 +4638,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     FlowTask flowTask = list.get(0);
                     String defJson = flowTask.getTaskJsonDef();
                     JSONObject defObj = JSONObject.fromObject(defJson);
+                    if(StringUtils.isNotEmpty(nodeCode)){
+                        JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                        String code = normalInfo.getString("nodeCode");
+                        if(!nodeCode.equalsIgnoreCase(code)){
+                            return ResponseData.operationFailure("10411",code);
+                        }
+                    }
                     String nodeType = defObj.getString("nodeType");
                     String approved = "true";
                     String opinion = "同意【自动执行】";

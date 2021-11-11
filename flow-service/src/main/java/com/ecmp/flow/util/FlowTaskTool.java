@@ -1098,7 +1098,7 @@ public class FlowTaskTool {
             // 删除其他到达的节点
 //            deleteOtherNode(currActivity, instance, definition, currTask, flowHistory.getFlowInstance());
             // 删除其他到达的节点
-            deleteOtherNode_new(flowHistory.getId());
+            deleteOtherNode_new(currActivity, instance, flowHistory.getId());
 
 
             //记录历史
@@ -1157,12 +1157,37 @@ public class FlowTaskTool {
         }
     }
 
+    /**
+     * 删除多实例的父节点
+     *
+     * @param currActivity
+     * @param instance
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteOtherNode_prd(PvmActivity currActivity, ProcessInstance instance) {
+        List<PvmTransition> nextTransitionList = currActivity.getOutgoingTransitions();
+        for (PvmTransition nextTransition : nextTransitionList) {
+            PvmActivity nextActivity = nextTransition.getDestination();
+            Boolean ifGateWay = ifGageway(nextActivity);
+            if (ifGateWay) {
+                deleteOtherNode_prd(nextActivity, instance);
+            } else {
+                boolean ifMultiInstance = ifMultiInstance(nextActivity);
+                if (ifMultiInstance) {//多实例任务，清除父执行分支
+                    ExecutionEntity pExecution = (ExecutionEntity) runtimeService.createExecutionQuery().processInstanceId(instance.getId()).activityIdNoActive(nextActivity.getId()).singleResult();
+                    if (pExecution != null) {
+                        runtimeService.deleteExecution(pExecution);
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * 删除其他到达的节点
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteOtherNode_new(String hisId) {
+    public void deleteOtherNode_new(PvmActivity currActivity, ProcessInstance instance, String hisId) {
         List<FlowTask> taskList = flowTaskDao.findListByProperty("preId", hisId);
         //是否推送信息到baisc
         Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
@@ -1176,6 +1201,8 @@ public class FlowTaskTool {
             }
             flowTaskDao.delete(flowTask);
         }
+
+        deleteOtherNode_prd(currActivity, instance);
 
         if (pushBasic) {
             new Thread(new Runnable() {
@@ -1555,7 +1582,7 @@ public class FlowTaskTool {
                 String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
                 String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
                 LogUtil.error("节点【" + errorName + "】配置的工作界面【" + workPageName + "】不存在！【workPageId=" + workPageUrlId + "】");
-                throw new FlowException(ContextUtil.getMessage("10350",errorName,workPageName));
+                throw new FlowException(ContextUtil.getMessage("10350", errorName, workPageName));
             }
             flowTask.setWorkPageUrl(workPageUrl);
         }
@@ -1730,7 +1757,7 @@ public class FlowTaskTool {
             if (workPageUrl == null) {
                 String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
                 String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
-                throw new FlowException(ContextUtil.getMessage("10351",errorName,workPageName));
+                throw new FlowException(ContextUtil.getMessage("10351", errorName, workPageName));
             }
             virtualTask.setWorkPageUrl(workPageUrl); //处理表单页面
 
@@ -2087,7 +2114,7 @@ public class FlowTaskTool {
                                     pushTaskList.add(flowTask);
                                 }
                             } else {
-                                throw new RuntimeException(ContextUtil.getMessage("10353",identityLink.getUserId()));
+                                throw new RuntimeException(ContextUtil.getMessage("10353", identityLink.getUserId()));
                             }
                         }
                     }
@@ -2696,7 +2723,7 @@ public class FlowTaskTool {
 
         if (TaskStatus.REJECT.toString().equalsIgnoreCase(flowTask.getTaskStatus())) { //驳回
             flowHistory.setFlowExecuteStatus(FlowExecuteStatus.REJECT.getCode());
-        } else if(TaskStatus.RETURN.toString().equalsIgnoreCase(flowTask.getTaskStatus())){ //退回
+        } else if (TaskStatus.RETURN.toString().equalsIgnoreCase(flowTask.getTaskStatus())) { //退回
             flowHistory.setFlowExecuteStatus(FlowExecuteStatus.RETURN.getCode());
         } else { //其他就是TaskStatus.COMPLETED.toString()
             try {
@@ -2726,7 +2753,7 @@ public class FlowTaskTool {
             String disagreeReasonCode = (String) variables.get("disagreeReasonCode");
             DisagreeReason disagreeReason = disagreeReasonService.getDisagreeReasonByCode(disagreeReasonCode);
             if (disagreeReason == null) {
-                throw new FlowException(ContextUtil.getMessage("10356",disagreeReasonCode));
+                throw new FlowException(ContextUtil.getMessage("10356", disagreeReasonCode));
             } else {
                 flowHistory.setDisagreeReasonId(disagreeReason.getId());
                 flowHistory.setDisagreeReasonCode(disagreeReason.getCode());
