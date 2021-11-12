@@ -2858,27 +2858,53 @@ public class FlowTaskTool {
         } else {//并行有待办，将弃权人待办转已办(底层直接删除)
             List<FlowTask> flowTaskList = flowTaskDao.findByActTaskDefKeyAndActInstanceId(taskActKey, actInstanceId);
             //是否推送信息到baisc
-            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
             //需要删除的待办
             List<FlowTask> delList = new ArrayList<>();
+
+            boolean boo = false;
+            String defJson = flowTask.getTaskJsonDef();
+            JSONObject defObj = JSONObject.fromObject(defJson);
+            JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            if (normalInfo.has("foldingLog") && normalInfo.getBoolean("foldingLog")) {
+                boo = true;
+            }
+            String mes = null;
             for (FlowTask bean : flowTaskList) {
                 if (!bean.getId().equals(flowTask.getId())) {
-                    HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(bean.getActTaskId()).singleResult();
-                    FlowHistory flowHistory = this.initFlowHistory(bean, historicTaskInstance, null, variables);
-                    flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
-                    flowHistory.setActHistoryId(null);
-                    //如果是转授权转办模式（获取转授权记录信息）
-                    String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
-                    if (bean.getTrustState() != null && bean.getTrustState() == 2) {
-                        flowHistory.setDepict(overPowerStr + "【会签委托自动清除】");
+                    if (boo) {
+                        if (mes == null) {
+                            mes = "【自动弃权:" + bean.getExecutorName();
+                        } else {
+                            mes += "," + bean.getExecutorName();
+                        }
                     } else {
-                        flowHistory.setDepict(overPowerStr + "【系统自动弃权】");
+                        HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(bean.getActTaskId()).singleResult();
+                        FlowHistory flowHistory = this.initFlowHistory(bean, historicTaskInstance, null, variables);
+                        flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
+                        flowHistory.setActHistoryId(null);
+                        //如果是转授权转办模式（获取转授权记录信息）
+                        String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
+                        if (bean.getTrustState() != null && bean.getTrustState() == 2) {
+                            flowHistory.setDepict(overPowerStr + "【会签委托自动清除】");
+                        } else {
+                            flowHistory.setDepict(overPowerStr + "【系统自动弃权】");
+                        }
+                        flowHistoryDao.save(flowHistory);
                     }
-                    flowHistoryDao.save(flowHistory);
                     delList.add(bean);
                     flowTaskDao.delete(bean);
                 }
             }
+            if (StringUtils.isNotEmpty(mes)) {
+                mes += "】";
+                if (StringUtils.isNotEmpty(flowTask.getDepict())) {
+                    flowTask.setDepict(flowTask.getDepict() + mes);
+                } else {
+                    flowTask.setDepict(mes);
+                }
+            }
+
             if (pushBasic) {
                 new Thread(new Runnable() {
                     @Override
