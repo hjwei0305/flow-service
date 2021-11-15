@@ -4790,7 +4790,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             } else if (!CollectionUtils.isEmpty(list)) {
                 String gateWayName = list.get(0).getGateWayName();
                 if (StringUtils.isNotEmpty(gateWayName) && "人工排他网关".equals(gateWayName)) {
-                    return ResponseData.operationFailure("存在人工排他网关，无法自动执行！");
+                    List<String> nodeOnle = new ArrayList<>();
+                    nodeOnle.add(list.get(0).getId());
+                    nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, nodeOnle);
                 } else {
                     nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
                 }
