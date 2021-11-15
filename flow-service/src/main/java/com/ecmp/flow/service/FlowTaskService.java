@@ -4648,7 +4648,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
                     nodeType = defObj.getString("nodeType");
-                    if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType)) {
+                    if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)) {
                         autoTask = flowTask;
                     } else {
                         return ResponseData.operationFailure("10380");
