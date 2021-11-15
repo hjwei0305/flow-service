@@ -968,7 +968,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @return
      */
     @GET
-    @Path("automatingTaskByBusinessId")
+    @Path("automatingTaskByBusinessIdAndCode")
     @ApiOperation(value = "通过业务单据ID和节点代码自动执行单据中的指定待办", notes = "通过业务单据ID和节点代码自动执行单据中的指定待办")
     ResponseData automatingTaskByBusinessIdAndCode(@QueryParam("businessId") String businessId,@QueryParam("nodeCode") String nodeCode);
 

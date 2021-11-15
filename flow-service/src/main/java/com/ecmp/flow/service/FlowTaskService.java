@@ -4621,109 +4621,149 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData automatingTaskByBusinessId(String businessId) {
-        return automatingTask(businessId,null);
+        return automatingTask(businessId, null);
     }
 
     @Override
     public ResponseData automatingTaskByBusinessIdAndCode(String businessId, String nodeCode) {
-        return automatingTask(businessId,nodeCode);
+        return automatingTask(businessId, nodeCode);
     }
 
     public ResponseData automatingTask(String businessId, String nodeCode) {
         if (StringUtils.isNotEmpty(businessId)) {
             FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
             if (flowInstance != null && !flowInstance.isEnded()) {//只考虑还在流程中的流程实例
+                FlowTask autoTask;
+                String nodeType;
                 List<FlowTask> list = this.findByInstanceId(flowInstance.getId());
                 if (list != null && list.size() == 1) {
                     FlowTask flowTask = list.get(0);
                     String defJson = flowTask.getTaskJsonDef();
                     JSONObject defObj = JSONObject.fromObject(defJson);
-                    if(StringUtils.isNotEmpty(nodeCode)){
+                    if (StringUtils.isNotEmpty(nodeCode)) {
                         JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
                         String code = normalInfo.getString("nodeCode");
-                        if(!nodeCode.equalsIgnoreCase(code)){
-                            return ResponseData.operationFailure("10411",code);
+                        if (!nodeCode.equalsIgnoreCase(code)) {
+                            return ResponseData.operationFailure("10411", code);
                         }
                     }
-                    String nodeType = defObj.getString("nodeType");
-                    String approved = "true";
-                    String opinion = "同意【自动执行】";
+                    nodeType = defObj.getString("nodeType");
                     if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType)) {
-                        if ("Normal".equalsIgnoreCase(nodeType)) {
-                            approved = null;
-                            opinion = "【自动执行】";
-                        }
-                        //模拟请求下一步，如果需要人为选择的情况，返回false
-                        ResponseData responseData;
-                        try {
-                            responseData = this.simulationNodesInfo(flowTask.getId(), approved);
-                        } catch (Exception e) {
-                            //模拟下一步失败，将待办设置为紧急
-                            flowTask.setPriority(3);
-                            this.save(flowTask);
-                            return ResponseData.operationFailure("10376");
-                        }
-
-                        if (responseData.getSuccess()) {
-                            String taskListString;
-                            String endEventId = null;
-                            if ("CounterSignNotEnd".equalsIgnoreCase(responseData.getData().toString())) { //会签未结束
-                                taskListString = "[]";
-                            } else if ("EndEvent".equalsIgnoreCase(responseData.getData().toString())) { //结束节点
-                                taskListString = "[]";
-                                endEventId = "true";
-                            } else {
-                                List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
-                                List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<>();
-                                for (NodeInfo nodeInfo : nodeInfoList) {
-                                    FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
-                                    taskWebVO.setNodeId(nodeInfo.getId());
-                                    taskWebVO.setUserVarName(nodeInfo.getUserVarName());
-                                    taskWebVO.setFlowTaskType(nodeInfo.getFlowTaskType());
-                                    taskWebVO.setSolidifyFlow(false);
-                                    taskWebVO.setCallActivityPath(null);
-                                    if (nodeInfo.getExecutorSet() != null && nodeInfo.getExecutorSet().size() == 1) {
-                                        taskWebVO.setUserIds(nodeInfo.getExecutorSet().iterator().next().getId());
-                                    } else if ("poolTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
-                                        taskWebVO.setUserIds(null);
-                                    } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getFlowTaskType()) || "receiveTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
-                                        taskWebVO.setUserIds(ContextUtil.getUserId());
-                                    } else {
-                                        flowTask.setPriority(3);
-                                        this.save(flowTask);
-                                        return ResponseData.operationFailure("10377");
-                                    }
-                                    flowTaskCompleteList.add(taskWebVO);
-                                }
-                                JSONArray jsonArray = JSONArray.fromObject(flowTaskCompleteList);
-                                taskListString = jsonArray.toString();
-                            }
-
-                            try {
-                                //自动执行待办
-                                long currentTime = System.currentTimeMillis();
-                                defaultFlowBaseService.completeTask(flowTask.getId(), businessId,
-                                        opinion, taskListString, endEventId, null, false,
-                                        approved, currentTime);
-                                return ResponseData.operationSuccess("10378");
-                            } catch (Exception e) {
-                                LogUtil.error("批量上传自动执行待办报错：" + e.getMessage(), e);
-                                //处理下一步失败，将待办设置为紧急
-                                flowTask.setPriority(3);
-                                this.save(flowTask);
-                                return ResponseData.operationFailure("10379", e.getMessage());
-                            }
-                        } else {
-                            //模拟下一步失败，将待办设置为紧急
-                            flowTask.setPriority(3);
-                            this.save(flowTask);
-                            return responseData;
-                        }
+                        autoTask = flowTask;
                     } else {
                         return ResponseData.operationFailure("10380");
                     }
                 } else {
-                    return ResponseData.operationFailure("10381");
+                    //可以执行单签任务(验证执行人)
+                    SessionUser sessionUser = ContextUtil.getSessionUser();
+                    String userId = sessionUser.getUserId();
+                    FlowTask task = list.stream().filter(a -> a.getExecutorId().equals(userId)).findFirst().orElse(null);
+                    if (task != null) {
+                        String defJson = task.getTaskJsonDef();
+                        JSONObject defObj = JSONObject.fromObject(defJson);
+                        if (StringUtils.isNotEmpty(nodeCode)) {
+                            JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                            String code = normalInfo.getString("nodeCode");
+                            if (!nodeCode.equalsIgnoreCase(code)) {
+                                return ResponseData.operationFailure("10411", code);
+                            }
+                        }
+                        nodeType = defObj.getString("nodeType");
+                        if ("SingleSign".equalsIgnoreCase(nodeType)) {
+                            autoTask = task;
+                        } else {
+                            return ResponseData.operationFailure("10380");
+                        }
+                    } else {
+                        return ResponseData.operationFailure("10381");
+                    }
+                }
+
+
+                //自动执行这个待办
+                String approved = "true";
+                String opinion = "同意【自动执行】";
+                if ("Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)) {
+                    approved = null;
+                    opinion = "【自动执行】";
+                }
+                //模拟请求下一步，如果需要人为选择的情况，返回false
+                ResponseData responseData;
+                try {
+                    responseData = this.simulationNodesInfo(autoTask.getId(), approved);
+                } catch (Exception e) {
+                    //模拟下一步失败，将待办设置为紧急
+                    autoTask.setPriority(3);
+                    this.save(autoTask);
+                    return ResponseData.operationFailure("10376");
+                }
+
+                if (responseData.getSuccess()) {
+                    String taskListString;
+                    String endEventId = null;
+                    boolean solidi = autoTask.getFlowInstance().getFlowDefVersion().getSolidifyFlow();
+                    if ("CounterSignNotEnd".equalsIgnoreCase(responseData.getData().toString())) { //会签未结束
+                        taskListString = "[]";
+                    } else if ("EndEvent".equalsIgnoreCase(responseData.getData().toString())) { //结束节点
+                        taskListString = "[]";
+                        endEventId = "true";
+                    } else {
+                        List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
+                        List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<>();
+                        for (NodeInfo nodeInfo : nodeInfoList) {
+                            FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
+                            taskWebVO.setNodeId(nodeInfo.getId());
+                            taskWebVO.setUserVarName(nodeInfo.getUserVarName());
+                            taskWebVO.setFlowTaskType(nodeInfo.getFlowTaskType());
+                            taskWebVO.setSolidifyFlow(solidi);
+                            taskWebVO.setCallActivityPath(null);
+                            if (nodeInfo.getExecutorSet() != null && nodeInfo.getExecutorSet().size() == 1) {
+                                taskWebVO.setUserIds(nodeInfo.getExecutorSet().iterator().next().getId());
+                            } else if ("poolTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
+                                taskWebVO.setUserIds(null);
+                            } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getFlowTaskType()) || "receiveTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
+                                taskWebVO.setUserIds(ContextUtil.getUserId());
+                            } else {
+                                if(solidi){
+                                    taskWebVO.setUserIds("");
+                                }else{
+                                    Set<Executor> set = nodeInfo.getExecutorSet();
+                                    String userIds = "";
+                                    for (Executor executor : set) {
+                                        if (StringUtils.isEmpty(userIds)) {
+                                            userIds += executor.getId();
+                                        } else {
+                                            userIds += "," + executor.getId();
+                                        }
+                                    }
+                                    taskWebVO.setUserIds(userIds);
+                                }
+                            }
+                            flowTaskCompleteList.add(taskWebVO);
+                        }
+                        JSONArray jsonArray = JSONArray.fromObject(flowTaskCompleteList);
+                        taskListString = jsonArray.toString();
+                    }
+
+                    try {
+                        //自动执行待办
+                        long currentTime = System.currentTimeMillis();
+                        defaultFlowBaseService.completeTask(autoTask.getId(), businessId,
+                                opinion, taskListString, endEventId, null, false,
+                                approved, currentTime);
+                        return ResponseData.operationSuccess("10378");
+                    } catch (Exception e) {
+                        LogUtil.error("批量上传自动执行待办报错：" + e.getMessage(), e);
+                        //处理下一步失败，将待办设置为紧急
+                        autoTask.setPriority(3);
+                        this.save(autoTask);
+                        return ResponseData.operationFailure("10379", e.getMessage());
+                    }
+                } else {
+                    //模拟下一步失败，将待办设置为紧急
+                    autoTask.setPriority(3);
+                    this.save(autoTask);
+                    return responseData;
                 }
             } else {
                 return ResponseData.operationFailure("10382");
