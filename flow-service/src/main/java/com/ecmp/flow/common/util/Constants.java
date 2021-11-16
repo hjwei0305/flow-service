@@ -427,6 +427,8 @@ public class Constants extends ConfigurableContants {
     public final static String WORK_CAPTION = "workCaption";
 
     public final static String BUSINESS_CODE = "businessCode";
+
+    public final static String BUSINESS_MONEY = "businessMoney";
     /**
      * 流程定义版本id
      */

@@ -1,6 +1,5 @@
 package com.ecmp.flow.entity;
 
-import com.ecmp.core.entity.ITenant;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,19 +10,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * 工作界面配置管理Entity定义
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/21 10:20      谭军(tanjun)                新建
- * <p/>
- * *************************************************************************************************
- */
 
 @Entity(name = "work_page_url")
 @DynamicInsert
@@ -52,6 +38,12 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     private String url;
 
     /**
+     * 移动端路由地址
+     */
+    @Column(name = "phone_url")
+    private String phoneUrl;
+
+    /**
      * 描述
      */
     @Column(length = 250)
@@ -76,6 +68,14 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
     @Column(name = "tenant_code", length = 10)
     private String tenantCode;
 
+
+    public String getPhoneUrl() {
+        return phoneUrl;
+    }
+
+    public void setPhoneUrl(String phoneUrl) {
+        this.phoneUrl = phoneUrl;
+    }
 
     public String getName() {
         return name;
@@ -148,13 +148,10 @@ public class WorkPageUrl extends com.ecmp.core.entity.BaseAuditableEntity {
         this.mustCommit = mustCommit;
     }
 
-
-//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
     }

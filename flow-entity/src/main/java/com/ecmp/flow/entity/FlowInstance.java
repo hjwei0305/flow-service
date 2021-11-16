@@ -68,6 +68,12 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	@Column(name = "business_name", nullable = false, length = 2000)
 	private String businessName;
 
+	/**
+	 * 业务单据名称
+	 */
+	@Column(name = "business_money")
+	private String businessMoney;
+
 
 	/**
 	 * 业务摘要(工作说明)
@@ -82,14 +88,6 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	@Column(name = "business_org_id")
 	private String businessOrgId;
 
-
-//	/**
-//	 * 业务额外属性
-//	 */
-//	@Lob
-//	@Basic(fetch = FetchType.LAZY)
-//	@Column(name = "business_extra_map",columnDefinition="CLOB")
-//	private Map<String,Object> businessExtraMap;
 
 	/**
 	 * 开始时间
@@ -227,6 +225,13 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	}
 
 
+	public String getBusinessMoney() {
+		return businessMoney;
+	}
+
+	public void setBusinessMoney(String businessMoney) {
+		this.businessMoney = businessMoney;
+	}
 
 	public FlowDefVersion getFlowDefVersion() {
 		return this.flowDefVersion;
@@ -347,14 +352,6 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	public void setBusinessOrgId(String businessOrgId) {
 		this.businessOrgId = businessOrgId;
 	}
-
-	//	public Map<String, Object> getBusinessExtraMap() {
-//		return businessExtraMap;
-//	}
-//
-//	public void setBusinessExtraMap(Map<String, Object> businessExtraMap) {
-//		this.businessExtraMap = businessExtraMap;
-//	}
 
 	public Boolean isManuallyEnd() {
 		return manuallyEnd;

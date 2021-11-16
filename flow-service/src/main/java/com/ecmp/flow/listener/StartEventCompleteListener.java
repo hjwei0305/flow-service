@@ -172,6 +172,18 @@ public class StartEventCompleteListener implements ExecutionListener {
         }
         flowInstance.setBusinessName(businessName);
 
+
+        String businessMoney = null;
+        if (variables.containsKey(Constants.BUSINESS_MONEY)) {
+            businessMoney = (String) variables.get(Constants.BUSINESS_MONEY);//业务单据金额字符串
+            if (StringUtils.isNotEmpty(businessMoney) && businessMoney.length() > 50) {
+                throw new FlowException(ContextUtil.getMessage("10406", businessMoney.length()));
+            }
+        }
+        flowInstance.setBusinessMoney(businessMoney);
+
+
+
         String orgId = (String) variables.get(Constants.ORG_ID);
         flowInstance.setBusinessOrgId(orgId);
 
