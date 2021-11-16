@@ -924,6 +924,18 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
+     * 查询当前用户的待办工作
+     *
+     * @param queryParam 查询参数
+     * @return 分页查询结果
+     */
+    @POST
+    @Path("queryCurrentUserFlowTaskByPhone")
+    @ApiOperation(value = "查询当前用户的待办工作", notes = "查询当前用户的待办工作，可以区分是否为批量处理")
+    ResponseData<FlowTaskPageResultVO<FlowTask>> queryCurrentUserFlowTaskByPhone(UserFlowTaskQueryParam queryParam);
+
+
+    /**
      * 重新推送未推送过的待办到BASIC
      */
     @GET

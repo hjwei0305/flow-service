@@ -4068,6 +4068,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return res;
     }
 
+
+    @Override
+    public ResponseData<FlowTaskPageResultVO<FlowTask>> queryCurrentUserFlowTaskByPhone(UserFlowTaskQueryParam queryParam) {
+        try{
+            FlowTaskPageResultVO<FlowTask> resultVO =  queryCurrentUserFlowTask(queryParam);
+            return  ResponseData.operationSuccessWithData(resultVO);
+        }catch (Exception e){
+            LogUtil.error("请求待办失败:{}",e.getMessage(),e);
+           return ResponseData.operationFailure("10412",e.getMessage());
+        }
+    }
+
     /**
      * 查询当前用户的待办工作
      *
