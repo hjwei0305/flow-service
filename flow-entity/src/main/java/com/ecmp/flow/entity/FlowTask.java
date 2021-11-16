@@ -435,6 +435,14 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
         this.depict = depict;
     }
 
+    public String getPhoneUrl() {
+        return phoneUrl;
+    }
+
+    public void setPhoneUrl(String phoneUrl) {
+        this.phoneUrl = phoneUrl;
+    }
+
     public Double getTiming() {
         return timing;
     }

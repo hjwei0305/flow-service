@@ -2190,6 +2190,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (!userId.equals(bean.getExecutorId())) {
                 bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
             }
+            WorkPageUrl workPageUrl = bean.getWorkPageUrl();
+            if (workPageUrl != null) {
+                bean.setPhoneUrl(StringUtils.isNotEmpty(workPageUrl.getPhoneUrl()) ? workPageUrl.getPhoneUrl() : "NotConfig");
+            }
+
         }
         return flowTaskPageResult;
     }
@@ -4724,9 +4729,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             } else if ("serviceTask".equalsIgnoreCase(nodeInfo.getFlowTaskType()) || "receiveTask".equalsIgnoreCase(nodeInfo.getFlowTaskType())) {
                                 taskWebVO.setUserIds(ContextUtil.getUserId());
                             } else {
-                                if(solidi){
+                                if (solidi) {
                                     taskWebVO.setUserIds("");
-                                }else{
+                                } else {
                                     Set<Executor> set = nodeInfo.getExecutorSet();
                                     String userIds = "";
                                     for (Executor executor : set) {
