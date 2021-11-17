@@ -1613,6 +1613,21 @@ public class FlowTaskTool {
             }
             flowTask.setPreId(preTask.getId());
         }
+
+        //金风需求：如果回到历史节点，那么标记为紧急
+        int priority =  flowTask.getPriority();
+        if(priority==0){
+            List<FlowHistory>  flowHistoryList = flowHistoryDao.findByInstanceId(flowTask.getFlowInstance().getId());
+            if(!CollectionUtils.isEmpty(flowHistoryList)){
+                FlowHistory flowHistory =   flowHistoryList.stream().filter(a->(a.getActTaskDefKey().equalsIgnoreCase(flowTask.getActTaskDefKey()) && a.getExecutorId().equals(flowTask.getExecutorId()))).findFirst().orElse(null);
+                if(flowHistory!=null){
+                    flowTask.setPriority(3);
+                }
+            }
+        }
+
+
+
         String nodeType = (String) currentNode.get("nodeType");
         if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)
                 || "ParallelTask".equalsIgnoreCase(nodeType) || "SerialTask".equalsIgnoreCase(nodeType)) {//能否由移动端审批
