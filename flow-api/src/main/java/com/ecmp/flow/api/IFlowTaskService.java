@@ -327,7 +327,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "选择当前流程抬头信息(兼容网关)", notes = "获取当前流程抬头信息(兼容网关)")
-    ApprovalHeaderVO getApprovalHeaderVoOfGateway(@QueryParam("id") String id);
+    ResponseData<ApprovalHeaderVO> getApprovalHeaderVoOfGateway(@QueryParam("id") String id);
 
 
     /**

@@ -1671,8 +1671,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
-    public ApprovalHeaderVO getApprovalHeaderVoOfGateway(String id) {
-        return this.getApprovalHeaderVO(id);
+    public ResponseData<ApprovalHeaderVO> getApprovalHeaderVoOfGateway(String id) {
+        try{
+            ApprovalHeaderVO approvalHeaderVO = this.getApprovalHeaderVO(id);
+            return  ResponseData.operationSuccessWithData(approvalHeaderVO);
+        }catch (Exception e){
+            LogUtil.error("请求抬头信息失败:{}",e.getMessage(),e);
+            return ResponseData.operationFailure("10413",e.getMessage());
+        }
     }
 
 
