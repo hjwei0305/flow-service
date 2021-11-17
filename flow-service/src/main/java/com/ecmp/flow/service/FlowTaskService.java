@@ -1701,6 +1701,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setCreateUser(flowTask.getFlowInstance().getCreatorName());
         result.setCreateTime(flowTask.getFlowInstance().getCreatedDate());
         result.setWorkAndAdditionRemark(flowTask.getFlowInstance().getBusinessModelRemark());
+        result.setFlowName(flowTask.getFlowInstance().getFlowName());
+        result.setBusinessModelName(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getName());
+
+
         FlowDefVersion flowDefVersion = flowTask.getFlowInstance().getFlowDefVersion();
         //判断是否是固化流程
         result.setSolidifyFlow(BooleanUtils.isTrue(flowDefVersion.getSolidifyFlow()));

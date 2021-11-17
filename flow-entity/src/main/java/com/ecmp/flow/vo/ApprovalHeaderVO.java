@@ -130,6 +130,32 @@ public class ApprovalHeaderVO implements Serializable{
      */
     private Boolean allowJumpBack;
 
+    /**
+     * 流程名称
+     */
+    private String flowName;
+
+    /**
+     * 业务实体名称
+     */
+    private String businessModelName;
+
+
+    public String getFlowName() {
+        return flowName;
+    }
+
+    public void setFlowName(String flowName) {
+        this.flowName = flowName;
+    }
+
+    public String getBusinessModelName() {
+        return businessModelName;
+    }
+
+    public void setBusinessModelName(String businessModelName) {
+        this.businessModelName = businessModelName;
+    }
 
     public Boolean getCarbonCopyOrReport() {
         return carbonCopyOrReport;
