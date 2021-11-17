@@ -1633,8 +1633,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return nodeInfoList;
     }
 
-    public List<NodeInfo> findNextNodesOfGateway(String id) throws NoSuchMethodException {
-        return this.findNextNodes(id);
+    public ResponseData<List<NodeInfo>> findNextNodesOfGateway(String id) {
+        try {
+            List<NodeInfo> list = this.findNextNodes(id);
+            return ResponseData.operationSuccessWithData(list);
+        } catch (Exception e) {
+            LogUtil.error("请求决策信息失败:{}", e.getMessage(), e);
+            return ResponseData.operationFailure("10414", e.getMessage());
+        }
     }
 
     public List<NodeInfo> findNextNodes(String id) throws NoSuchMethodException {
@@ -1672,12 +1678,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
     public ResponseData<ApprovalHeaderVO> getApprovalHeaderVoOfGateway(String id) {
-        try{
+        try {
             ApprovalHeaderVO approvalHeaderVO = this.getApprovalHeaderVO(id);
-            return  ResponseData.operationSuccessWithData(approvalHeaderVO);
-        }catch (Exception e){
-            LogUtil.error("请求抬头信息失败:{}",e.getMessage(),e);
-            return ResponseData.operationFailure("10413",e.getMessage());
+            return ResponseData.operationSuccessWithData(approvalHeaderVO);
+        } catch (Exception e) {
+            LogUtil.error("请求抬头信息失败:{}", e.getMessage(), e);
+            return ResponseData.operationFailure("10413", e.getMessage());
         }
     }
 
@@ -4077,12 +4083,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData<FlowTaskPageResultVO<FlowTask>> queryCurrentUserFlowTaskByPhone(UserFlowTaskQueryParam queryParam) {
-        try{
-            FlowTaskPageResultVO<FlowTask> resultVO =  queryCurrentUserFlowTask(queryParam);
-            return  ResponseData.operationSuccessWithData(resultVO);
-        }catch (Exception e){
-            LogUtil.error("请求待办失败:{}",e.getMessage(),e);
-           return ResponseData.operationFailure("10412",e.getMessage());
+        try {
+            FlowTaskPageResultVO<FlowTask> resultVO = queryCurrentUserFlowTask(queryParam);
+            return ResponseData.operationSuccessWithData(resultVO);
+        } catch (Exception e) {
+            LogUtil.error("请求待办失败:{}", e.getMessage(), e);
+            return ResponseData.operationFailure("10412", e.getMessage());
         }
     }
 
