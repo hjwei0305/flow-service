@@ -2,6 +2,7 @@ package com.ecmp.flow.service;
 
 import com.ecmp.flow.vo.CompleteTaskVo;
 import com.ecmp.flow.vo.SolidifyStartFlowVo;
+import com.ecmp.flow.vo.StartFlowBusinessAndTypeVo;
 import com.ecmp.flow.vo.StartFlowVo;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
@@ -13,6 +14,22 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
 
     @Autowired
     private DefaultFlowBaseService defaultFlowBaseService;
+
+    @Test
+    public void startFlowByBusinessAndType(){
+        StartFlowBusinessAndTypeVo vo = new StartFlowBusinessAndTypeVo();
+        vo.setBusinessKey("526F49F9-483E-11EC-8BD7-0242C0A84611");
+        vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
+        vo.setFlowTypeCode("FLOW_TEST");
+        try{
+            ResponseData responseData =  defaultFlowBaseService.startFlowByBusinessAndType(vo);
+            System.out.println(JsonUtils.toJson(responseData));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
 
     @Test
     public void getSelectedNodesInfo(){

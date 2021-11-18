@@ -106,7 +106,7 @@ public class FlowIntegrateService implements IFlowIntegrateService {
                     userList.add(userIds);
                     userMap.put(nodeInfo.getUserVarName(), userIds);
                 }
-                selectedNodesUserMap.put(nodeInfo.getUserVarName(), userList);
+                selectedNodesUserMap.put(nodeInfo.getId(), userList);
             }
         }
         startVO.setUserMap(userMap);
