@@ -680,4 +680,18 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "得到固化执行人列表中有指定用户的所有固化流程实例", notes = "得到固化执行人列表中有指定用户的所有固化流程实例")
     ResponseData getSolidifyFlowInstanceByUserId(@QueryParam("userId") String userId);
 
+
+    /**
+     * 获取历史抬头信息(移动端)
+     *
+     * @param instanceId 流程实例ID
+     * @return 当前任务流程抬头信息
+     */
+    @GET
+    @Path("getHislHeaderVoOfGateway")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "获取历史抬头信息(移动端)", notes = "获取历史抬头信息(移动端)")
+    ResponseData<ApprovalHeaderVO>  getHislHeaderVoOfGateway(@QueryParam("instanceId") String instanceId);
+
 }

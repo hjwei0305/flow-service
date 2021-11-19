@@ -2679,4 +2679,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         return ResponseData.operationSuccessWithData(flowInstanceList);
     }
 
+
+    @Override
+    public ResponseData<ApprovalHeaderVO> getHislHeaderVoOfGateway(String instanceId) {
+        FlowInstance flowInstance =       findOne(instanceId);
+        ApprovalHeaderVO approvalHeaderVO = new ApprovalHeaderVO();
+        approvalHeaderVO.setFlowName(flowInstance.getFlowName());
+        approvalHeaderVO.setBusinessModelName(flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getName());
+        approvalHeaderVO.setCreateTime(flowInstance.getCreatedDate());
+        approvalHeaderVO.setCreateUser(flowInstance.getCreatorName());
+        approvalHeaderVO.setWorkAndAdditionRemark(flowInstance.getBusinessModelRemark());
+        return ResponseData.operationSuccessWithData(approvalHeaderVO);
+    }
 }
