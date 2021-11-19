@@ -18,13 +18,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * 移动端路由地址（由工作界面中配置）
-     */
-    @Transient
-    private String phoneUrl;
-
-
-    /**
      * 推送的已办审批状态（审批任务：agree/disagree）
      */
     @Transient
@@ -433,14 +426,6 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
         this.candidateAccount = candidateAccount;
         this.executeDate = executeDate;
         this.depict = depict;
-    }
-
-    public String getPhoneUrl() {
-        return phoneUrl;
-    }
-
-    public void setPhoneUrl(String phoneUrl) {
-        this.phoneUrl = phoneUrl;
     }
 
     public Double getTiming() {

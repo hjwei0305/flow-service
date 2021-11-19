@@ -141,6 +141,20 @@ public class ApprovalHeaderVO implements Serializable{
     private String businessModelName;
 
 
+    /**
+     * 移动端路由地址（由工作界面中配置）
+     */
+    private String phoneUrl;
+
+
+    public String getPhoneUrl() {
+        return phoneUrl;
+    }
+
+    public void setPhoneUrl(String phoneUrl) {
+        this.phoneUrl = phoneUrl;
+    }
+
     public String getFlowName() {
         return flowName;
     }

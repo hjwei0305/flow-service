@@ -1683,6 +1683,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public ResponseData<ApprovalHeaderVO> getApprovalHeaderVoOfGateway(String id) {
         try {
             ApprovalHeaderVO approvalHeaderVO = this.getApprovalHeaderVO(id);
+
+
+
             return ResponseData.operationSuccessWithData(approvalHeaderVO);
         } catch (Exception e) {
             LogUtil.error("请求抬头信息失败:{}", e.getMessage(), e);
@@ -1706,6 +1709,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setWorkAndAdditionRemark(flowTask.getFlowInstance().getBusinessModelRemark());
         result.setFlowName(flowTask.getFlowInstance().getFlowName());
         result.setBusinessModelName(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getName());
+
+
+        //移动端配置的地址
+        WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();
+        if (workPageUrl != null) {
+            result.setPhoneUrl(StringUtils.isNotEmpty(workPageUrl.getPhoneUrl()) ? workPageUrl.getPhoneUrl() : "NotConfig");
+        }
+
 
 
         FlowDefVersion flowDefVersion = flowTask.getFlowInstance().getFlowDefVersion();
@@ -2209,11 +2220,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (!userId.equals(bean.getExecutorId())) {
                 bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
             }
-            WorkPageUrl workPageUrl = bean.getWorkPageUrl();
-            if (workPageUrl != null) {
-                bean.setPhoneUrl(StringUtils.isNotEmpty(workPageUrl.getPhoneUrl()) ? workPageUrl.getPhoneUrl() : "NotConfig");
-            }
-
         }
         return flowTaskPageResult;
     }
