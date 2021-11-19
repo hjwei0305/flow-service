@@ -4532,24 +4532,31 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         for (PvmTransition pvmTransition : pvmTransitionList) {
             oriPvmTransitionList.add(pvmTransition);
         }
+
         pvmTransitionList.clear();
         //建立新方向
         TransitionImpl newTransition = currentActivity.createOutgoingTransition();
         //取得转向的目标
         newTransition.setDestination(targetActivity);
-        //完成任务
-        this.complete(currentTask.getId(), jumpOpinion, variables);
 
-        //恢复方向
-        targetActivity.getIncomingTransitions().remove(newTransition);
-        List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
-        pvmTList.clear();
-        for (PvmTransition pvmTransition : oriPvmTransitionList) {
-            pvmTransitionList.add(pvmTransition);
+        try{
+            //完成任务
+            this.complete(currentTask.getId(), jumpOpinion, variables);
+        }catch (Exception e){
+              throw e;
+        }finally {
+            //恢复方向
+            targetActivity.getIncomingTransitions().remove(newTransition);
+            List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
+            pvmTList.clear();
+            for (PvmTransition pvmTransition : oriPvmTransitionList) {
+                pvmTransitionList.add(pvmTransition);
+            }
+            //将状态重置
+            runtimeService.removeVariable(instance.getProcessInstanceId(), currentTask.getActTaskDefKey() + "currentNodeAfterEvent");
+            runtimeService.removeVariable(instance.getProcessInstanceId(), targetNodeId + "targetNodeBeforeEvent");
         }
-        //将状态重置
-        runtimeService.removeVariable(instance.getProcessInstanceId(), currentTask.getActTaskDefKey() + "currentNodeAfterEvent");
-        runtimeService.removeVariable(instance.getProcessInstanceId(), targetNodeId + "targetNodeBeforeEvent");
+
         return OperateResult.operationSuccess("10266");
     }
 

@@ -45,12 +45,12 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Test
     public void jumpToTargetNode() {
         JumpTaskVo jumpTaskVo = new JumpTaskVo();
-        jumpTaskVo.setInstanceId("25E78D95-8636-11EB-8A4B-0242C0A84413");
-        jumpTaskVo.setTargetNodeId("UserTask_198");
+        jumpTaskVo.setInstanceId("CEDA0E98-48DA-11EC-A62D-0242C0A84611");
+        jumpTaskVo.setTargetNodeId("UserTask_78");
         jumpTaskVo.setCurrentNodeAfterEvent(true);
         jumpTaskVo.setTargetNodeBeforeEvent(true);
         jumpTaskVo.setJumpDepict("测试跳转");
-        jumpTaskVo.setTaskList("[{\"nodeId\":\"UserTask_198\",\"flowTaskType\":\"CounterSign\",\"userIds\":\"1592D012-A330-11E7-A967-02420B99179E\",\"userVarName\":\"UserTask_198_List_CounterSign\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false,\"allowJumpBack\":false}]");
+        jumpTaskVo.setTaskList("[{\"nodeId\":\"UserTask_78\",\"flowTaskType\":\"common\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_78_Normal\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false,\"allowJumpBack\":false}]");
         ResponseData responseData = service.jumpToTargetNode(jumpTaskVo);
         System.out.println(JsonUtils.toJson(responseData));
     }
