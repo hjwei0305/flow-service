@@ -5046,6 +5046,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 pvmTransitionList.add(pvmTransition);
             }
             runtimeService.removeVariable(instance.getProcessInstanceId(), "return");//将状态重置
+            runtimeService.removeVariable(instance.getProcessInstanceId(), "allowJumpBack");//将状态重置
         }
         return ResponseData.operationSuccess();
     }
