@@ -2507,6 +2507,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseData jumpToTargetNode(JumpTaskVo jumpTaskVo) {
         String businessId;
         String approved = null;
@@ -2552,6 +2553,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 String opinion = jumpString.toString() + jumpTaskVo.getJumpDepict();
                 return flowTaskService.jumpToTarget(currentTask, jumpTaskVo.getTargetNodeId(), properties, opinion);
             } catch (Exception e) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 LogUtil.error("跳转失败:" + e.getMessage(), e);
                 return ResponseData.operationFailure("10172");
             }
