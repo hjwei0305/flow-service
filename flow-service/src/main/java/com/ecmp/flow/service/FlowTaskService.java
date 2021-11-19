@@ -1124,7 +1124,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @param variables 参数
      * @return 结果
      */
-    @Transactional(propagation = Propagation.REQUIRED)
     public OperateResult taskReject(String id, String opinion, Map<String, Object> variables) throws Exception {
         FlowTask flowTask = flowTaskDao.findOne(id);
         if (flowTask == null) {
@@ -1146,8 +1145,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 return OperateResult.operationFailure("10212");
             }
         } catch (FlowException e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return OperateResult.operationFailure(e.getMessage());
+            LogUtil.error("驳回失败：{}",e.getMessage(),e);
+            return OperateResult.operationFailure("10415",e.getMessage());
         }
     }
 
@@ -1216,19 +1215,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             // 取得转向的目标，这里需要指定用需要回退到的任务节点
             newTransition.setDestination(preActivity);
 
-            //完成任务
-            variables.put("reject", 1);
-            this.complete(currentTask.getId(), currentTask.getDepict(), variables);
-
-            //恢复方向
-            preActivity.getIncomingTransitions().remove(newTransition);
-            List<PvmTransition> pvmTList = currentActivity
-                    .getOutgoingTransitions();
-            pvmTList.clear();
-            for (PvmTransition pvmTransition : oriPvmTransitionList) {
-                pvmTransitionList.add(pvmTransition);
+            try{
+                //完成任务
+                variables.put("reject", 1);
+                this.complete(currentTask.getId(), currentTask.getDepict(), variables);
+            }catch (Exception e){
+                throw e;
+            }finally {
+                //恢复方向
+                preActivity.getIncomingTransitions().remove(newTransition);
+                List<PvmTransition> pvmTList = currentActivity
+                        .getOutgoingTransitions();
+                pvmTList.clear();
+                for (PvmTransition pvmTransition : oriPvmTransitionList) {
+                    pvmTransitionList.add(pvmTransition);
+                }
+                runtimeService.removeVariable(instance.getProcessInstanceId(), "reject");//将状态重置
             }
-            runtimeService.removeVariable(instance.getProcessInstanceId(), "reject");//将状态重置
             return OperateResult.operationSuccess("10216");
         } else {
             return OperateResult.operationFailure(checkResponse.getMessage());
@@ -5027,17 +5030,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Map<String, Object> variables = new HashMap<>();
 
 
-        variables.put("return", 1); //退回
-        variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
-        //完成任务
-        this.complete(flowTask.getId(), opinion, variables);
-
-        //恢复方向
-        targetActivity.getIncomingTransitions().remove(newTransition);
-        List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
-        pvmTList.clear();
-        for (PvmTransition pvmTransition : oriPvmTransitionList) {
-            pvmTransitionList.add(pvmTransition);
+        try{
+            variables.put("return", 1); //退回
+            variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
+            //完成任务
+            this.complete(flowTask.getId(), opinion, variables);
+        }catch (Exception e){
+                throw  e;
+        }finally {
+            //恢复方向
+            targetActivity.getIncomingTransitions().remove(newTransition);
+            List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
+            pvmTList.clear();
+            for (PvmTransition pvmTransition : oriPvmTransitionList) {
+                pvmTransitionList.add(pvmTransition);
+            }
+            runtimeService.removeVariable(instance.getProcessInstanceId(), "return");//将状态重置
         }
         return ResponseData.operationSuccess();
     }
