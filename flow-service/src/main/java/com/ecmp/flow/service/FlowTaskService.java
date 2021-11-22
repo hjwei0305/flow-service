@@ -1683,9 +1683,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public ResponseData<ApprovalHeaderVO> getApprovalHeaderVoOfGateway(String id) {
         try {
             ApprovalHeaderVO approvalHeaderVO = this.getApprovalHeaderVO(id);
-
-
-
             return ResponseData.operationSuccessWithData(approvalHeaderVO);
         } catch (Exception e) {
             LogUtil.error("请求抬头信息失败:{}", e.getMessage(), e);
@@ -1709,7 +1706,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setWorkAndAdditionRemark(flowTask.getFlowInstance().getBusinessModelRemark());
         result.setFlowName(flowTask.getFlowInstance().getFlowName());
         result.setBusinessModelName(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getName());
-
+        result.setFlowInstanceId(flowTask.getFlowInstance().getId());
 
         //移动端配置的地址
         WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();

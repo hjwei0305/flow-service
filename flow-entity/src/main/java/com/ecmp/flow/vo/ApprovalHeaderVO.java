@@ -147,6 +147,22 @@ public class ApprovalHeaderVO implements Serializable{
     private String phoneUrl;
 
 
+    /**
+     * 流程实例ID
+     */
+    private String flowInstanceId;
+
+
+
+
+    public String getFlowInstanceId() {
+        return flowInstanceId;
+    }
+
+    public void setFlowInstanceId(String flowInstanceId) {
+        this.flowInstanceId = flowInstanceId;
+    }
+
     public String getPhoneUrl() {
         return phoneUrl;
     }
