@@ -483,6 +483,19 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
     }
 
+
+
+    @Override
+    public ResponseData<List<ProcessTrackVO>> getProcessTrackVOOfMobile(String businessId) {
+        try{
+            List<ProcessTrackVO> result = getProcessTrackVO(businessId);
+            return ResponseData.operationSuccessWithData(result);
+        }catch (Exception e){
+            LogUtil.error("获取单据流程历史失败：{}",e.getMessage(),e);
+            return ResponseData.operationFailure("10416",e.getMessage());
+        }
+    }
+
     /**
      * 通过单据id，获取流程实例及关联待办及任务历史
      *

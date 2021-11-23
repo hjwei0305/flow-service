@@ -197,6 +197,20 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
 
 
     /**
+     * 通过单据id，获取流程实例及关联待办及任务历史
+     *
+     * @param businessId 业务单据id
+     * @return 流程实例及关联待办及任务历史
+     */
+    @POST
+    @Path("getProcessTrackVOOfMobile")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据id，获取流程实例及关联待办及任务历史", notes = "测试")
+    ResponseData<List<ProcessTrackVO>> getProcessTrackVOOfMobile(@QueryParam("businessId") String businessId);
+
+
+    /**
      * 通过当前任务id，获取流程实例及关联待办及任务历史
      *
      * @param taskId 当前任务id（必须在待办中）
