@@ -2700,6 +2700,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         approvalHeaderVO.setFlowName(flowInstance.getFlowName());
         approvalHeaderVO.setCreateTime(flowInstance.getCreatedDate());
         approvalHeaderVO.setCreateUser(flowInstance.getCreatorName());
+        approvalHeaderVO.setBusinessId(flowInstance.getBusinessId());
         approvalHeaderVO.setWorkAndAdditionRemark(flowInstance.getBusinessModelRemark());
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         if(businessModel!=null){
