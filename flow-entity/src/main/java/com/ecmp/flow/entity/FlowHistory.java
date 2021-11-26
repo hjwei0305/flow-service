@@ -17,6 +17,7 @@ import java.util.Date;
 @Table(name = "flow_history")
 public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implements Cloneable, ITenant {
 
+
     /**
      * 所属流程实例
      */
@@ -329,6 +330,15 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
     private String taskExecutors;
 
 
+    /**
+     * 移动端url
+     */
+    @Transient
+    private String phoneUrl;
+
+
+
+
     public FlowHistory() {
     }
 
@@ -355,6 +365,14 @@ public class FlowHistory extends com.ecmp.core.entity.BaseAuditableEntity implem
         this.depict = depict;
     }
 
+
+    public String getPhoneUrl() {
+        return phoneUrl;
+    }
+
+    public void setPhoneUrl(String phoneUrl) {
+        this.phoneUrl = phoneUrl;
+    }
 
     public Boolean getIfTimeout() {
         return ifTimeout;

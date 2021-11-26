@@ -548,6 +548,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                         flowHistory.setWebBaseAddress("/" + webBaseAddress + "/");
                     }
                 }
+                //已办设置移动端标识
+                flowHistory.setPhoneUrl(flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
             }
         }
         return result;

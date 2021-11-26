@@ -1145,8 +1145,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 return OperateResult.operationFailure("10212");
             }
         } catch (FlowException e) {
-            LogUtil.error("驳回失败：{}",e.getMessage(),e);
-            return OperateResult.operationFailure("10415",e.getMessage());
+            LogUtil.error("驳回失败：{}", e.getMessage(), e);
+            return OperateResult.operationFailure("10415", e.getMessage());
         }
     }
 
@@ -1215,13 +1215,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             // 取得转向的目标，这里需要指定用需要回退到的任务节点
             newTransition.setDestination(preActivity);
 
-            try{
+            try {
                 //完成任务
                 variables.put("reject", 1);
                 this.complete(currentTask.getId(), currentTask.getDepict(), variables);
-            }catch (Exception e){
+            } catch (Exception e) {
                 throw e;
-            }finally {
+            } finally {
                 //恢复方向
                 preActivity.getIncomingTransitions().remove(newTransition);
                 List<PvmTransition> pvmTList = currentActivity
@@ -1713,7 +1713,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (workPageUrl != null) {
             result.setPhoneUrl(StringUtils.isNotEmpty(workPageUrl.getPhoneUrl()) ? workPageUrl.getPhoneUrl() : "NotConfig");
         }
-
 
 
         FlowDefVersion flowDefVersion = flowTask.getFlowInstance().getFlowDefVersion();
@@ -2442,6 +2441,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (!userId.equals(bean.getExecutorId())) {
                 bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
             }
+
+            WorkPageUrl workPageUrl = bean.getWorkPageUrl();
+            if (workPageUrl != null) {
+                bean.setPhoneUrl(StringUtils.isNotEmpty(workPageUrl.getPhoneUrl()) ? workPageUrl.getPhoneUrl() : "NotConfig");
+            }
+
         }
         //完成待办任务的URL设置
         initFlowTasks(flowTaskList);
@@ -4545,12 +4550,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         //取得转向的目标
         newTransition.setDestination(targetActivity);
 
-        try{
+        try {
             //完成任务
             this.complete(currentTask.getId(), jumpOpinion, variables);
-        }catch (Exception e){
-              throw e;
-        }finally {
+        } catch (Exception e) {
+            throw e;
+        } finally {
             //恢复方向
             targetActivity.getIncomingTransitions().remove(newTransition);
             List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();
@@ -5033,14 +5038,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         Map<String, Object> variables = new HashMap<>();
 
 
-        try{
+        try {
             variables.put("return", 1); //退回
             variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
             //完成任务
             this.complete(flowTask.getId(), opinion, variables);
-        }catch (Exception e){
-                throw  e;
-        }finally {
+        } catch (Exception e) {
+            throw e;
+        } finally {
             //恢复方向
             targetActivity.getIncomingTransitions().remove(newTransition);
             List<PvmTransition> pvmTList = currentActivity.getOutgoingTransitions();

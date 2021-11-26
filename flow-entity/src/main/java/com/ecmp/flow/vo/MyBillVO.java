@@ -61,6 +61,15 @@ public class MyBillVO implements Serializable{
 
     private String taskExecutors; //待办执行人（中泰）
 
+    private String phoneUrl;
+
+    public String getPhoneUrl() {
+        return phoneUrl;
+    }
+
+    public void setPhoneUrl(String phoneUrl) {
+        this.phoneUrl = phoneUrl;
+    }
 
     public Boolean getManuallyEnd() {
         return ManuallyEnd;
