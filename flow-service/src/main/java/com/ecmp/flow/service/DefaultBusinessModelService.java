@@ -158,6 +158,13 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             return ResponseData.operationSuccess();
         }else if(entity.getCount()==1){
             throw new FlowException("10042");
+        }else if(entity.getCount()==2){
+            //测试请求超时
+            try {
+                Thread.sleep(1000 * 60 * 5);
+            } catch (Exception e) {
+            }
+            return ResponseData.operationFailure("测试请求超时！");
         }else{
             return ResponseData.operationFailure("10042");
         }
