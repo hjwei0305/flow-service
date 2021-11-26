@@ -13,6 +13,7 @@ import com.ecmp.flow.dao.DefaultBusinessModelDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.CodeGenerator;
 import com.ecmp.flow.util.FlowCommonUtil;
+import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
@@ -155,8 +156,11 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
         if(entity.getCount()==99){
             return ResponseData.operationSuccess();
+        }else if(entity.getCount()==1){
+            throw new FlowException("10042");
+        }else{
+            return ResponseData.operationFailure("10042");
         }
-        return ResponseData.operationFailure("10042");
     }
 
 
