@@ -2603,52 +2603,85 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return all;
     }
 
-    public List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(String taskIds) throws NoSuchMethodException {
-        List<NodeGroupInfo> all = new ArrayList<>();
+    public Map<String, List<NodeGroupInfo>> findNexNodesGroupWithUserSetCanBatch(String taskIds) throws Exception {
         List<String> taskIdList = null;
         if (StringUtils.isNotEmpty(taskIds)) {
             String[] includeNodeIdsStringArray = taskIds.split(",");
             taskIdList = Arrays.asList(includeNodeIdsStringArray);
         }
+        Map<String, List<NodeGroupInfo>> tempNodeGroupInfoMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(taskIdList)) {
             String approved = "true";
-            Map<String, NodeGroupInfo> tempNodeGroupInfoMap = new HashMap<>();
             for (String taskId : taskIdList) {
                 List<NodeInfo> nodeInfoList = this.findNexNodesWithUserSet(taskId, approved, null);
                 if (!CollectionUtils.isEmpty(nodeInfoList)) {
-                    for (NodeInfo nodeInfo : nodeInfoList) {
+                    if (nodeInfoList.size() == 1) {
+                        NodeInfo nodeInfo = nodeInfoList.get(0);
                         String flowDefVersionId = nodeInfo.getFlowDefVersionId();
                         Set<Executor> executorSet = nodeInfo.getExecutorSet();
-                        NodeGroupInfo tempNodeGroupInfo;
+                        List<NodeGroupInfo> tempNodeGroupInfoList;
                         String mapKey;
                         if (!CollectionUtils.isEmpty(executorSet)) {
                             mapKey = flowDefVersionId + nodeInfo.getId() + executorSet.size() + executorSet.iterator().next().getId();
-                            tempNodeGroupInfo = tempNodeGroupInfoMap.get(mapKey);
+                            tempNodeGroupInfoList = tempNodeGroupInfoMap.get(mapKey);
                         } else {
                             mapKey = flowDefVersionId + nodeInfo.getId();
-                            tempNodeGroupInfo = tempNodeGroupInfoMap.get(mapKey);
+                            tempNodeGroupInfoList = tempNodeGroupInfoMap.get(mapKey);
                         }
-                        if (tempNodeGroupInfo == null) {
-                            tempNodeGroupInfo = new NodeGroupInfo();
+                        if (CollectionUtils.isEmpty(tempNodeGroupInfoList)) {
+                            NodeGroupInfo tempNodeGroupInfo = new NodeGroupInfo();
                             tempNodeGroupInfo.setFlowDefVersionId(flowDefVersionId);
                             tempNodeGroupInfo.setNodeId(nodeInfo.getId());
                             tempNodeGroupInfo.setFlowDefVersionName(nodeInfo.getFlowDefVersionName());
                             BeanUtils.copyProperties(nodeInfo, tempNodeGroupInfo);
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
                             tempNodeGroupInfo.setExecutorSet(nodeInfo.getExecutorSet());
-                            tempNodeGroupInfoMap.put(mapKey, tempNodeGroupInfo);
+                            tempNodeGroupInfoList.add(tempNodeGroupInfo);
+                            tempNodeGroupInfoMap.put(mapKey, tempNodeGroupInfoList);
                         } else {
+                            for (NodeGroupInfo tempNodeGroupInfo : tempNodeGroupInfoList) {
+                                tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
+                            }
+                        }
+                    } else {
+                        String mapKey = null;
+                        List<NodeGroupInfo> nodes = new ArrayList<>();
+                        for (NodeInfo nodeInfo : nodeInfoList) {
+                            String flowDefVersionId = nodeInfo.getFlowDefVersionId();
+                            if (StringUtils.isEmpty(mapKey)) {
+                                mapKey = flowDefVersionId;
+                            }
+                            Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                            if (!CollectionUtils.isEmpty(executorSet)) {
+                                mapKey += nodeInfo.getId() + executorSet.size() + executorSet.iterator().next().getId();
+                            } else {
+                                mapKey += nodeInfo.getId();
+                            }
+                            NodeGroupInfo tempNodeGroupInfo = new NodeGroupInfo();
+                            tempNodeGroupInfo.setFlowDefVersionId(flowDefVersionId);
+                            tempNodeGroupInfo.setNodeId(nodeInfo.getId());
+                            tempNodeGroupInfo.setFlowDefVersionName(nodeInfo.getFlowDefVersionName());
+                            BeanUtils.copyProperties(nodeInfo, tempNodeGroupInfo);
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
+                            tempNodeGroupInfo.setExecutorSet(nodeInfo.getExecutorSet());
+                            nodes.add(tempNodeGroupInfo);
+                        }
+                        List<NodeGroupInfo> tempNodeGroupInfoList = tempNodeGroupInfoMap.get(mapKey);
+                        if (CollectionUtils.isEmpty(tempNodeGroupInfoList)) {
+                            tempNodeGroupInfoMap.put(mapKey, nodes);
+                        } else {
+                            for (NodeGroupInfo tempNodeGroupInfo : tempNodeGroupInfoList) {
+                                tempNodeGroupInfo.getIds().add(nodeInfoList.get(0).getFlowTaskId());
+                            }
                         }
                     }
                 }
             }
-            all.addAll(tempNodeGroupInfoMap.values());
         }
-        return all;
+        return tempNodeGroupInfoMap;
     }
 
-    public ResponseData getSelectedCanBatchNodesInfoOfPhone(String taskIds) throws NoSuchMethodException {
+    public ResponseData getSelectedCanBatchNodesInfoOfPhone(String taskIds) throws Exception {
         List<NodeGroupByFlowVersionInfo> nodeInfoList = this.findNexNodesGroupByVersionWithUserSetCanBatch(taskIds);
         if (!CollectionUtils.isEmpty(nodeInfoList)) {
             return ResponseData.operationSuccessWithData(nodeInfoList);
@@ -2679,27 +2712,30 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
     }
 
-    public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(String taskIds) throws NoSuchMethodException {
+    public List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(String taskIds) throws Exception {
         List<NodeGroupByFlowVersionInfo> all = new ArrayList<>();
-        List<NodeGroupInfo> nodeGroupInfoList = this.findNexNodesGroupWithUserSetCanBatch(taskIds);
+        Map<String, List<NodeGroupInfo>> nodeGroupInfoMap = this.findNexNodesGroupWithUserSetCanBatch(taskIds);
         Map<String, NodeGroupByFlowVersionInfo> nodeGroupByFlowVersionInfoMap = new HashMap<>();
-        if (!CollectionUtils.isEmpty(nodeGroupInfoList)) {
+        if (!CollectionUtils.isEmpty(nodeGroupInfoMap)) {
             int i = 0;
-            for (NodeGroupInfo nodeGroupInfo : nodeGroupInfoList) {
+            for (String key : nodeGroupInfoMap.keySet()) {
+                List<NodeGroupInfo> nodeGroupInfoList = nodeGroupInfoMap.get(key);
                 i++;
-                String flowDefVersionId = nodeGroupInfo.getFlowDefVersionId();
+                String flowDefVersionId = nodeGroupInfoList.get(0).getFlowDefVersionId();
                 NodeGroupByFlowVersionInfo nodeGroupByFlowVersionInfo = new NodeGroupByFlowVersionInfo();
                 nodeGroupByFlowVersionInfo.setId(flowDefVersionId + "_" + i);
-                nodeGroupByFlowVersionInfo.setName(nodeGroupInfo.getFlowDefVersionName());
+                nodeGroupByFlowVersionInfo.setName(nodeGroupInfoList.get(0).getFlowDefVersionName());
                 FlowDefVersion flowDefVersion = flowDefVersionDao.findOne(flowDefVersionId);
                 if (flowDefVersion != null) {
                     Boolean boo = flowDefVersion.getSolidifyFlow() == null ? false : flowDefVersion.getSolidifyFlow();
                     nodeGroupByFlowVersionInfo.setSolidifyFlow(boo);
                 }
-                if (nodeGroupByFlowVersionInfo.getSolidifyFlow() == true) {
-                    nodeGroupInfo.setExecutorSet(null);
+                if (nodeGroupByFlowVersionInfo.getSolidifyFlow()) {
+                    for (NodeGroupInfo nodeGroupInfo : nodeGroupInfoList) {
+                        nodeGroupInfo.setExecutorSet(null);
+                    }
                 }
-                nodeGroupByFlowVersionInfo.getNodeGroupInfos().add(nodeGroupInfo);
+                nodeGroupByFlowVersionInfo.setNodeGroupInfos(nodeGroupInfoList);
                 nodeGroupByFlowVersionInfoMap.put(flowDefVersionId + "_" + i, nodeGroupByFlowVersionInfo);
             }
             all.addAll(nodeGroupByFlowVersionInfoMap.values());

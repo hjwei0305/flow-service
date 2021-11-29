@@ -109,8 +109,8 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Test
     public void getBatchNextNodes() {
         List<String> list = new ArrayList<>();
-        list.add("2515F2AE-DAE6-11EA-B55A-0242C0A84613");
-        list.add("1F8C67E6-DAE6-11EA-B55A-0242C0A84613");
+        list.add("5AD501A9-50BE-11EC-8508-0242C0A84611");
+        list.add("DC393C81-50D4-11EC-8508-0242C0A84611");
         service.getBatchNextNodes(list);
     }
 
@@ -219,61 +219,32 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
         FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO1 = new FlowTaskBatchCompleteWebVO();
         List<String> list1 = new ArrayList<>();
-        list1.add("0A456A0D-3346-11EA-AC69-0242C0A8440A");
+        list1.add("F9FA050F-50B4-11EC-8508-0242C0A84611");
         flowTaskBatchCompleteWebVO1.setTaskIdList(list1);
+        flowTaskBatchCompleteWebVO1.setSolidifyFlow(false);
         List<FlowTaskCompleteWebVO> flowTaskCompleteList1 = new ArrayList<>();
         FlowTaskCompleteWebVO flowTaskCompleteWebVO1 = new FlowTaskCompleteWebVO();
         flowTaskCompleteWebVO1.setSolidifyFlow(null);
         flowTaskCompleteWebVO1.setCallActivityPath(null);
-        flowTaskCompleteWebVO1.setUserVarName("UserTask_65_Approve");
-        flowTaskCompleteWebVO1.setNodeId("UserTask_65");
+        flowTaskCompleteWebVO1.setUserVarName("UserTask_98_Normal");
+        flowTaskCompleteWebVO1.setNodeId("UserTask_98");
         flowTaskCompleteWebVO1.setInstancyStatus(false);
-        flowTaskCompleteWebVO1.setFlowTaskType("approve");
-        flowTaskCompleteWebVO1.setUserIds("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
+        flowTaskCompleteWebVO1.setFlowTaskType("common");
+        flowTaskCompleteWebVO1.setUserIds("B54E8964-D14D-11E8-A64B-0242C0A8441B");
         flowTaskCompleteList1.add(flowTaskCompleteWebVO1);
-        flowTaskBatchCompleteWebVO1.setFlowTaskCompleteList(flowTaskCompleteList1);
-        flowTaskBatchCompleteWebVO1.setSolidifyFlow(false);
-
-
-        FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO2 = new FlowTaskBatchCompleteWebVO();
-        List<String> list2 = new ArrayList<>();
-        list2.add("E21C5985-3345-11EA-AC69-0242C0A8440A");
-        flowTaskBatchCompleteWebVO2.setTaskIdList(list2);
-        List<FlowTaskCompleteWebVO> flowTaskCompleteList2 = new ArrayList<>();
         FlowTaskCompleteWebVO flowTaskCompleteWebVO2 = new FlowTaskCompleteWebVO();
         flowTaskCompleteWebVO2.setSolidifyFlow(null);
         flowTaskCompleteWebVO2.setCallActivityPath(null);
-        flowTaskCompleteWebVO2.setUserVarName("UserTask_65_Approve");
-        flowTaskCompleteWebVO2.setNodeId("UserTask_65");
+        flowTaskCompleteWebVO2.setUserVarName("UserTask_90_Normal");
+        flowTaskCompleteWebVO2.setNodeId("UserTask_90");
         flowTaskCompleteWebVO2.setInstancyStatus(false);
-        flowTaskCompleteWebVO2.setFlowTaskType("approve");
-        flowTaskCompleteWebVO2.setUserIds("1AE28F00-2FFC-11E9-AC2E-0242C0A84417");
-        flowTaskCompleteList2.add(flowTaskCompleteWebVO2);
-        flowTaskBatchCompleteWebVO2.setFlowTaskCompleteList(flowTaskCompleteList2);
-        flowTaskBatchCompleteWebVO2.setSolidifyFlow(false);
-
-
-        FlowTaskBatchCompleteWebVO flowTaskBatchCompleteWebVO3 = new FlowTaskBatchCompleteWebVO();
-        List<String> list3 = new ArrayList<>();
-        list3.add("F57E5B28-3345-11EA-AC69-0242C0A8440A");
-        flowTaskBatchCompleteWebVO3.setTaskIdList(list3);
-        List<FlowTaskCompleteWebVO> flowTaskCompleteList3 = new ArrayList<>();
-        FlowTaskCompleteWebVO flowTaskCompleteWebVO3 = new FlowTaskCompleteWebVO();
-        flowTaskCompleteWebVO3.setSolidifyFlow(null);
-        flowTaskCompleteWebVO3.setCallActivityPath(null);
-        flowTaskCompleteWebVO3.setUserVarName("UserTask_65_Approve");
-        flowTaskCompleteWebVO3.setNodeId("UserTask_65");
-        flowTaskCompleteWebVO3.setInstancyStatus(false);
-        flowTaskCompleteWebVO3.setFlowTaskType("approve");
-        flowTaskCompleteWebVO3.setUserIds(null);
-        flowTaskCompleteList3.add(flowTaskCompleteWebVO3);
-        flowTaskBatchCompleteWebVO3.setFlowTaskCompleteList(flowTaskCompleteList3);
-        flowTaskBatchCompleteWebVO3.setSolidifyFlow(true);
+        flowTaskCompleteWebVO2.setFlowTaskType("common");
+        flowTaskCompleteWebVO2.setUserIds("B54E8964-D14D-11E8-A64B-0242C0A8441B");
+        flowTaskCompleteList1.add(flowTaskCompleteWebVO2);
+        flowTaskBatchCompleteWebVO1.setFlowTaskCompleteList(flowTaskCompleteList1);
 
         List<FlowTaskBatchCompleteWebVO> flowTaskBatchCompleteWebVOList = new ArrayList<>();
         flowTaskBatchCompleteWebVOList.add(flowTaskBatchCompleteWebVO1);
-        flowTaskBatchCompleteWebVOList.add(flowTaskBatchCompleteWebVO2);
-        flowTaskBatchCompleteWebVOList.add(flowTaskBatchCompleteWebVO3);
 
         service.completeTaskBatch(flowTaskBatchCompleteWebVOList);
 

@@ -626,25 +626,11 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      * @throws NoSuchMethodException 找不到方法异常
      */
     @GET
-    @Path("findNextNodesGroupWithUserSetCanBatch")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息)", notes = "测试")
-    List<NodeGroupInfo> findNexNodesGroupWithUserSetCanBatch(@QueryParam("taskIds") String taskIds) throws NoSuchMethodException;
-
-    /**
-     * 通过任务IDs选择下一步带用户信息的执行的节点信息
-     *
-     * @param taskIds 任务IDs
-     * @return 下一步执行的节点信息(带用户信息), 带分组
-     * @throws NoSuchMethodException 找不到方法异常
-     */
-    @GET
     @Path("findNextNodesByVersionGroupWithUserSetCanBatch")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过任务IDs选择下一步可批量审批执行的节点信息(带用户信息与版本分组)", notes = "测试")
-    List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds") String taskIds) throws NoSuchMethodException;
+    List<NodeGroupByFlowVersionInfo> findNexNodesGroupByVersionWithUserSetCanBatch(@QueryParam("taskIds") String taskIds) throws Exception;
 
 
     /**
@@ -672,7 +658,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "获取下一步的节点信息任务(移动端)", notes = "获取下一步的节点信息任务(移动端)")
-    ResponseData getSelectedCanBatchNodesInfoOfPhone(@QueryParam("taskIds") String taskIds) throws NoSuchMethodException;
+    ResponseData getSelectedCanBatchNodesInfoOfPhone(@QueryParam("taskIds") String taskIds) throws Exception;
 
 
     /**
