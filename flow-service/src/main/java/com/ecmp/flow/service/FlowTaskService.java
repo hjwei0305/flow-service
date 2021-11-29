@@ -2636,6 +2636,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             BeanUtils.copyProperties(nodeInfo, tempNodeGroupInfo);
                             tempNodeGroupInfo.getIds().add(nodeInfo.getFlowTaskId());
                             tempNodeGroupInfo.setExecutorSet(nodeInfo.getExecutorSet());
+                            tempNodeGroupInfoList = new ArrayList<>();
                             tempNodeGroupInfoList.add(tempNodeGroupInfo);
                             tempNodeGroupInfoMap.put(mapKey, tempNodeGroupInfoList);
                         } else {
