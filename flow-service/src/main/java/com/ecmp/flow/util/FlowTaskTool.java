@@ -2821,7 +2821,7 @@ public class FlowTaskTool {
     public List<String> getParentOrgCodes(String nodeId) {
         if (StringUtils.isEmpty(nodeId)) {
             //获取业务数据条件属性值接口【orgId未赋值】
-            throw new FlowException("10069");
+            throw new FlowException(ContextUtil.getMessage("10361"));
         }
         List<Organization> organizationsList = flowCommonUtil.getParentOrganizations(nodeId);
         List<String> orgCodesList = new ArrayList<>();
