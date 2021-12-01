@@ -1740,7 +1740,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         myBillVO.setEnded(f.isEnded());
                         myBillVO.setManuallyEnd(f.isManuallyEnd());
 
-                        String phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
+                        //我的单据设置移动端查看单据地址
+                        String phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getPhoneLookUrl();
+                        if(StringUtils.isEmpty(phoneLookUrl)){
+                            phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
+                        }
                         myBillVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
                         data.add(myBillVO);
                     }
@@ -2706,7 +2710,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         if (businessModel != null) {
             approvalHeaderVO.setBusinessModelName(businessModel.getName());
-            String phoneLookUrl = businessModel.getPhoneLookUrl();
+            //已办和我的单据抬头信息设置移动端查看单据地址
+            String phoneLookUrl = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getPhoneLookUrl();
+            if(StringUtils.isEmpty(phoneLookUrl)){
+                phoneLookUrl = businessModel.getPhoneLookUrl();
+            }
             approvalHeaderVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
         }
         return ResponseData.operationSuccessWithData(approvalHeaderVO);
