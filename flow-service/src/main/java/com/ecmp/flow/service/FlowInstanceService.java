@@ -2706,7 +2706,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
         if (businessModel != null) {
             approvalHeaderVO.setBusinessModelName(businessModel.getName());
-            approvalHeaderVO.setPhoneUrl(businessModel.getClassName());
+            String phoneLookUrl = businessModel.getPhoneLookUrl();
+            approvalHeaderVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
         }
         return ResponseData.operationSuccessWithData(approvalHeaderVO);
     }
