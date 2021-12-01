@@ -141,6 +141,12 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
     private String lookUrl;
 
     /**
+     * 移动端查看单据的URL
+     */
+    @Column(name = "phone_look_url")
+    private String phoneLookUrl;
+
+    /**
      * 租户代码
      */
     @Column(name = "tenant_code", length = 10)
@@ -231,6 +237,14 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
 
     public void setLookUrl(String lookUrl) {
         this.lookUrl = lookUrl;
+    }
+
+    public String getPhoneLookUrl() {
+        return phoneLookUrl;
+    }
+
+    public void setPhoneLookUrl(String phoneLookUrl) {
+        this.phoneLookUrl = phoneLookUrl;
     }
 
     @Override
