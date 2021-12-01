@@ -549,7 +549,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                     }
                 }
                 //已办设置移动端标识
-                flowHistory.setPhoneUrl(flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
+                String phoneLookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
+                flowHistory.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
             }
         }
         return result;

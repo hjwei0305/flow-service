@@ -266,11 +266,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
             JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(currentNodeKey);
             List<NodeInfo> allExitNodeInfo = new ArrayList<>();
-            findAllExitNodesInfo(allExitNodeInfo,definition,currentNode);
+            findAllExitNodesInfo(allExitNodeInfo, definition, currentNode);
             List<CanToHistoryNode> resultList = new ArrayList<>();
-            allExitNodeInfo.forEach(node ->{
-                FlowHistory history = flowHistoryList.stream().filter(his->node.getId().equalsIgnoreCase(his.getActTaskDefKey())).findFirst().orElse(null);
-                if(history!=null){
+            allExitNodeInfo.forEach(node -> {
+                FlowHistory history = flowHistoryList.stream().filter(his -> node.getId().equalsIgnoreCase(his.getActTaskDefKey())).findFirst().orElse(null);
+                if (history != null) {
                     CanToHistoryNode canToHistoryNode = new CanToHistoryNode();
                     canToHistoryNode.setId(history.getId());
                     canToHistoryNode.setFlowName(history.getFlowName());
@@ -280,16 +280,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     canToHistoryNode.setExecutorId(history.getExecutorId());
                     canToHistoryNode.setExecutorName(history.getExecutorName());
                     canToHistoryNode.setExecutorAccount(history.getExecutorAccount());
-                    try{
+                    try {
                         JSONObject jsonObject = JSONObject.fromObject(history.getTaskJsonDef());
                         JSONObject normalInfo = jsonObject.getJSONObject("nodeConfig").getJSONObject("normal");
                         String nodeCode = normalInfo.getString("poolTaskCode");
                         canToHistoryNode.setPoolTaskCode(nodeCode);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                     }
                     resultList.add(canToHistoryNode);
-                }else{
-                    if("StartUser".equalsIgnoreCase(node.getUiUserType())){ // 执行人为发起人
+                } else {
+                    if ("StartUser".equalsIgnoreCase(node.getUiUserType())) { // 执行人为发起人
                         CanToHistoryNode canToHistoryNode = new CanToHistoryNode();
                         canToHistoryNode.setId(IdGenerator.uuid());
                         canToHistoryNode.setFlowName(flowInstance.getFlowName());
@@ -303,7 +303,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     }
                 }
             });
-          return ResponseData.operationSuccessWithData(resultList);
+            return ResponseData.operationSuccessWithData(resultList);
         } else {
             //通过参数获取流程实例失败！
             return ResponseData.operationFailure("10249");
@@ -318,19 +318,19 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String targetId = jsonObject.getString("targetId");
             JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(targetId);
             if (targetId.contains("Gateway")) {
-                 List<NodeInfo> resultGateway = new ArrayList<>();
-                 this.findAllExitNodesInfo(resultGateway, definition, currentNode);
-                 result.addAll(resultGateway);
+                List<NodeInfo> resultGateway = new ArrayList<>();
+                this.findAllExitNodesInfo(resultGateway, definition, currentNode);
+                result.addAll(resultGateway);
             } else {
                 NodeInfo newNode = new NodeInfo();
-                newNode.setId(currentNode.get("id")+"");
-                newNode.setName(currentNode.get("name")+"");
+                newNode.setId(currentNode.get("id") + "");
+                newNode.setName(currentNode.get("name") + "");
                 try {
                     JSONArray executorList = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONArray(Constants.EXECUTOR);
                     if (executorList != null && executorList.size() == 1) {
                         JSONObject executor = executorList.getJSONObject(0);
-                        String userType =  (String)executor.get("userType");
-                        if("StartUser".equalsIgnoreCase(userType)){
+                        String userType = (String) executor.get("userType");
+                        if ("StartUser".equalsIgnoreCase(userType)) {
                             newNode.setUiUserType("StartUser");
                         }
                     }
@@ -339,7 +339,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 result.add(newNode);
             }
         }
-        return  result;
+        return result;
     }
 
 
@@ -484,15 +484,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-
     @Override
     public ResponseData<List<ProcessTrackVO>> getProcessTrackVOOfMobile(String businessId) {
-        try{
+        try {
             List<ProcessTrackVO> result = getProcessTrackVO(businessId);
             return ResponseData.operationSuccessWithData(result);
-        }catch (Exception e){
-            LogUtil.error("获取单据流程历史失败：{}",e.getMessage(),e);
-            return ResponseData.operationFailure("10416",e.getMessage());
+        } catch (Exception e) {
+            LogUtil.error("获取单据流程历史失败：{}", e.getMessage(), e);
+            return ResponseData.operationFailure("10416", e.getMessage());
         }
     }
 
@@ -1740,7 +1739,9 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
                         myBillVO.setEnded(f.isEnded());
                         myBillVO.setManuallyEnd(f.isManuallyEnd());
-                        myBillVO.setPhoneUrl(f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getClassName());
+
+                        String phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
+                        myBillVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
                         data.add(myBillVO);
                     }
 
@@ -2567,7 +2568,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 return flowTaskService.jumpToTarget(currentTask, jumpTaskVo.getTargetNodeId(), properties, opinion);
             } catch (Exception e) {
                 LogUtil.error("跳转失败:" + e.getMessage(), e);
-                return ResponseData.operationFailure("10172",e.getMessage());
+                return ResponseData.operationFailure("10172", e.getMessage());
             }
         } else {
             return responseData;
@@ -2671,7 +2672,6 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
-
     @Override
     public ResponseData getSolidifyFlowInstanceByUserId(String userId) {
         if (StringUtils.isEmpty(userId)) {
@@ -2696,7 +2696,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     @Override
     public ResponseData<ApprovalHeaderVO> getHislHeaderVoOfGateway(String instanceId) {
-        FlowInstance flowInstance =   findOne(instanceId);
+        FlowInstance flowInstance = findOne(instanceId);
         ApprovalHeaderVO approvalHeaderVO = new ApprovalHeaderVO();
         approvalHeaderVO.setFlowName(flowInstance.getFlowName());
         approvalHeaderVO.setCreateTime(flowInstance.getCreatedDate());
@@ -2704,7 +2704,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         approvalHeaderVO.setBusinessId(flowInstance.getBusinessId());
         approvalHeaderVO.setWorkAndAdditionRemark(flowInstance.getBusinessModelRemark());
         BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
-        if(businessModel!=null){
+        if (businessModel != null) {
             approvalHeaderVO.setBusinessModelName(businessModel.getName());
             approvalHeaderVO.setPhoneUrl(businessModel.getClassName());
         }
