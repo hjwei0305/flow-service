@@ -4736,7 +4736,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         }
                     }
                     nodeType = defObj.getString("nodeType");
-                    if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)) {
+                    if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType)
+                            || "SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
+                        if("PoolTask".equalsIgnoreCase(nodeType) && "anonymous".equalsIgnoreCase(flowTask.getExecutorId())){ //工作池任务验证执行人是否已经确认
+                            return ResponseData.operationFailure("10417");
+                        }
                         autoTask = flowTask;
                     } else {
                         return ResponseData.operationFailure("10380");
@@ -4771,7 +4775,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 //自动执行这个待办
                 String approved = "true";
                 String opinion = "同意【自动执行】";
-                if ("Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)) {
+                if ("Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
                     approved = null;
                     opinion = "【自动执行】";
                 }

@@ -943,7 +943,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 通过业务单据ID自动执行单据中的待办
-     * 注解：（只考虑普通任务和审批任务）（执行不成功待办的标注为紧急）
+     * 注解：（普通、审批、单签、工作池）（执行不成功待办的标注为紧急）
      *
      * @param businessId
      * @return
@@ -956,9 +956,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 通过业务单据ID和节点代码自动执行单据中的指定待办
-     * 注解：1、只考虑普通任务和审批任务
-     *      2、执行不成功待办的标注为紧急
-     *      3、不验证接口调用人
+     * （普通、审批、单签、工作池）（执行不成功待办的标注为紧急）
      *
      * @param businessId 单据ID
      * @param nodeCode  节点code(允许为空，不控制节点)

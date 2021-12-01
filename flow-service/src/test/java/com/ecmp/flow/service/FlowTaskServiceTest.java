@@ -32,6 +32,13 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
+    public void automatingTaskByBusinessId(){
+         service.automatingTaskByBusinessId("FD936EF9-524D-11EC-A6A9-0242C0A84611");
+    }
+
+
+
+    @Test
     public void getCanReturnNodeInfos() {
         ResponseData<List<FlowNodeVO>> responseData = service.getCanReturnNodeInfos("7F020E25-3B7B-11EC-BB4A-0242C0A84611");
         System.out.println(ApiJsonUtils.toJson(responseData));
@@ -109,8 +116,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Test
     public void getBatchNextNodes() {
         List<String> list = new ArrayList<>();
-        list.add("5AD501A9-50BE-11EC-8508-0242C0A84611");
-        list.add("DC393C81-50D4-11EC-8508-0242C0A84611");
+        list.add("0A58D8CA-50B5-11EC-8508-0242C0A84611");
         service.getBatchNextNodes(list);
     }
 
