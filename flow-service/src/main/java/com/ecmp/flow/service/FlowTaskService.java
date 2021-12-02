@@ -71,6 +71,8 @@ import org.springframework.util.CollectionUtils;
 
 import javax.ws.rs.core.GenericType;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -260,15 +262,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             } else {
-                //检查非固化需要跳过的待办
-                ResponseData needTaskResult = this.checkAutomaticToDoTask(checkList);
-                if (needTaskResult.successful()) {
-                    List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
-                    if (!CollectionUtils.isEmpty(needLsit)) {
-                        LogUtil.bizLog("非固化记录需要自动执行信息：taskId={},taskName={},executorName={}", flowTask.getId(), flowTask.getTaskName(), flowTask.getExecutorName());
-                        flowTask.setNewTaskAuto(true);
-                    }
-                }
+                 //检查非固化需要跳过的待办
+//                ResponseData needTaskResult = this.checkAutomaticToDoTask(checkList);
+//                if (needTaskResult.successful()) {
+//                    List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
+//                    if (!CollectionUtils.isEmpty(needLsit)) {
+//                        LogUtil.bizLog("非固化记录需要自动执行信息：taskId={},taskName={},executorName={}", flowTask.getId(), flowTask.getTaskName(), flowTask.getExecutorName());
+//                        flowTask.setNewTaskAuto(true);
+//                    }
+//                }
             }
         }
     }
@@ -4241,6 +4243,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+    public FlowHistory pollingCheckHis(FlowHistory flowHistory, String hisId) {
+        flowHistory = flowHistoryService.findOne(hisId);
+        return flowHistory;
+    }
+
     /**
      * 检查非固化流程需要跳过的待办
      *
@@ -4254,23 +4261,49 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (StringUtils.isNotEmpty(flowTask.getPreId())) {
                     //上一节点信息
                     FlowHistory flowHistory = flowHistoryService.findOne(flowTask.getPreId());
-                    //上一步和当前执行人一致
-                    if (StringUtils.isNotEmpty(flowHistory.getExecutorId()) && StringUtils.isNotEmpty(flowTask.getExecutorId()) && flowHistory.getExecutorId().equals(flowTask.getExecutorId())) {
-                        String hisJson = flowHistory.getTaskJsonDef();
-                        JSONObject hisJsonObj = JSONObject.fromObject(hisJson);
-                        String hisNodeType = hisJsonObj.get("nodeType") + "";
-                        //上一步如果是审批节点(并且同意)
-                        if ("Approve".equalsIgnoreCase(hisNodeType) && "agree".equalsIgnoreCase(flowHistory.getFlowExecuteStatus())) {
-                            String taskJsonDef = flowTask.getTaskJsonDef();
-                            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
-                            String nodeType = taskJsonDefObj.get("nodeType") + "";
-                            //本节点也是审批节点
-                            if ("Approve".equalsIgnoreCase(nodeType)) {
-                                if (flowSolidifyExecutorService.checkPage(flowTask)) {
-                                    needLsit.add(flowTask);
+                    //监控发现存在此时流程历史还没有持久化的情况（轮询获取）
+                    if (flowHistory == null) {
+                        Calendar startTreadTime = Calendar.getInstance();
+                        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+                        Runnable runnable = new Runnable() {
+                            public void run() {
+                                Calendar nowTime = Calendar.getInstance();
+                                nowTime.add(Calendar.SECOND, -30);//不能超过30秒
+                                if (nowTime.after(startTreadTime)) {
+                                    service.shutdown();
+                                }
+                                FlowHistory flowHistoryTwo = pollingCheckHis(flowHistory, flowTask.getPreId());
+                                if (flowHistoryTwo != null) {
+                                    service.shutdown();
+                                }
+                            }
+                        };
+                        service.scheduleWithFixedDelay(runnable, 5, 10, TimeUnit.SECONDS);
+                    }
+
+                    if(flowHistory != null){
+                        //上一步和当前执行人一致
+                        if (StringUtils.isNotEmpty(flowHistory.getExecutorId())
+                                && StringUtils.isNotEmpty(flowTask.getExecutorId())
+                                && flowHistory.getExecutorId().equals(flowTask.getExecutorId())) {
+                            String hisJson = flowHistory.getTaskJsonDef();
+                            JSONObject hisJsonObj = JSONObject.fromObject(hisJson);
+                            String hisNodeType = hisJsonObj.get("nodeType") + "";
+                            //上一步如果是审批节点(并且同意)
+                            if ("Approve".equalsIgnoreCase(hisNodeType) && "agree".equalsIgnoreCase(flowHistory.getFlowExecuteStatus())) {
+                                String taskJsonDef = flowTask.getTaskJsonDef();
+                                JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+                                String nodeType = taskJsonDefObj.get("nodeType") + "";
+                                //本节点也是审批节点
+                                if ("Approve".equalsIgnoreCase(nodeType)) {
+                                    if (flowSolidifyExecutorService.checkPage(flowTask)) {
+                                        needLsit.add(flowTask);
+                                    }
                                 }
                             }
                         }
+                    }else{
+                        LogUtil.error("检查待办是否需要自动执行失败：流程历史信息还未实例化！");
                     }
                 }
             }
@@ -4738,7 +4771,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeType = defObj.getString("nodeType");
                     if ("Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType)
                             || "SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
-                        if("PoolTask".equalsIgnoreCase(nodeType) && "anonymous".equalsIgnoreCase(flowTask.getExecutorId())){ //工作池任务验证执行人是否已经确认
+                        if ("PoolTask".equalsIgnoreCase(nodeType) && "anonymous".equalsIgnoreCase(flowTask.getExecutorId())) { //工作池任务验证执行人是否已经确认
                             return ResponseData.operationFailure("10417");
                         }
                         autoTask = flowTask;
