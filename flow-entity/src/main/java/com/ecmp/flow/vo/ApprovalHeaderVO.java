@@ -153,7 +153,20 @@ public class ApprovalHeaderVO implements Serializable{
     private String flowInstanceId;
 
 
+    /**
+     * 批注原因
+     */
+    private String labelReason;
 
+
+
+    public String getLabelReason() {
+        return labelReason;
+    }
+
+    public void setLabelReason(String labelReason) {
+        this.labelReason = labelReason;
+    }
 
     public String getFlowInstanceId() {
         return flowInstanceId;

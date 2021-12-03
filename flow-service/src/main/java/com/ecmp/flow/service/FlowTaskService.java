@@ -1709,6 +1709,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         result.setFlowName(flowTask.getFlowInstance().getFlowName());
         result.setBusinessModelName(flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getName());
         result.setFlowInstanceId(flowTask.getFlowInstance().getId());
+        result.setLabelReason(flowTask.getLabelReason());
 
         //移动端配置的地址
         WorkPageUrl workPageUrl = flowTask.getWorkPageUrl();

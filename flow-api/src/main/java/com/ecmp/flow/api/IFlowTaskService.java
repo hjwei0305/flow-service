@@ -994,13 +994,13 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
 
     /**
-     * 通过任务ID给代表添加标注原因
+     * 通过任务ID给代表添加批注原因
      * @return 是否成功
      */
     @POST
     @Path("labelTaskReasonByTaskId")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "通过任务ID给代表添加标注原因", notes = "通过任务ID给代表添加标注原因")
+    @ApiOperation(value = "通过任务ID给代表添加批注原因", notes = "通过任务ID给代表添加批注原因")
     ResponseData labelTaskReasonByTaskId(LabelTaskReasonVo params);
 }

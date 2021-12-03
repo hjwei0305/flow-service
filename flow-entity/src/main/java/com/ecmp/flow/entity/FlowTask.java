@@ -211,7 +211,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * 优先级：1》驳回  2》撤回  3》紧急  4》标注
+     * 优先级：1》驳回  2》撤回  3》紧急  4》批注
      */
     @Column(name = "priority")
     private int priority;
@@ -395,7 +395,7 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * 标注原因
+     * 批注原因
      */
     @Column(name = "label_reason")
     private String labelReason;
