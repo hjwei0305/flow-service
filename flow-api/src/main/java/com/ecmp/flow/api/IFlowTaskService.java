@@ -991,4 +991,16 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "退回到指定节点", notes = "退回到指定节点")
     ResponseData  returnToSpecifiedNode(ReturnToSpecifiedNode params);
+
+
+    /**
+     * 通过任务ID给代表添加标注原因
+     * @return 是否成功
+     */
+    @POST
+    @Path("labelTaskReasonByTaskId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过任务ID给代表添加标注原因", notes = "通过任务ID给代表添加标注原因")
+    ResponseData labelTaskReasonByTaskId(LabelTaskReasonVo params);
 }

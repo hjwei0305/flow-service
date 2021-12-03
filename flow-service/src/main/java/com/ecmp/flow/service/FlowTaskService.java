@@ -262,7 +262,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                 }
             } else {
-                 //检查非固化需要跳过的待办
+                //检查非固化需要跳过的待办
 //                ResponseData needTaskResult = this.checkAutomaticToDoTask(checkList);
 //                if (needTaskResult.successful()) {
 //                    List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
@@ -4281,7 +4281,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         service.scheduleWithFixedDelay(runnable, 5, 10, TimeUnit.SECONDS);
                     }
 
-                    if(flowHistory != null){
+                    if (flowHistory != null) {
                         //上一步和当前执行人一致
                         if (StringUtils.isNotEmpty(flowHistory.getExecutorId())
                                 && StringUtils.isNotEmpty(flowTask.getExecutorId())
@@ -4302,7 +4302,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         LogUtil.error("检查待办是否需要自动执行失败：流程历史信息还未实例化！");
                     }
                 }
@@ -5134,5 +5134,29 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
 
+    @Override
+    public ResponseData labelTaskReasonByTaskId(LabelTaskReasonVo params) {
+        if (params == null) {
+            return ResponseData.operationFailure("10006");
+        }
+        String id = params.getTaskId();
+        if (StringUtils.isEmpty(id)) {
+            return ResponseData.operationFailure("10377");
+        }
+        String reason = params.getLabelReason();
+        if (StringUtils.isEmpty(reason)) {
+            return ResponseData.operationFailure("10418");
+        }
+
+        FlowTask flowTask = flowTaskDao.findOne(id);
+        if (flowTask != null) {
+            flowTask.setPriority(4);
+            flowTask.setLabelReason(reason);
+            flowTaskDao.save(flowTask);
+            return ResponseData.operationSuccess();
+        } else {
+            return ResponseData.operationFailure("10419");
+        }
+    }
 }
 

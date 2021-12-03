@@ -211,10 +211,11 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
 
     /**
-     * 优先级：1》驳回  2》撤回  3》紧急
+     * 优先级：1》驳回  2》撤回  3》紧急  4》标注
      */
     @Column(name = "priority")
     private int priority;
+
 
     /**
      * 任务所属人账号（拥有人）
@@ -391,6 +392,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
      */
     @Column(name = "timing")
     private Double timing;
+
+
+    /**
+     * 标注原因
+     */
+    @Column(name = "label_reason")
+    private String labelReason;
 
 
     /**
@@ -991,5 +999,13 @@ public class FlowTask extends com.ecmp.core.entity.BaseAuditableEntity implement
 
     public void setJumpBackPrevious(Boolean jumpBackPrevious) {
         this.jumpBackPrevious = jumpBackPrevious;
+    }
+
+    public String getLabelReason() {
+        return labelReason;
+    }
+
+    public void setLabelReason(String labelReason) {
+        this.labelReason = labelReason;
     }
 }
