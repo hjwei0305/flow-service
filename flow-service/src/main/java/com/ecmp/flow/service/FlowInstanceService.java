@@ -962,7 +962,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     //任务池指定真实用户组，抢单池确定用户组签定（多执行人）
     @Transactional(propagation = Propagation.REQUIRED)
-    public ResponseData<List<FlowTask>> poolTaskSignByUserList(HistoricTaskInstance historicTaskInstance, List<String> userList, Map<String, Object> v) {
+    public ResponseData<List<FlowTask>> poolTaskSignByUserList(HistoricTaskInstance historicTaskInstance, List<String> userList, Map<String, Object> v,String labelReason) {
         String actTaskId = historicTaskInstance.getId();
         //根据用户的id列表获取执行人列表
         List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
@@ -1013,6 +1013,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newFlowTask.setOwnerOrgCode(executor.getOrganizationCode());
                     newFlowTask.setOwnerOrgName(executor.getOrganizationName());
                     newFlowTask.setTrustState(0);
+
+                    //给待办添加批注
+                    if(StringUtils.isEmpty(labelReason)){
+                        newFlowTask.setLabelReason(labelReason);
+                        newFlowTask.setPriority(4);
+                    }
+
                     if (v != null && v.get("instancyStatus") != null) {
                         try {
                             if ((Boolean) v.get("instancyStatus") == true) {
@@ -1155,7 +1162,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(signalPoolTaskVO.getPoolTaskActDefId()).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap());
+                this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap() , signalPoolTaskVO.getLabelReason());
                 return ResponseData.operationSuccess();
             } else {
                 return ResponseData.operationFailure("10144");

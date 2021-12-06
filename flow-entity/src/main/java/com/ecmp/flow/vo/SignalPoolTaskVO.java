@@ -24,6 +24,12 @@ public class SignalPoolTaskVO implements Serializable {
      */
     private List<String> userIds;
 
+
+    /**
+     * 批注原因
+     */
+    private String labelReason;
+
     /**
      * 其他参数集合
      */
@@ -59,5 +65,13 @@ public class SignalPoolTaskVO implements Serializable {
 
     public void setMap(Map<String, Object> map) {
         this.map = map;
+    }
+
+    public String getLabelReason() {
+        return labelReason;
+    }
+
+    public void setLabelReason(String labelReason) {
+        this.labelReason = labelReason;
     }
 }
