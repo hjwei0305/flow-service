@@ -1015,7 +1015,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newFlowTask.setTrustState(0);
 
                     //给待办添加批注
-                    if(StringUtils.isEmpty(labelReason)){
+                    if(StringUtils.isNotEmpty(labelReason)){
                         newFlowTask.setLabelReason(labelReason);
                         newFlowTask.setPriority(4);
                     }
