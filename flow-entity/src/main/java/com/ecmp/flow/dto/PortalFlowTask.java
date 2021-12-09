@@ -80,6 +80,12 @@ public class PortalFlowTask implements Serializable {
 
 
     /**
+     * 标注原因
+     */
+    private String labelReason;
+
+
+    /**
      * 默认构造函数
      */
     public PortalFlowTask() {
@@ -106,6 +112,7 @@ public class PortalFlowTask implements Serializable {
         createdDate = flowTask.getCreatedDate();
         timing = flowTask.getTiming();
         warningStatus = flowTask.getWarningStatus();
+        labelReason = flowTask.getLabelReason();
     }
 
     public String getId() {
@@ -202,5 +209,13 @@ public class PortalFlowTask implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getLabelReason() {
+        return labelReason;
+    }
+
+    public void setLabelReason(String labelReason) {
+        this.labelReason = labelReason;
     }
 }
