@@ -2801,13 +2801,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         EcmpMessage message = new EcmpMessage();
         message.setCanToSender(true); //可以发送给发件人
         message.setSenderId(ContextUtil.getUserId()); //发布人ID
-        message.setSubject("发起人催办：【" + flowInstance.getFlowName() + "】");//消息主题
+        message.setSubject("发起人催办：【" + flowInstance.getFlowName() + "-"+flowInstance.getBusinessCode()+"】");//消息主题
         message.setNotifyTypes(typeList); //消息类型
         message.setReceiverIds(receiverIds); //接收用户ID清单
         //模板参数
         Map<String, Object> contentTemplateParams = new HashMap<>();
         contentTemplateParams.put("businessName", flowInstance.getBusinessName());
         contentTemplateParams.put("businessCode", flowInstance.getBusinessCode());
+        contentTemplateParams.put("flowName",flowInstance.getFlowName());
         contentTemplateParams.put("urgedInfo", urgedInfo);
         message.setContentTemplateParams(contentTemplateParams); //模板参数
         message.setContentTemplateCode("FLOW_START_URGED_TEMPLATE");//催办模板代码
