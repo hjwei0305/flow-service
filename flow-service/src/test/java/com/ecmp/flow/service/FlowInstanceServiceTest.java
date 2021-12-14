@@ -1,5 +1,7 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.core.search.Search;
+import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.FlowNodeVO;
 import com.ecmp.flow.vo.JumpTaskVo;
@@ -29,8 +31,15 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
 
+
     @Test
-    public void getCanToHistoryNodeInfos(){
+    public void getAllMyBills() {
+        UserFlowBillsQueryParam userFlowBillsQueryParam = new UserFlowBillsQueryParam();
+        service.getAllMyBills(userFlowBillsQueryParam);
+    }
+
+    @Test
+    public void getCanToHistoryNodeInfos() {
         ResponseData responseData = service.getCanToHistoryNodeInfos("3417325C-BC6B-11EB-87A2-0242C0A8462A");
         System.out.println(JsonUtils.toJson(responseData));
     }

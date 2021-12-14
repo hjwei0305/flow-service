@@ -684,19 +684,39 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
 
     /**
-     * 检查当前实例是否允许执行终止流程实例操作
+     * 检查当前实例是否允许发起人催办
+     *
+     * @param id 待操作数据ID
+     */
+    public Boolean checkCanUrged(String id) {
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(id);
+        if(!CollectionUtils.isEmpty(flowTaskList)){
+            for (FlowTask flowTask : flowTaskList) {
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+                if(normalInfo.has("allowUrged") && normalInfo.getBoolean("allowUrged")){
+                      return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检查当前实例是否允许执行终止流程操作
      *
      * @param id 待操作数据ID
      */
     public Boolean checkCanEnd(String id) {
         Boolean canEnd = false;
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(id);
-        if (flowTaskList != null && !flowTaskList.isEmpty()) {
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
             int taskCount = flowTaskList.size();
             int index = 0;
             for (FlowTask flowTask : flowTaskList) {
                 Boolean canCancel = flowTask.getCanSuspension();
-                if (canCancel != null && canCancel == true) {
+                if (canCancel != null && canCancel) {
                     index++;
                 }
             }
@@ -708,7 +728,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         if (!canEnd) {
             if (flowTaskList != null && !flowTaskList.isEmpty()) {
                 for (FlowTask flowTask : flowTaskList) {
-                    if (flowTask.getCanSuspension() == null || flowTask.getCanSuspension() == true) {
+                    if (flowTask.getCanSuspension() == null || flowTask.getCanSuspension()) {
                         flowTask.setCanSuspension(false);
                         flowTaskDao.save(flowTask);
                     }
@@ -726,7 +746,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     public List<Boolean> checkIdsCanEnd(List<String> ids) {
         List<Boolean> result = null;
         if (ids != null && !ids.isEmpty()) {
-            result = new ArrayList<Boolean>(ids.size());
+            result = new ArrayList<>(ids.size());
             for (String id : ids) {
                 Boolean canEnd = this.checkCanEnd(id);
                 result.add(canEnd);
@@ -1706,10 +1726,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             try {
                 PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
                 List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
-                PageResult<MyBillVO> results = new PageResult<MyBillVO>();
-                ArrayList<MyBillVO> data = new ArrayList<MyBillVO>();
+                PageResult<MyBillVO> results = new PageResult<>();
+                ArrayList<MyBillVO> data = new ArrayList<>();
                 if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
-                    List<String> flowInstanceIds = new ArrayList<String>();
+                    List<String> flowInstanceIds = new ArrayList<>();
                     for (FlowInstance f : flowInstanceList) {
                         FlowInstance parent = f.getParent();
                         if (parent != null) {
@@ -1753,14 +1773,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                             phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
                         }
                         myBillVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
-                        data.add(myBillVO);
-                    }
 
-                    List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
-                    if (canEnds != null && !canEnds.isEmpty()) {
-                        for (int i = 0; i < canEnds.size(); i++) {
-                            data.get(i).setCanManuallyEnd(canEnds.get(i));
-                        }
+                        //检测流程实例是否可以终止
+                        Boolean canEnd = this.checkCanEnd(f.getId());
+                        myBillVO.setCanManuallyEnd(canEnd);
+                        //检测流程实例是否可以催办
+                        Boolean canUrged = this.checkCanUrged(f.getId());
+                        myBillVO.setCanUrged(canUrged);
+                        data.add(myBillVO);
                     }
                 }
                 results.setRows(data);
@@ -1799,16 +1819,16 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         search.setPageInfo(pageInfo);
 
         SearchOrder searchOrder = new SearchOrder("createdDate", SearchOrder.Direction.DESC);
-        List<SearchOrder> list = new ArrayList<SearchOrder>();
+        List<SearchOrder> list = new ArrayList<>();
         list.add(searchOrder);
         search.setSortOrders(list);
 
         PageResult<FlowInstance> flowInstancePageResult = this.findByPage(search);
         List<FlowInstance> flowInstanceList = flowInstancePageResult.getRows();
-        PageResult<MyBillPhoneVO> results = new PageResult<MyBillPhoneVO>();
-        ArrayList<MyBillPhoneVO> data = new ArrayList<MyBillPhoneVO>();
+        PageResult<MyBillPhoneVO> results = new PageResult<>();
+        ArrayList<MyBillPhoneVO> data = new ArrayList<>();
         if (flowInstanceList != null && !flowInstanceList.isEmpty()) {
-            List<String> flowInstanceIds = new ArrayList<String>();
+            List<String> flowInstanceIds = new ArrayList<>();
             for (FlowInstance f : flowInstanceList) {
                 FlowInstance parent = f.getParent();
                 if (parent != null) {
@@ -1831,14 +1851,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     businessDetailServiceUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getBusinessDetailServiceUrl();
                 }
                 myBillVO.setDetailUrl(f.getApiBaseAddressAbsolute() + businessDetailServiceUrl);
+                //检查实例是否允许执行终止流程
+                Boolean canEnd = this.checkCanEnd(f.getId());
+                myBillVO.setCanManuallyEnd(canEnd);
                 data.add(myBillVO);
-            }
-
-            List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
-            if (canEnds != null && !canEnds.isEmpty()) {
-                for (int i = 0; i < canEnds.size(); i++) {
-                    data.get(i).setCanManuallyEnd(canEnds.get(i));
-                }
             }
         }
         results.setRows(data);
@@ -1933,14 +1949,10 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 myBillVO.setWebBaseAddressAbsolute(f.getWebBaseAddressAbsolute());
                 myBillVO.setApiBaseAddress(f.getApiBaseAddress());
                 myBillVO.setApiBaseAddressAbsolute(f.getApiBaseAddressAbsolute());
+                //检测流程实例是否可以终止
+                Boolean canEnd = this.checkCanEnd(f.getId());
+                myBillVO.setCanManuallyEnd(canEnd);
                 data.add(myBillVO);
-            }
-
-            List<Boolean> canEnds = this.checkIdsCanEnd(flowInstanceIds);
-            if (canEnds != null && !canEnds.isEmpty()) {
-                for (int i = 0; i < canEnds.size(); i++) {
-                    data.get(i).setCanManuallyEnd(canEnds.get(i));
-                }
             }
         }
         results.setRows(data);

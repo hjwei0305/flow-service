@@ -15,7 +15,7 @@ import java.util.Date;
  * <p/>
  * *************************************************************************************************
  */
-public class MyBillVO implements Serializable{
+public class MyBillVO implements Serializable {
 
     private String businessModelCode;//业务模型code
 
@@ -43,7 +43,7 @@ public class MyBillVO implements Serializable{
 
     private String lookUrl;//表单查看url
 
-    private Boolean canManuallyEnd=false;//是否可以人工终止流程实例
+    private Boolean canManuallyEnd = false;//是否可以人工终止流程实例
 
     private Boolean ManuallyEnd;//是否异常结束
 
@@ -61,7 +61,18 @@ public class MyBillVO implements Serializable{
 
     private String taskExecutors; //待办执行人（中泰）
 
-    private String phoneUrl;
+    private String phoneUrl; //移动端单据路由地址
+
+    private Boolean canUrged = false; // 是否可以催办
+
+
+    public Boolean getCanUrged() {
+        return canUrged;
+    }
+
+    public void setCanUrged(Boolean canUrged) {
+        this.canUrged = canUrged;
+    }
 
     public String getPhoneUrl() {
         return phoneUrl;
