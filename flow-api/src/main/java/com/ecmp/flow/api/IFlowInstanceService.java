@@ -708,4 +708,12 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @ApiOperation(value = "获取历史抬头信息(移动端)", notes = "获取历史抬头信息(移动端)")
     ResponseData<ApprovalHeaderVO>  getHislHeaderVoOfGateway(@QueryParam("instanceId") String instanceId);
 
+
+
+    @POST
+    @Path("sendToUrgedInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "发送催办信息", notes = "发送催办信息")
+    ResponseData   sendToUrgedInfo(UrgedInfoVo urgedInfoVo);
 }

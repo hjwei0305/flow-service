@@ -1,5 +1,6 @@
 package com.ecmp.flow.service;
 
+import com.ecmp.config.util.ApiClient;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
@@ -10,6 +11,7 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
+import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.CanToHistoryNode;
 import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.*;
@@ -19,8 +21,11 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.flow.vo.phone.MyBillPhoneVO;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.notity.entity.EcmpMessage;
+import com.ecmp.notity.entity.NotifyType;
 import com.ecmp.util.DateUtils;
 import com.ecmp.util.IdGenerator;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -47,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
+import javax.ws.rs.core.GenericType;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -690,13 +696,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
      */
     public Boolean checkCanUrged(String id) {
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(id);
-        if(!CollectionUtils.isEmpty(flowTaskList)){
+        if (!CollectionUtils.isEmpty(flowTaskList)) {
             for (FlowTask flowTask : flowTaskList) {
                 String defJson = flowTask.getTaskJsonDef();
                 JSONObject defObj = JSONObject.fromObject(defJson);
                 JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
-                if(normalInfo.has("allowUrged") && normalInfo.getBoolean("allowUrged")){
-                      return true;
+                if (normalInfo.has("allowUrged") && normalInfo.getBoolean("allowUrged")) {
+                    return true;
                 }
             }
         }
@@ -982,7 +988,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
     //任务池指定真实用户组，抢单池确定用户组签定（多执行人）
     @Transactional(propagation = Propagation.REQUIRED)
-    public ResponseData<List<FlowTask>> poolTaskSignByUserList(HistoricTaskInstance historicTaskInstance, List<String> userList, Map<String, Object> v,String labelReason) {
+    public ResponseData<List<FlowTask>> poolTaskSignByUserList(HistoricTaskInstance historicTaskInstance, List<String> userList, Map<String, Object> v, String labelReason) {
         String actTaskId = historicTaskInstance.getId();
         //根据用户的id列表获取执行人列表
         List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
@@ -1035,7 +1041,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                     newFlowTask.setTrustState(0);
 
                     //给待办添加批注
-                    if(StringUtils.isNotEmpty(labelReason)){
+                    if (StringUtils.isNotEmpty(labelReason)) {
                         newFlowTask.setLabelReason(labelReason);
                         newFlowTask.setPriority(4);
                     }
@@ -1182,7 +1188,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().processInstanceId(actInstanceId).taskDefinitionKey(signalPoolTaskVO.getPoolTaskActDefId()).unfinished().singleResult(); // 创建历史任务实例查询
             if (historicTaskInstance != null) {
-                this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap() , signalPoolTaskVO.getLabelReason());
+                this.poolTaskSignByUserList(historicTaskInstance, signalPoolTaskVO.getUserIds(), signalPoolTaskVO.getMap(), signalPoolTaskVO.getLabelReason());
                 return ResponseData.operationSuccess();
             } else {
                 return ResponseData.operationFailure("10144");
@@ -1769,7 +1775,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
                         //我的单据设置移动端查看单据地址
                         String phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getPhoneLookUrl();
-                        if(StringUtils.isEmpty(phoneLookUrl)){
+                        if (StringUtils.isEmpty(phoneLookUrl)) {
                             phoneLookUrl = f.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
                         }
                         myBillVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
@@ -2731,11 +2737,105 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             approvalHeaderVO.setBusinessModelName(businessModel.getName());
             //已办和我的单据抬头信息设置移动端查看单据地址
             String phoneLookUrl = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getPhoneLookUrl();
-            if(StringUtils.isEmpty(phoneLookUrl)){
+            if (StringUtils.isEmpty(phoneLookUrl)) {
                 phoneLookUrl = businessModel.getPhoneLookUrl();
             }
             approvalHeaderVO.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);
         }
         return ResponseData.operationSuccessWithData(approvalHeaderVO);
     }
+
+
+    @Override
+    public ResponseData sendToUrgedInfo(UrgedInfoVo urgedInfoVo) {
+        if (urgedInfoVo == null) {
+            return ResponseData.operationFailure("10006");
+        }
+        String instanceId = urgedInfoVo.getFlowInstanceId();
+        if (StringUtils.isEmpty(instanceId)) {
+            return ResponseData.operationFailure("10139");
+        }
+        String urgedInfo = urgedInfoVo.getUrgedInfo();
+        if (StringUtils.isEmpty(urgedInfo)) {
+            return ResponseData.operationFailure("10420");
+        }
+        List<String> urgedTypeList = urgedInfoVo.getUrgedTypeList();
+        if (CollectionUtils.isEmpty(urgedTypeList)) {
+            return ResponseData.operationFailure("10421");
+        }
+        FlowInstance flowInstance = findOne(instanceId);
+        if (flowInstance.isEnded()) {
+            return ResponseData.operationFailure("10422");
+        }
+        List<FlowTask> flowTaskList = flowTaskDao.findByInstanceIdNoVirtual(instanceId);
+        if (CollectionUtils.isEmpty(flowTaskList)) {
+            return ResponseData.operationFailure("10423");
+        }
+
+        //接收用户id清单
+        List<String> receiverIds = new ArrayList<>();
+        List<String> receiverNames = new ArrayList<>();
+        for (FlowTask flowTask : flowTaskList) {
+            String defJson = flowTask.getTaskJsonDef();
+            JSONObject defObj = JSONObject.fromObject(defJson);
+            JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            if (normalInfo.has("allowUrged") && normalInfo.getBoolean("allowUrged")) {
+                if (!flowTask.getExecutorId().equalsIgnoreCase("anonymous")) {
+                    receiverIds.add(flowTask.getExecutorId());
+                    receiverNames.add(flowTask.getExecutorName());
+                }
+            }
+        }
+
+        List<NotifyType> typeList = new ArrayList<>();
+        for (String urgedType : urgedTypeList) {
+            if ("EMAIL".equalsIgnoreCase(urgedType)) { //邮件
+                typeList.add(NotifyType.EMAIL);
+            } else if ("MESSAGE".equalsIgnoreCase(urgedType)) { //站内信
+                typeList.add(NotifyType.SEI_REMIND);
+            } else {
+                return ResponseData.operationFailure("10424", urgedType);
+            }
+        }
+
+        EcmpMessage message = new EcmpMessage();
+        message.setCanToSender(true); //可以发送给发件人
+        message.setSenderId(ContextUtil.getUserId()); //发布人ID
+        message.setSubject("发起人催办：【" + flowInstance.getFlowName() + "】");//消息主题
+        message.setNotifyTypes(typeList); //消息类型
+        message.setReceiverIds(receiverIds); //接收用户ID清单
+        //模板参数
+        Map<String, Object> contentTemplateParams = new HashMap<>();
+        contentTemplateParams.put("businessName", flowInstance.getBusinessName());
+        contentTemplateParams.put("businessCode", flowInstance.getBusinessCode());
+        contentTemplateParams.put("urgedInfo", urgedInfo);
+        message.setContentTemplateParams(contentTemplateParams); //模板参数
+        message.setContentTemplateCode("FLOW_START_URGED_TEMPLATE");//催办模板代码
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                sendNotifyMessage(message);
+            }
+        }).start();
+        return ResponseData.operationSuccess("已催办：" + receiverNames.toString());
+    }
+
+
+    private void sendNotifyMessage(EcmpMessage message) {
+        String notifyUrl = Constants.getConfigValueByApi("NOTIFY_API");
+        String endNotifyPath = PageUrlUtil.buildUrl(notifyUrl, "/notify/send");
+        String messageLog = "开始调用【消息模块】，接口url=" + endNotifyPath + ",参数值" + JsonUtils.toJson(message);
+        try {
+            ResponseData result = ApiClient.postViaProxyReturnResult(endNotifyPath, new GenericType<ResponseData>() {
+            }, message);
+            if (!result.successful()) {
+                LogUtil.error(messageLog + "-调用报错,返回错误信息【" + JsonUtils.toJson(result) + "】");
+            }
+        } catch (Exception e) {
+            LogUtil.error(messageLog + "内部报错!", e);
+        }
+    }
+
+
 }
