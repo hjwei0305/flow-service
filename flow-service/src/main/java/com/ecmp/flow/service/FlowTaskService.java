@@ -17,6 +17,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
+import com.ecmp.flow.dto.RejectParam;
 import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.dto.UserFlowTaskQueryParam;
 import com.ecmp.flow.entity.*;
@@ -1117,6 +1118,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         return ResponseData.operationSuccess();
 
+    }
+
+    @Override
+    public ResponseData taskRejectToHis(RejectParam rejectParam) throws Exception{
+        return this.taskReject(rejectParam.getId(),rejectParam.getOpinion(),null);
     }
 
     /**

@@ -6,6 +6,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dto.RejectParam;
 import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.dto.UserFlowTaskQueryParam;
 import com.ecmp.flow.entity.FlowTask;
@@ -170,6 +171,19 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "驳回任务（动态驳回）", notes = "测试")
     OperateResult taskReject(@PathParam("id") String id, @PathParam("opinion") String opinion, Map<String, Object> variables) throws Exception;
+
+    /**
+     * 驳回任务
+     *
+     * @param rejectParam 驳回接口参数
+     * @return 操作结果
+     */
+    @POST
+    @Path("taskRejectToHis")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "撤回任务到指定节点", notes = "撤回任务到指定节点")
+    ResponseData taskRejectToHis(RejectParam rejectParam) throws Exception;
 
     /**
      * 驳回任务（移动端）

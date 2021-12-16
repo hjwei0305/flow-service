@@ -3,10 +3,7 @@ package com.ecmp.flow.service;
 import com.ecmp.core.search.Search;
 import com.ecmp.flow.dto.UserFlowBillsQueryParam;
 import com.ecmp.flow.entity.FlowTask;
-import com.ecmp.flow.vo.FlowNodeVO;
-import com.ecmp.flow.vo.JumpTaskVo;
-import com.ecmp.flow.vo.SignalPoolTaskVO;
-import com.ecmp.flow.vo.TargetNodeInfoVo;
+import com.ecmp.flow.vo.*;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.ResponseData;
@@ -31,6 +28,16 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowInstanceService service;
 
+    @Test
+    public void sendToUrgedInfo(){
+        UrgedInfoVo vo = new UrgedInfoVo();
+        vo.setFlowInstanceId("6CDF25D8-5BE3-11EC-9421-0242C0A84611");
+        vo.setUrgedInfo("测试催办");
+        List<String> urgedTypeList = new ArrayList<>();
+        urgedTypeList.add("MESSAGE");
+        vo.setUrgedTypeList(urgedTypeList);
+        service.sendToUrgedInfo(vo);
+    }
 
     @Test
     public void getAllMyBills() {
