@@ -113,17 +113,43 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     }
 
 
+
+    @Test
+    public void complete111() {
+        CompleteTaskVo completeTaskVo = new CompleteTaskVo();
+        completeTaskVo.setApproved("true");
+        completeTaskVo.setBusinessId("BD240A0B-5684-11EC-B29C-0242C0A84611");
+        completeTaskVo.setEndEventId("false");
+        completeTaskVo.setLoadOverTime(null);
+        completeTaskVo.setManualSelected(true);
+        completeTaskVo.setOpinion("1111");
+        completeTaskVo.setTaskId("7314B95F-5E82-11EC-8E73-0242C0A84611");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"ServiceTask_102\",\"flowTaskType\":\"serviceTask\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"ServiceTask_102_ServiceTask\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        ResponseData res = null;
+        try {
+            res = defaultFlowBaseService.completeTask(completeTaskVo);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            Thread.sleep(1000 * 60 * 5);  //20秒  因为有异步事件需要执行
+        } catch (Exception e) {
+        }
+        System.out.println(JsonUtils.toJson(res));
+    }
+
     @Test
     public void complete() {
         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
         completeTaskVo.setApproved("true");
-        completeTaskVo.setBusinessId("3B7D9209-814A-11EB-AA6F-0242C0A84620");
+        completeTaskVo.setBusinessId("BD240A0B-5684-11EC-B29C-0242C0A84611");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
-        completeTaskVo.setManualSelected(false);
+        completeTaskVo.setManualSelected(true);
         completeTaskVo.setOpinion("1111");
-        completeTaskVo.setTaskId("A5EFF991-82D3-11EB-BE59-0242C0A84620");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_54\",\"flowTaskType\":\"approve\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_54_Approve\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false,\"allowJumpBack\":false}]");
+        completeTaskVo.setTaskId("7314B95F-5E82-11EC-8E73-0242C0A84611");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"PoolTask_104\",\"flowTaskType\":\"poolTask\",\"userIds\":null,\"userVarName\":null,\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.completeTask(completeTaskVo);

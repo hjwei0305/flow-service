@@ -525,14 +525,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                     variables.put("approveResult", null);
                     //执行任务
-                    result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-                    if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
-                        for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
-                            PvmTransition pvmTransition = entry.getKey();
-                            String uelText = entry.getValue();
-                            UelExpressionCondition uel = new UelExpressionCondition(uelText);
-                            ((ProcessElementImpl) pvmTransition).setProperty("condition", uel);
-                            ((ProcessElementImpl) pvmTransition).setProperty("conditionText", uelText);
+                    try{
+                        result = complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
+                    }catch (Exception e){
+                        throw e;
+                    }finally {
+                        if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
+                            for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
+                                PvmTransition pvmTransition = entry.getKey();
+                                String uelText = entry.getValue();
+                                UelExpressionCondition uel = new UelExpressionCondition(uelText);
+                                ((ProcessElementImpl) pvmTransition).setProperty("condition", uel);
+                                ((ProcessElementImpl) pvmTransition).setProperty("conditionText", uelText);
+                            }
                         }
                     }
                 } else {//针对人工网关的情况
@@ -577,22 +582,29 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             ((ProcessElementImpl) pvmTransition).setProperty("conditionText", uelText);
                         }
                     }
-                    //执行任务
-                    result = this.complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-                    if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
-                        for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
-                            PvmTransition pvmTransition = entry.getKey();
-                            String uelText = entry.getValue();
-                            if (StringUtils.isNotEmpty(uelText)) {
-                                UelExpressionCondition uel = new UelExpressionCondition(uelText);
-                                ((ProcessElementImpl) pvmTransition).setProperty("condition", uel);
-                                ((ProcessElementImpl) pvmTransition).setProperty("conditionText", uelText);
-                            } else {
-                                ((ProcessElementImpl) pvmTransition).setProperty("condition", null);
-                                ((ProcessElementImpl) pvmTransition).setProperty("conditionText", null);
+                    try{
+                        //执行任务
+                        result = complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
+                    }catch (Exception e){
+                        throw e;
+                    }finally {
+                        if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
+                            for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
+                                PvmTransition pvmTransition = entry.getKey();
+                                String uelText = entry.getValue();
+                                if (StringUtils.isNotEmpty(uelText)) {
+                                    UelExpressionCondition uel = new UelExpressionCondition(uelText);
+                                    ((ProcessElementImpl) pvmTransition).setProperty("condition", uel);
+                                    ((ProcessElementImpl) pvmTransition).setProperty("conditionText", uelText);
+                                } else {
+                                    ((ProcessElementImpl) pvmTransition).setProperty("condition", null);
+                                    ((ProcessElementImpl) pvmTransition).setProperty("conditionText", null);
+                                }
                             }
                         }
                     }
+
+
                 }
             }
         } catch (FlowException e) {
