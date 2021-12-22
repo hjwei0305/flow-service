@@ -318,10 +318,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                     }
                 }
             } else {
-                LogUtil.error("10177");
+                LogUtil.error("自动执行待办-查询待办失败！");
             }
         } else {
-            LogUtil.error("10178");
+            LogUtil.error("自动执行待办-参数为空！");
         }
     }
 
