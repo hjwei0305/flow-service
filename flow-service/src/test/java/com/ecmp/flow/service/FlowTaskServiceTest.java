@@ -30,6 +30,17 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowDefinationService flowDefinationService;
 
+    @Test
+    public void counterSignAdd(){
+        try{
+            OperateResult result =   service.counterSignAdd("50976aaa-6459-11ec-ad29-0242c0a84625","UserTask_116","7A406B37-823D-11EB-8686-0242C0A8461F");
+            System.out.println(ApiJsonUtils.toJson(result));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
 
     @Test
     public void automatingTaskByBusinessId(){

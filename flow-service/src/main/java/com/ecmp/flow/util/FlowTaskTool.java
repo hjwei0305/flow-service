@@ -1692,8 +1692,7 @@ public class FlowTaskTool {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
                 List<FlowTask> tempFlowTasks = flowTaskDao.findByActTaskId(task.getId());
-                FlowTask tempFlowTask = tempFlowTasks.get(0);
-                if (tempFlowTask != null) {
+                if (!CollectionUtils.isEmpty(tempFlowTasks)) {
                     continue;
                 }
                 if (StringUtils.isNotEmpty(userId)) {
