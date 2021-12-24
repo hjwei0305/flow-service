@@ -3474,16 +3474,16 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
 
         if (resultDecTrue.length() > 0) {
-            resultDecTrue.append("10235");
+            resultDecTrue.append(ContextUtil.getMessage("10235"));
         }
         if (resultDecFalseOne.length() > 0) {
-            resultDecFalseOne.append("10236");
+            resultDecFalseOne.append(ContextUtil.getMessage("10236"));
         }
         if (resultDecFalseTwo.length() > 0) {
-            resultDecFalseTwo.append("10237");
+            resultDecFalseTwo.append(ContextUtil.getMessage("10237"));
         }
         if (resultDecFalseThree.length() > 0) {
-            resultDecFalseThree.append("10238");
+            resultDecFalseThree.append(ContextUtil.getMessage("10238"));
         }
         resultDec.append(resultDecTrue).append(resultDecFalseOne).append(resultDecFalseTwo).append(resultDecFalseThree);
         if (resultDecTrue.length() > 0) {
