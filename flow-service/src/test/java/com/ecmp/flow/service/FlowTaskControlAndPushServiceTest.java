@@ -1,15 +1,21 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiJsonUtils;
+import com.ecmp.core.search.PageResult;
+import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
+import com.ecmp.core.search.SearchOrder;
 import com.ecmp.flow.dao.FlowTaskControlAndPushDao;
 import com.ecmp.flow.dao.FlowTaskPushControlDao;
 import com.ecmp.flow.entity.FlowTaskControlAndPush;
 import com.ecmp.flow.entity.FlowTaskPush;
+import com.ecmp.flow.entity.FlowTaskPushControl;
 import com.ecmp.flow.vo.CleaningPushHistoryVO;
 import com.ecmp.vo.OperateResult;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +27,30 @@ public class FlowTaskControlAndPushServiceTest extends BaseContextTestCase {
     FlowTaskPushControlService controlService;
     @Autowired
     FlowTaskPushService pushService;
+
+    @Test
+    public void findbypage(){
+        //页面查询
+//        Search search = new Search();
+//        search.addFilter(new SearchFilter("flowTypeId", "B2FC0C5F-5E87-11EA-AEE3-0242C0A8460D"));
+//        search.addFilter(new SearchFilter("businessCode", "M9N8F0"));
+//        List<SearchOrder> listOrder = new ArrayList<>();
+//        listOrder.add(new SearchOrder("pushStartDate", SearchOrder.Direction.DESC));
+//        search.setSortOrders(listOrder);
+//        PageResult result = controlService.findByPage(search);
+//        System.out.println(ApiJsonUtils.toJson(result));
+
+        //后台查询
+        Search search = new Search();
+        search.addFilter(new SearchFilter("flowInstanceId", "16C62A5C-6156-11EC-B0A5-0242C0A84625"));
+        search.addFilter(new SearchFilter("flowActTaskDefKey", "UserTask_113"));
+        search.addFilter(new SearchFilter("pushType", "basic"));
+        search.addFilter(new SearchFilter("pushStatus", "new"));
+        List<FlowTaskPushControl> list =  controlService.findByFilters(search);
+        System.out.println(ApiJsonUtils.toJson(list));
+    }
+
+
 
     @Test
     public void testAll() {
@@ -42,8 +72,6 @@ public class FlowTaskControlAndPushServiceTest extends BaseContextTestCase {
     @Test
     public void cleaningPushHistoryData() {
         CleaningPushHistoryVO vo = new CleaningPushHistoryVO();
-        vo.setAppModuleId("42839AC3-5E7F-11EA-9017-0242C0A8460D");
-        vo.setBusinessModelId("B0E334A1-5E86-11EA-AEE3-0242C0A8460D");
         vo.setFlowTypeId("B2FC0C5F-5E87-11EA-AEE3-0242C0A8460D");
         vo.setRecentDate(11);
         controlService.cleaningPushHistoryData(vo);

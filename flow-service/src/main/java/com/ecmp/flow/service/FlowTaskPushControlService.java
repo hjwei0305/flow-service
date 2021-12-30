@@ -15,14 +15,17 @@ import com.ecmp.flow.entity.FlowTaskPushControl;
 import com.ecmp.flow.vo.CleaningPushHistoryVO;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.vo.ResponseData;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.ecmp.flow.common.util.Constants.*;
 
@@ -90,7 +93,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
             return this.pushAgainByTypeAndStatus(pushType, PushStatus, taskList);
         } catch (Exception e) {
             LogUtil.error("重新推送任务获取参数失败！", e);
-            return ResponseData.operationFailure("10185",e.getMessage());
+            return ResponseData.operationFailure("10185", e.getMessage());
         }
     }
 
@@ -358,13 +361,19 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         control.setPushEndDate(date);
         control.setTenantCode(ContextUtil.getTenantCode());
         flowTaskPushControlDao.save(control);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                cleaningPushByMonth(control.getFlowTypeId());
+            }
+        }).start();
         return control;
     }
 
 
     public FlowTaskPushControl updateBeanByFlowTask(FlowTaskPushControl control, String url, Boolean success, List<FlowTask> taskList) throws Exception {
         //执行人名称字段
-        List<String> nameList = new ArrayList<String>();
+        List<String> nameList = new ArrayList<>();
         taskList.forEach(a -> nameList.add(a.getExecutorName()));
         String nameListString = nameList.toString();
         nameListString = nameListString.substring(1, nameListString.length() - 1);
@@ -380,9 +389,38 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         control.setPushEndDate(date);
         control.setTenantCode(ContextUtil.getTenantCode());
         flowTaskPushControlDao.save(control);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                cleaningPushByMonth(control.getFlowTypeId());
+            }
+        }).start();
         return control;
     }
 
+
+    public void cleaningPushByMonth(String flowTypeId) {
+        if(StringUtils.isEmpty(flowTypeId)){
+            return;
+        }
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = sim.format(new Date());
+        Boolean setValue = redisTemplate.opsForValue().setIfAbsent(Constants.REDIS_KEY_PREFIX + "cleaningPushByMonth:" + flowTypeId + dateString, flowTypeId + dateString);
+        if (BooleanUtils.isTrue(setValue)) { //表示今天还没清理过，开始清理
+            //清理日期设置24小时过期
+            redisTemplate.expire(Constants.REDIS_KEY_PREFIX + "cleaningPushByMonth:" + flowTypeId + dateString, 24 * 60 * 60, TimeUnit.SECONDS);
+            String keepMonth = Constants.getFlowPropertiesByKey("KEEP_PUSH_LOG_MONTH");
+            if (StringUtils.isEmpty(keepMonth)) {
+                keepMonth = "6";
+            }
+            int month = Integer.parseInt(keepMonth);
+            LogUtil.bizLog("开始清理推送信息数据，清理类型ID={},保留{}个月数据！",flowTypeId, keepMonth);
+            CleaningPushHistoryVO cleaningPushHistoryVO = new CleaningPushHistoryVO();
+            cleaningPushHistoryVO.setFlowTypeId(flowTypeId);
+            cleaningPushHistoryVO.setRecentDate(month);
+            cleaningPushHistoryData(cleaningPushHistoryVO);
+        }
+    }
 
     @Override
     public ResponseData cleaningPushHistoryData(CleaningPushHistoryVO cleaningPushHistoryVO) {
@@ -392,28 +430,19 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         if (cleaningPushHistoryVO.getRecentDate() == null) {
             return ResponseData.operationFailure("10190");
         }
-        String redisKey = ContextUtil.getTenantCode();
-        Search search = new Search();
-        if (StringUtils.isNotEmpty(cleaningPushHistoryVO.getAppModuleId())) {
-            search.addFilter(new SearchFilter("appModuleId", cleaningPushHistoryVO.getAppModuleId()));
-            redisKey += cleaningPushHistoryVO.getAppModuleId();
+        if (StringUtils.isEmpty(cleaningPushHistoryVO.getFlowTypeId())) {
+            return ResponseData.operationSuccess("10059");
         }
-        if (StringUtils.isNotEmpty(cleaningPushHistoryVO.getBusinessModelId())) {
-            search.addFilter(new SearchFilter("businessModelId", cleaningPushHistoryVO.getBusinessModelId()));
-            redisKey += cleaningPushHistoryVO.getBusinessModelId();
-        }
-        if (StringUtils.isNotEmpty(cleaningPushHistoryVO.getFlowTypeId())) {
-            search.addFilter(new SearchFilter("flowTypeId", cleaningPushHistoryVO.getFlowTypeId()));
-            redisKey += cleaningPushHistoryVO.getFlowTypeId();
-        }
-        redisKey += cleaningPushHistoryVO.getRecentDate();
 
+        Search search = new Search();
+        search.addFilter(new SearchFilter("flowTypeId", cleaningPushHistoryVO.getFlowTypeId()));
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());
         calendar.add(Calendar.MONTH, -cleaningPushHistoryVO.getRecentDate());
-        search.addFilter(new SearchFilter("pushEndDate", calendar.getTime(), SearchFilter.Operator.LT));
+        search.addFilter(new SearchFilter("pushStartDate", calendar.getTime(), SearchFilter.Operator.LT));
         List<FlowTaskPushControl> list = flowTaskPushControlDao.findByFilters(search);
         if (!CollectionUtils.isEmpty(list)) {
+            String redisKey = ContextUtil.getTenantCode() + cleaningPushHistoryVO.getFlowTypeId() + cleaningPushHistoryVO.getRecentDate();
             Boolean setValue = redisTemplate.opsForValue().setIfAbsent("pushCleaning_" + redisKey, redisKey);
             if (!setValue) {
                 Long remainingTime = redisTemplate.getExpire("pushCleaning_" + redisKey, TimeUnit.SECONDS);
@@ -421,7 +450,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
                     redisTemplate.expire("pushCleaning_" + redisKey, 30 * 60, TimeUnit.SECONDS);
                     remainingTime = 1800L;
                 }
-                return ResponseData.operationFailure("10191" , remainingTime );
+                return ResponseData.operationFailure("10191", remainingTime);
             } else {
                 //异步清理历史数据
                 String finalRedisKey = redisKey;
@@ -456,7 +485,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());
         calendar.add(Calendar.HOUR, -time);
-        search.addFilter(new SearchFilter("pushEndDate", calendar.getTime(), SearchFilter.Operator.GT));
+        search.addFilter(new SearchFilter("pushStartDate", calendar.getTime(), SearchFilter.Operator.GT));
         search.addFilter(new SearchFilter("pushSuccess", 0));
         List<FlowTaskPushControl> list = flowTaskPushControlDao.findByFilters(search);
         if (!CollectionUtils.isEmpty(list)) {

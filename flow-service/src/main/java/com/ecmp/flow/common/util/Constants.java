@@ -397,6 +397,9 @@ public class Constants extends ConfigurableContants {
     public final static String POOL_TASK_CALLBACK_USER_ID = "poolTaskActCallbackUserId_";
 
 
+    public final static String REDIS_KEY_PREFIX = "sei-flow:";
+
+
     /**
      * 转办
      */

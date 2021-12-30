@@ -80,7 +80,7 @@ public class FlowTaskControlAndPushService extends BaseRelationService<FlowTaskC
                 }
             });
         } catch (Exception e) {
-            LogUtil.error("清除历史推送数据报错,[controlId = " + flowTaskPushControl.getId() + "]！", e);
+//            LogUtil.error("清除历史推送数据报错,[controlId = " + flowTaskPushControl.getId() + "]！", e);
         }
     }
 
