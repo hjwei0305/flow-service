@@ -7,7 +7,7 @@ ALTER TABLE `flow_task_push_control`
   ADD KEY `idx_control_page_code_query` (`business_code`, `push_start_date`, `tenant_code`);
 
 ALTER TABLE `flow_task_push_control`
-  ADD KEY `idx_control_instance_and_key` (`flow_instance_id`, `flow_act_task_def_key`, `push_type`, `push_status`, `tenant_code`);
+  ADD KEY `idx_control_instance_and_key` (`flow_instance_id`, `flow_act_task_def_key`, `push_status`, `tenant_code`);
 
 ALTER TABLE `flow_task_control_and_push`
   ADD  KEY `idx_control_id` (`control_id`);
@@ -27,7 +27,7 @@ CREATE INDEX "idx_control_page_code_query" ON "public"."flow_task_push_control" 
 );
 
 CREATE INDEX "idx_control_instance_and_key" ON "public"."flow_task_push_control" USING btree (
-  "flow_instance_id","flow_act_task_def_key","push_type","push_status","tenant_code"
+  "flow_instance_id","flow_act_task_def_key","push_status","tenant_code"
 );
 
 CREATE INDEX "idx_control_id" ON "public"."flow_task_control_and_push" USING btree (

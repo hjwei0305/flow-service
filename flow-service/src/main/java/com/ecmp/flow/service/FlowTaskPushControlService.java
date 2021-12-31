@@ -174,7 +174,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
         Search search = new Search();
         search.addFilter(new SearchFilter("flowInstanceId", flowInstanceId));
         search.addFilter(new SearchFilter("flowActTaskDefKey", nodeId));
-        search.addFilter(new SearchFilter("pushType", type));
+//        search.addFilter(new SearchFilter("pushType", type));
         search.addFilter(new SearchFilter("pushStatus", status));
         return flowTaskPushControlDao.findByFilters(search);
     }
