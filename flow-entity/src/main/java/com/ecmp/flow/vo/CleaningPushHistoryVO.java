@@ -14,6 +14,20 @@ public class CleaningPushHistoryVO implements Serializable {
      */
     private Integer recentDate;
 
+    /**
+     * 是否异步处理
+     */
+    private Boolean isAsyn = true;
+
+
+    public Boolean getAsyn() {
+        return isAsyn;
+    }
+
+    public void setAsyn(Boolean asyn) {
+        isAsyn = asyn;
+    }
+
     public String getFlowTypeId() {
         return flowTypeId;
     }

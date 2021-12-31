@@ -400,7 +400,7 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
 
 
     public void cleaningPushByMonth(String flowTypeId) {
-        if(StringUtils.isEmpty(flowTypeId)){
+        if (StringUtils.isEmpty(flowTypeId)) {
             return;
         }
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
@@ -414,10 +414,11 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
                 keepMonth = "6";
             }
             int month = Integer.parseInt(keepMonth);
-            LogUtil.bizLog("开始清理推送信息数据，清理类型ID={},保留{}个月数据！",flowTypeId, keepMonth);
+            LogUtil.bizLog("开始清理推送信息数据，清理类型ID={},保留{}个月数据！", flowTypeId, keepMonth);
             CleaningPushHistoryVO cleaningPushHistoryVO = new CleaningPushHistoryVO();
             cleaningPushHistoryVO.setFlowTypeId(flowTypeId);
             cleaningPushHistoryVO.setRecentDate(month);
+            cleaningPushHistoryVO.setAsyn(false);
             cleaningPushHistoryData(cleaningPushHistoryVO);
         }
     }
@@ -452,14 +453,17 @@ public class FlowTaskPushControlService extends BaseEntityService<FlowTaskPushCo
                 }
                 return ResponseData.operationFailure("10191", remainingTime);
             } else {
-                //异步清理历史数据
-                String finalRedisKey = redisKey;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        flowTaskControlAndPushService.cleaningPushHistoryData(list, finalRedisKey);
-                    }
-                }).start();
+                if(BooleanUtils.isFalse(cleaningPushHistoryVO.getAsyn())){
+                    flowTaskControlAndPushService.cleaningPushHistoryData(list, redisKey);
+                }else{
+                    //异步清理历史数据
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            flowTaskControlAndPushService.cleaningPushHistoryData(list, redisKey);
+                        }
+                    }).start();
+                }
                 return ResponseData.operationSuccess("10192");
             }
         } else {
