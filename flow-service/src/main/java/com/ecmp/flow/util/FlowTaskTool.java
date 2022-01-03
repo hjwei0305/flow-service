@@ -2052,10 +2052,10 @@ public class FlowTaskTool {
                                 flowTask.setTenantCode(ContextUtil.getTenantCode());
                                 flowTask.setOwnerAccount(Constants.ANONYMOUS);
                                 flowTask.setOwnerId(Constants.ANONYMOUS);
-                                flowTask.setOwnerName(Constants.ANONYMOUS);
+                                flowTask.setOwnerName("工作池");
                                 flowTask.setExecutorAccount(Constants.ANONYMOUS);
                                 flowTask.setExecutorId(Constants.ANONYMOUS);
-                                flowTask.setExecutorName(Constants.ANONYMOUS);
+                                flowTask.setExecutorName("工作池");
                                 flowTask.setTaskJsonDef(currentNode.toString());
                                 flowTask.setFlowDefinitionId(flowInstance.getFlowDefVersion().getFlowDefination().getId());
                                 flowTask.setActTaskDefKey(actTaskDefKey);
