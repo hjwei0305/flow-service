@@ -1,6 +1,6 @@
 package com.ecmp.flow.entity;
 
-import com.ecmp.core.entity.ITenant;
+import com.ecmp.core.entity.IRank;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -30,7 +30,7 @@ import java.util.Set;
 @DynamicUpdate
 @Cacheable(true)
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
+public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity implements  IRank {
 
     /**
      * 乐观锁-版本
@@ -116,12 +116,6 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
     @JoinColumn(name = "app_module_id")
     private AppModule appModule;
 
-//    /**
-//     * 关联的应用模块ID
-//     */
-//    @Column(length = 36,name = "app_module_id")
-//    private String appModuleId;
-
     /**
      * 关联的应用模块Code
      */
@@ -158,12 +152,18 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
     @Column(name = "push_msg_url", length = 255)
     private String  pushMsgUrl;
 
+
+    /**
+     * 排序号
+     */
+    @Column(name = "rank", nullable = false)
+    private Integer rank;
+
     /**
      * 拥有的流程类型
      */
     @Transient
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "businessModel")
-    private Set<FlowType> flowTypes = new HashSet<FlowType>();
+    private Set<FlowType> flowTypes = new HashSet<>();
 
 
     public String getPushMsgUrl() {
@@ -318,14 +318,6 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
         this.businessDetailServiceUrl = businessDetailServiceUrl;
     }
 
-    //    public String getAppModuleId() {
-//        return appModuleId;
-//    }
-//
-//    public void setAppModuleId(String appModuleId) {
-//        this.appModuleId = appModuleId;
-//    }
-
     public AppModule getAppModule() {
         return appModule;
     }
@@ -374,13 +366,19 @@ public class BusinessModel extends com.ecmp.core.entity.BaseAuditableEntity  {
     }
 
 
-//    @Override
     public String getTenantCode() {
         return tenantCode;
     }
 
-//    @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
     }
 }

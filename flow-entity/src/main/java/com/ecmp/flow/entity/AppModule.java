@@ -6,8 +6,6 @@ import javax.persistence.*;
 
 import com.ecmp.core.entity.ICodeUnique;
 import com.ecmp.core.entity.IRank;
-import com.ecmp.core.entity.ITenant;
-import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
