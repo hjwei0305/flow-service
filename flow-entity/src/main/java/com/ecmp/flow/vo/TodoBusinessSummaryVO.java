@@ -35,6 +35,19 @@ public class TodoBusinessSummaryVO implements Serializable {
      */
     private String businessModelName;
 
+
+    /**
+     * 应用模块排序
+     */
+    private int appRank;
+
+    /**
+     * 业务实体排序
+     */
+    private int businessRank;
+
+
+
     public String getBusinessModeId() {
         return businessModeId;
     }
@@ -65,5 +78,21 @@ public class TodoBusinessSummaryVO implements Serializable {
 
     public void setBusinessModelName(String businessModelName) {
         this.businessModelName = businessModelName;
+    }
+
+    public int getAppRank() {
+        return appRank;
+    }
+
+    public void setAppRank(int appRank) {
+        this.appRank = appRank;
+    }
+
+    public int getBusinessRank() {
+        return businessRank;
+    }
+
+    public void setBusinessRank(int businessRank) {
+        this.businessRank = businessRank;
     }
 }

@@ -1,6 +1,7 @@
 package com.ecmp.flow.service;
 
 import com.ecmp.config.util.ApiClient;
+import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.context.ContextUtil;
 import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.search.*;
@@ -2080,12 +2081,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 todoBusinessSummaryVO.setBusinessModelCode(map.getKey().getClassName());
                 todoBusinessSummaryVO.setBusinessModeId(map.getKey().getId());
                 todoBusinessSummaryVO.setCount(map.getValue());
-                // todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName() + "(" + map.getValue() + ")");
+                todoBusinessSummaryVO.setAppRank(map.getKey().getAppModule().getRank());
+                todoBusinessSummaryVO.setBusinessRank(map.getKey().getRank());
                 // 在业务实体名称上不拼接待办数量
                 todoBusinessSummaryVO.setBusinessModelName(map.getKey().getName());
                 voList.add(todoBusinessSummaryVO);
             }
         }
+        //先按照应用模块排序，再按照业务实体排序
+        Comparator<TodoBusinessSummaryVO> byAppRank = Comparator.comparing(TodoBusinessSummaryVO::getAppRank);
+        Comparator<TodoBusinessSummaryVO> byBusinessRank = Comparator.comparing(TodoBusinessSummaryVO::getBusinessRank);
+        voList.sort(byAppRank.thenComparing(byBusinessRank));
         return voList;
     }
 
