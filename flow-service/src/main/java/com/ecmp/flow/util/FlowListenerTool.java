@@ -395,11 +395,11 @@ public class FlowListenerTool {
                             ResponseData res = ApiClient.postViaProxyReturnResult(checkUrlPath, new GenericType<ResponseData>() {
                             }, flowInvokeParams);
                             if (res.successful()) {
-                                LogUtil.bizLog("结束前事件【{}】,接口请求地址：{},请求参数：{},返回信息：{}", serviceName, checkUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(result));
+                                LogUtil.bizLog("结束前事件【{}】,接口请求地址：{},请求参数：{},返回信息：{}", serviceName, checkUrlPath, JsonUtils.toJson(flowInvokeParams), JsonUtils.toJson(res));
                                 result = new FlowOperateResult(true, res.getMessage());
                             } else {
-                                LogUtil.error("结束前事件【{}】,调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(result), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
-                                result = new FlowOperateResult(false, ContextUtil.getMessage("10326", serviceName, result.getMessage()));
+                                LogUtil.error("结束前事件【{}】,调用返回失败信息:{},接口请求地址：{},请求参数：{}", serviceName, JsonUtils.toJson(res), checkUrlPath, JsonUtils.toJson(flowInvokeParams));
+                                result = new FlowOperateResult(false, ContextUtil.getMessage("10326", serviceName, res.getMessage()));
                             }
                         } catch (Exception e) {
                             LogUtil.error("结束前事件【{}】,调用异常:{},接口请求地址：{},请求参数：{}", serviceName, e.getMessage(), checkUrlPath, JsonUtils.toJson(flowInvokeParams), e);
