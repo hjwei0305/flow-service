@@ -2903,11 +2903,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             redisTemplate.expire("taskTurn_" + taskId, 2 * 60, TimeUnit.SECONDS);
 
             SessionUser sessionUser = ContextUtil.getSessionUser();
-            OperateResult result = null;
+            OperateResult result;
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
                 if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
-                    OperateResult.operationFailure("10230");
+                    return  OperateResult.operationFailure("10230");
+                }
+
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                if(defObj.getString("nodeType").equalsIgnoreCase("PoolTask")){
+                   return  OperateResult.operationFailure("10425");
                 }
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
                 //根据用户的id获取执行人
