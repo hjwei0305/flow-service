@@ -4,8 +4,10 @@ import com.ecmp.flow.vo.CompleteTaskVo;
 import com.ecmp.flow.vo.SolidifyStartFlowVo;
 import com.ecmp.flow.vo.StartFlowBusinessAndTypeVo;
 import com.ecmp.flow.vo.StartFlowVo;
+import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.ResponseData;
+import net.sf.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -143,13 +145,13 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     public void complete() {
         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
         completeTaskVo.setApproved("true");
-        completeTaskVo.setBusinessId("BD240A0B-5684-11EC-B29C-0242C0A84611");
+        completeTaskVo.setBusinessId("BD9ACB90-7839-11EC-BB08-0242C0A84609");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
-        completeTaskVo.setManualSelected(true);
+        completeTaskVo.setManualSelected(false);
         completeTaskVo.setOpinion("1111");
-        completeTaskVo.setTaskId("7314B95F-5E82-11EC-8E73-0242C0A84611");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"PoolTask_104\",\"flowTaskType\":\"poolTask\",\"userIds\":null,\"userVarName\":null,\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setTaskId("67A46D76-783D-11EC-BB08-0242C0A84609");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_118\",\"flowTaskType\":\"common\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_118_Normal\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.completeTask(completeTaskVo);
