@@ -171,10 +171,10 @@ public class FlowTaskDaoImpl extends BaseEntityDaoImpl<FlowTask> implements Cust
                         hqlQuery += " and ft.createdDate <  '" + sim.format(calendar.getTime()) + "' ";
                     }
                 }else if("taskStatus".equals(filters.getFieldName())){
-                    if (SearchFilter.Operator.EQ.equals(filters.getOperator()) && filters.getValue() != null) { //是否虚拟待办
+                    if (filters.getValue() != null && "VIRTUAL".equals(filters.getValue())) { //是否虚拟待办
                         hqlCount += " and ft.taskStatus =  '" + filters.getValue() + "' ";
                         hqlQuery += " and ft.taskStatus =  '" + filters.getValue() + "' ";
-                    }else if(SearchFilter.Operator.NE.equals(filters.getOperator()) && filters.getValue() != null){
+                    }else if(filters.getValue() != null && "NOVIRTUAL".equals(filters.getValue())){
                         hqlCount += " and ft.taskStatus !=  '" + filters.getValue() + "' ";
                         hqlQuery += " and ft.taskStatus !=  '" + filters.getValue() + "' ";
                     }
