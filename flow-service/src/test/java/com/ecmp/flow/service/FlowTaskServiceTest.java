@@ -3,8 +3,10 @@ package com.ecmp.flow.service;
 import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.Search;
+import com.ecmp.core.search.SearchFilter;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dto.RollBackParam;
+import com.ecmp.flow.dto.UserFlowTaskQueryParam;
 import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.vo.*;
 import com.ecmp.util.JsonUtils;
@@ -140,6 +142,24 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
         list.add("0A58D8CA-50B5-11EC-8508-0242C0A84611");
         service.getBatchNextNodes(list);
     }
+
+
+    @Test
+    public void queryCurrentUserFlowTask(){
+        UserFlowTaskQueryParam vo = new UserFlowTaskQueryParam();
+        vo.setCanBatch(false);
+        vo.setModelId(null);
+        List<SearchFilter> filters = new ArrayList<>();
+        filters.add(new SearchFilter("taskStatus", "VIRTUAL",SearchFilter.Operator.NE));
+        vo.setFilters(filters);
+        vo.setQuickSearchProperties(null);
+        vo.setQuickSearchValue(null);
+        vo.setSortOrders(null);
+        vo.setPageInfo(new PageInfo());
+        FlowTaskPageResultVO<FlowTask> res = service.queryCurrentUserFlowTask(vo);
+        System.out.print(ApiJsonUtils.toJson(res));
+    }
+
 
 
     @Test
