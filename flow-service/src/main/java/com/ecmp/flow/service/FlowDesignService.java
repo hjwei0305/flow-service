@@ -199,7 +199,7 @@ public class FlowDesignService implements IFlowDesignService {
         }
         if (inclusiveGateway % 2 != 0) {
             //包容网关必须成对使用，当前流程定义只有【{0}】个包容网关！
-            return ResponseData.operationFailure("10400", parallelGateway);
+            return ResponseData.operationFailure("10400", inclusiveGateway);
         }
         return ResponseData.operationSuccessWithData(startNodeKey);
     }
