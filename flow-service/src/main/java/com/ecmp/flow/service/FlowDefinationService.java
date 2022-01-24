@@ -1366,7 +1366,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         bean.setExecutorIds(executors.get(0).getId());
                         bean.setNodeType(nodeType);
                         map.put(id, bean);
-                    } else if (executors.size() > 1 && "SingleSign".equalsIgnoreCase(nodeType)) { //单签任务默认全选
+                    } else if (executors.size() > 1 &&  ("SingleSign".equalsIgnoreCase(nodeType) || "CounterSign".equalsIgnoreCase(nodeType))) { //单签、会签任务默认全选
                         String userIds = "";
                         for (int i = 0; i < executors.size(); i++) {
                             if (i == 0) {
