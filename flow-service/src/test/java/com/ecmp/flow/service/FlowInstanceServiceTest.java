@@ -29,6 +29,12 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     private FlowInstanceService service;
 
     @Test
+    public void getProcessTrackVO(){
+        List<ProcessTrackVO> list = service.getProcessTrackVO("EA96FDDD-7A57-11EC-8AE7-0242C0A84609");
+        System.out.println(JsonUtils.toJson(list));
+    }
+
+    @Test
     public void sendToUrgedInfo(){
         UrgedInfoVo vo = new UrgedInfoVo();
         vo.setFlowInstanceId("6CDF25D8-5BE3-11EC-9421-0242C0A84611");

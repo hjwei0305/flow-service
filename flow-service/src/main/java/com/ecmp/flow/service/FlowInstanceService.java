@@ -660,6 +660,11 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
             }
         }
         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
+        //隐藏发起人跳过的流程历史
+        String hideStartUserSkipNode = Constants.getFlowPropertiesByKey("HIDE_START_USER_SKIP_NODE");
+        if(StringUtils.isNotEmpty(hideStartUserSkipNode) && "true".equalsIgnoreCase(hideStartUserSkipNode)){
+            hideStartUserSkipHis(flowInstance.getCreatorId(),flowHistoryList);
+        }
         //计算流程历史任务是否超时
         flowHistoryService.setHistoryListIfTimeout(flowHistoryList);
 
@@ -684,6 +689,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         } else {
             if (resultMap.get(flowInstance) == null) {
                 resultMap.put(flowInstance, pv);
+            }
+        }
+    }
+
+
+    public void hideStartUserSkipHis(String startUserId,List<FlowHistory> list){
+        Iterator<FlowHistory> iterator = list.iterator();
+        while (iterator.hasNext()){
+            FlowHistory history = iterator.next();
+            if (startUserId.equals(history.getExecutorId()) && history.getDepict().contains("【自动执行】")){
+                iterator.remove();
             }
         }
     }
