@@ -68,6 +68,14 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
                         hqlCount+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
                         hqlQuery+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
                     }
+                }else if("taskStatus".equals(filters.getFieldName())){
+                    if (filters.getValue() != null && "VIRTUAL".equals(filters.getValue())) { //是否虚拟已办
+                        hqlCount += " and ft.taskStatus =  '" + filters.getValue() + "' ";
+                        hqlQuery += " and ft.taskStatus =  '" + filters.getValue() + "' ";
+                    }else if(filters.getValue() != null && "NOVIRTUAL".equals(filters.getValue())){
+                        hqlCount += " and ft.taskStatus !=  '" + filters.getValue() + "' ";
+                        hqlQuery += " and ft.taskStatus !=  '" + filters.getValue() + "' ";
+                    }
                 }else{
                     if(filters.getValue()!=null){
                         hqlCount += "  and ft."+filters.getFieldName()+"  like  '%" + filters.getValue() + "%' ";
@@ -277,6 +285,14 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
                         calendar.add(calendar.DATE,1);
                         hqlCount+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
                         hqlQuery+=" and ft.actEndTime <  '"+sim.format(calendar.getTime())+"' ";
+                    }
+                }else if("taskStatus".equals(filters.getFieldName())){
+                    if (filters.getValue() != null && "VIRTUAL".equals(filters.getValue())) { //是否虚拟已办
+                        hqlCount += " and ft.taskStatus =  '" + filters.getValue() + "' ";
+                        hqlQuery += " and ft.taskStatus =  '" + filters.getValue() + "' ";
+                    }else if(filters.getValue() != null && "NOVIRTUAL".equals(filters.getValue())){
+                        hqlCount += " and ft.taskStatus !=  '" + filters.getValue() + "' ";
+                        hqlQuery += " and ft.taskStatus !=  '" + filters.getValue() + "' ";
                     }
                 }else{
                     if(filters.getValue()!=null){
