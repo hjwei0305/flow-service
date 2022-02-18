@@ -522,6 +522,8 @@ public class Constants extends ConfigurableContants {
     //baisc推送任务的状态（归档（终止））
     public final static String STATUS_BASIC_END = "end";
 
+    //隐藏发起人跳过的流程历史
+    public final static String  HIDE_START_USER_SKIP_NODE = getFlowPropertiesByKey("HIDE_START_USER_SKIP_NODE");
 
     public final static String AUTHBASURL = getProperty(
             "ecmp.auth2.url");

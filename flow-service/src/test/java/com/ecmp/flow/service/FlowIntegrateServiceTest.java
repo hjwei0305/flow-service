@@ -13,6 +13,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +28,7 @@ import static org.junit.Assert.*;
  * @author 王锦光 wangj
  * @version 1.0.1 2018-12-19 10:58
  */
-public class FlowIntegrateServiceTest extends BaseContextTestCase{
+public class FlowIntegrateServiceTest extends BaseContextTestCase {
     @Autowired
     private FlowIntegrateService service;
 
@@ -34,7 +37,7 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
         String modelCode = "com.ecmp.flow.entity.DefaultBusinessModel";
         String entityId = "526F49F9-483E-11EC-8BD7-0242C0A84611";
         DefaultStartParam startParam = new DefaultStartParam(modelCode, entityId);
-        OperateResult result =service.startDefaultFlow(startParam);
+        OperateResult result = service.startDefaultFlow(startParam);
         System.out.println(JsonUtils.toJson(result));
         Assert.assertTrue(result.successful());
     }
@@ -55,7 +58,7 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
 
     @Test
     public void getPortalFlowHistory() {
-        int recordCount = 10;
+        int recordCount = 5;
         List<PortalFlowHistory> histories = service.getPortalFlowHistory(recordCount);
         Assert.assertTrue(CollectionUtils.isNotEmpty(histories));
         System.out.println(JsonUtils.toJson(histories));
@@ -67,5 +70,21 @@ public class FlowIntegrateServiceTest extends BaseContextTestCase{
         List<MyBillVO> myBillS = service.getPortalMyBill(recordCount);
         Assert.assertTrue(CollectionUtils.isNotEmpty(myBillS));
         System.out.println(JsonUtils.toJson(myBillS));
+    }
+
+
+    public static void main(String[] args) {
+        byte[] secretBytes = null;
+        try {
+            secretBytes = MessageDigest.getInstance("md5").digest(
+                    "123456".getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("没有这个md5算法！");
+        }
+        String md5code = new BigInteger(1, secretBytes).toString(16);
+        for (int i = 0; i < 32 - md5code.length(); i++) {
+            md5code = "0" + md5code;
+        }
+        System.out.println(md5code);
     }
 }

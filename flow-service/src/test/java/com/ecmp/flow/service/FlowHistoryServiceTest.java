@@ -2,6 +2,8 @@ package com.ecmp.flow.service;
 
 import com.ecmp.flow.entity.FlowHistory;
 import com.ecmp.flow.util.FlowTaskTool;
+import com.ecmp.util.JsonUtils;
+import com.ecmp.vo.ResponseData;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +17,13 @@ public class FlowHistoryServiceTest extends BaseContextTestCase {
     private FlowTaskTool flowTaskTool;
     @Autowired
     private FlowHistoryService flowHistoryService;
+
+
+    @Test
+    public void listValidFlowHistoryHeader(){
+        ResponseData responseData =  flowHistoryService.listValidFlowHistoryHeader();
+        System.out.println(JsonUtils.toJson(responseData));
+    }
 
 
     @Test

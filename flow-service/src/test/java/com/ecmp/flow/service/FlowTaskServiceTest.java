@@ -33,21 +33,21 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowDefinationService flowDefinationService;
 
     @Test
-    public void listFlowTaskHeader(){
-        try{
-            ResponseData result =   service.listFlowTaskHeader();
+    public void listFlowTaskHeader() {
+        try {
+            ResponseData result = service.listFlowTaskHeader();
             System.out.println(ApiJsonUtils.toJson(result));
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
     @Test
-    public void counterSignAdd(){
-        try{
-            OperateResult result =   service.counterSignAdd("50976aaa-6459-11ec-ad29-0242c0a84625","UserTask_116","7A406B37-823D-11EB-8686-0242C0A8461F");
+    public void counterSignAdd() {
+        try {
+            OperateResult result = service.counterSignAdd("50976aaa-6459-11ec-ad29-0242c0a84625", "UserTask_116", "7A406B37-823D-11EB-8686-0242C0A8461F");
             System.out.println(ApiJsonUtils.toJson(result));
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
@@ -55,15 +55,14 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
-    public void automatingTaskByBusinessId(){
-         service.automatingTaskByBusinessId("FD936EF9-524D-11EC-A6A9-0242C0A84611");
+    public void automatingTaskByBusinessId() {
+        service.automatingTaskByBusinessId("FD936EF9-524D-11EC-A6A9-0242C0A84611");
     }
 
     @Test
-    public void automatingTaskByBusinessIdAndCode(){
-        service.automatingTaskByBusinessIdAndCode("BD9ACB90-7839-11EC-BB08-0242C0A84609","akakak");
+    public void automatingTaskByBusinessIdAndCode() {
+        service.automatingTaskByBusinessIdAndCode("BD9ACB90-7839-11EC-BB08-0242C0A84609", "akakak");
     }
-
 
 
     @Test
@@ -150,12 +149,12 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
 
     @Test
-    public void queryCurrentUserFlowTask(){
+    public void queryCurrentUserFlowTask() {
         UserFlowTaskQueryParam vo = new UserFlowTaskQueryParam();
         vo.setCanBatch(false);
         vo.setModelId(null);
         List<SearchFilter> filters = new ArrayList<>();
-        filters.add(new SearchFilter("taskStatus", "VIRTUAL",SearchFilter.Operator.NE));
+        filters.add(new SearchFilter("taskStatus", "VIRTUAL", SearchFilter.Operator.NE));
         vo.setFilters(filters);
         vo.setQuickSearchProperties(null);
         vo.setQuickSearchValue(null);
@@ -164,7 +163,6 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
         FlowTaskPageResultVO<FlowTask> res = service.queryCurrentUserFlowTask(vo);
         System.out.print(ApiJsonUtils.toJson(res));
     }
-
 
 
     @Test
@@ -225,10 +223,10 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void getSelectedNodesInfo() {
-        String taskId = "8A5C5D6E-1FD7-11EA-84D4-0242C0A84516";
-        String apprvod = "true";
+        String taskId = "D44004B5-8FC4-11EC-B0E7-0242C0A84609";
+        String apprvod = null;
         try {
-            OperateResultWithData res = service.getSelectedNodesInfo(taskId, apprvod, null, true);
+            OperateResultWithData res = service.getSelectedNodesInfo(taskId, apprvod, null, false);
             System.out.print(ApiJsonUtils.toJson(res));
         } catch (Exception e) {
         }

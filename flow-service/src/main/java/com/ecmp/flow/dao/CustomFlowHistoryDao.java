@@ -24,7 +24,7 @@ public interface CustomFlowHistoryDao {
      * 通过业务实体类型id,基于动态组合条件对象和分页(含排序)对象查询数据集合
      */
     @Transactional(readOnly = true)
-    PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorAccount, Search searchConfig);
+    PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorAccount, Search searchConfig, Boolean hideNode);
 
 
     /**
@@ -58,7 +58,7 @@ public interface CustomFlowHistoryDao {
     List<FlowHistory> findByAllTaskMakeOverPowerHistory();
 
 
-    PageResult<FlowHistory> findByPage(String executorId, Search searchConfig);
+    PageResult<FlowHistory> findByPage(String executorId, Search searchConfig, Boolean hideNode);
 
 
 }

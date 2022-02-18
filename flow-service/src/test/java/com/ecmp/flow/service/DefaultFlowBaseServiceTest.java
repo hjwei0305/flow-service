@@ -18,29 +18,29 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     private DefaultFlowBaseService defaultFlowBaseService;
 
     @Test
-    public void startFlowByBusinessAndType(){
+    public void startFlowByBusinessAndType() {
         StartFlowBusinessAndTypeVo vo = new StartFlowBusinessAndTypeVo();
         vo.setBusinessKey("526F49F9-483E-11EC-8BD7-0242C0A84611");
         vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
         vo.setFlowTypeCode("FLOW_TEST");
-        try{
-            ResponseData responseData =  defaultFlowBaseService.startFlowByBusinessAndType(vo);
+        try {
+            ResponseData responseData = defaultFlowBaseService.startFlowByBusinessAndType(vo);
             System.out.println(JsonUtils.toJson(responseData));
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
 
-
     @Test
-    public void getSelectedNodesInfo(){
-        try{
-            ResponseData responseData =  defaultFlowBaseService.getSelectedNodesInfo("27CBC749-3C4C-11EC-BB8D-0242C0A84611",
+    public void getSelectedNodesInfo() {
+        try {
+            ResponseData responseData = defaultFlowBaseService.getSelectedNodesInfo("D44004B5-8FC4-11EC-B0E7-0242C0A84609",
                     "true",
                     null,
                     false);
-        }catch (Exception e){
+            System.out.println(JsonUtils.toJson(responseData));
+        } catch (Exception e) {
         }
     }
 
@@ -70,8 +70,8 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     @Test
     public void sart_one() {
         StartFlowVo vo = new StartFlowVo();
-        vo.setBusinessKey("81A975D4-5ABC-11EB-801D-0242C0A84620");
-        vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
+        vo.setBusinessKey("5EFC6266-88B1-11EC-9A63-0242C0A84627");
+        vo.setBusinessModelCode("com.rcsit.prc.entity.BudgetApply");
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.startFlow(vo);
@@ -113,7 +113,6 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
 
         }
     }
-
 
 
     @Test

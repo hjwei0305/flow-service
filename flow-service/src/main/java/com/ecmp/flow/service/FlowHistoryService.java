@@ -255,7 +255,19 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     public ResponseData listValidFlowHistoryHeader() {
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
-        List groupResultList = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
+
+        //隐藏发起人跳过的流程历史
+        String hideStartUserSkipNode = Constants.HIDE_START_USER_SKIP_NODE;
+        Boolean hideNode = false;
+        if (StringUtils.isNotEmpty(hideStartUserSkipNode) && "true".equalsIgnoreCase(hideStartUserSkipNode)) {
+            hideNode = true;
+        }
+        List groupResultList;
+        if(hideNode){
+            groupResultList = flowHistoryDao.findHisByExecutorIdGroupValidHideNode(userID);
+        }else{
+            groupResultList = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
+        }
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(groupResultList)) {
             Iterator it = groupResultList.iterator();
@@ -398,10 +410,16 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     public PageResult<FlowHistory> findByBusinessModelId(String businessModelId, Search searchConfig) {
         String userId = ContextUtil.getUserId();
         PageResult<FlowHistory> result;
+        //隐藏发起人跳过的流程历史
+        String hideStartUserSkipNode = Constants.HIDE_START_USER_SKIP_NODE;
+        Boolean hideNode = false;
+        if (StringUtils.isNotEmpty(hideStartUserSkipNode) && "true".equalsIgnoreCase(hideStartUserSkipNode)) {
+            hideNode = true;
+        }
         if (StringUtils.isNotEmpty(businessModelId)) {
-            result = flowHistoryDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig);
+            result = flowHistoryDao.findByPageByBusinessModelId(businessModelId, userId, searchConfig, hideNode);
         } else {
-            result = flowHistoryDao.findByPage(userId, searchConfig);
+            result = flowHistoryDao.findByPage(userId, searchConfig, hideNode);
         }
         //设置已办的API和WEB基地址
         initFlowTaskAppModule(result.getRows());
@@ -550,7 +568,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 }
                 //已办设置移动端查看单据地址
                 String phoneLookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getPhoneLookUrl();
-                if(StringUtils.isEmpty(phoneLookUrl)){
+                if (StringUtils.isEmpty(phoneLookUrl)) {
                     phoneLookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getPhoneLookUrl();
                 }
                 flowHistory.setPhoneUrl(StringUtils.isEmpty(phoneLookUrl) ? "NotConfig" : phoneLookUrl);

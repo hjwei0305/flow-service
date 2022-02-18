@@ -34,6 +34,15 @@ public interface FlowHistoryDao extends BaseEntityDao<FlowHistory>, CustomFlowHi
     List findHisByExecutorIdGroupValid(@Param("executorId") String executorId);
 
     /**
+     * 根据执行人ID归类查询历史(有效数据，排除发起人跳过情况)
+     *
+     * @param executorId
+     * @return
+     */
+    @Query("select count(ft.id),ft.flowDefId from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and (ft.executorId != ft.flowInstance.creatorId or ft.depict not like '%【自动执行】%' )    and  ( ft.flowExecuteStatus in ('submit','agree','disagree','turntodo','entrust','recall','reject','haveRead') or  ft.flowExecuteStatus is null )  group by ft.flowDefId ")
+    List findHisByExecutorIdGroupValidHideNode(@Param("executorId") String executorId);
+
+    /**
      * 根据执行人ID归类查询历史(记录数据)
      *
      * @param executorId

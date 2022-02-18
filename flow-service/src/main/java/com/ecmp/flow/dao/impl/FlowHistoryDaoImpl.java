@@ -33,7 +33,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         super(FlowHistory.class, entityManager);
     }
 
-    public PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig) {
+    public PageResult<FlowHistory> findByPageByBusinessModelId(String businessModelId, String executorId, Search searchConfig,Boolean hideNode) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
@@ -41,6 +41,10 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         List<SearchFilter> searchFilters = searchConfig.getFilters();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId and ft.flowInstance.id in  ( select ins.id from  com.ecmp.flow.entity.FlowInstance ins where  ins.flowDefVersion.id in  (select    ve.id from com.ecmp.flow.entity.FlowDefVersion ve  where  ve.flowDefination.id in ( select fd.id from com.ecmp.flow.entity.FlowDefination fd where fd.flowType.id in  (select fType.id from com.ecmp.flow.entity.FlowType fType where fType.businessModel.id = :businessModelId  ) ) ) ) ";
+        if(hideNode){
+            hqlCount  += "and (ft.executorId != ft.flowInstance.creatorId or ft.depict not like '%【自动执行】%' )  ";
+            hqlQuery  += "and (ft.executorId != ft.flowInstance.creatorId or ft.depict not like '%【自动执行】%' )  ";
+        }
 
         if (!CollectionUtils.isEmpty(searchFilters)) {
             SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
@@ -250,7 +254,7 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
     }
 
 
-    public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig) {
+    public PageResult<FlowHistory> findByPage(String executorId, Search searchConfig, Boolean hideNode) {
         PageInfo pageInfo = searchConfig.getPageInfo();
         Collection<String> quickSearchProperties = searchConfig.getQuickSearchProperties();
         String quickSearchValue = searchConfig.getQuickSearchValue();
@@ -258,6 +262,11 @@ public class FlowHistoryDaoImpl extends BaseEntityDaoImpl<FlowHistory> implement
         List<SearchFilter> searchFilters = searchConfig.getFilters();
         String hqlCount = "select count(ft.id) from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
         String hqlQuery = "select ft from com.ecmp.flow.entity.FlowHistory ft where ft.executorId  = :executorId ";
+        if(hideNode){
+             hqlCount  += "and (ft.executorId != ft.flowInstance.creatorId or ft.depict not like '%【自动执行】%' )  ";
+             hqlQuery  += "and (ft.executorId != ft.flowInstance.creatorId or ft.depict not like '%【自动执行】%' )  ";
+        }
+
 
         if (!CollectionUtils.isEmpty(searchFilters)) {
             for(SearchFilter filters :  searchFilters){

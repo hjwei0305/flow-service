@@ -661,7 +661,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         }
         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowInstance.getId());
         //隐藏发起人跳过的流程历史
-        String hideStartUserSkipNode = Constants.getFlowPropertiesByKey("HIDE_START_USER_SKIP_NODE");
+        String hideStartUserSkipNode = Constants.HIDE_START_USER_SKIP_NODE;
         if(StringUtils.isNotEmpty(hideStartUserSkipNode) && "true".equalsIgnoreCase(hideStartUserSkipNode)){
             hideStartUserSkipHis(flowInstance.getCreatorId(),flowHistoryList);
         }
