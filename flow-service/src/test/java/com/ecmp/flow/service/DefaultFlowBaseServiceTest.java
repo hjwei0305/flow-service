@@ -70,8 +70,8 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     @Test
     public void sart_one() {
         StartFlowVo vo = new StartFlowVo();
-        vo.setBusinessKey("5EFC6266-88B1-11EC-9A63-0242C0A84627");
-        vo.setBusinessModelCode("com.rcsit.prc.entity.BudgetApply");
+        vo.setBusinessKey("A23F2FB3-90AB-11EC-B627-0242C0A84609");
+        vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.startFlow(vo);

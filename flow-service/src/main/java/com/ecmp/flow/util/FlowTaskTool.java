@@ -861,10 +861,16 @@ public class FlowTaskTool {
                 if (StringUtils.isNotEmpty(defaultSequenceId)) {
                     PvmTransition pvmTransition = currActivity.findOutgoingTransition(defaultSequenceId);
                     if (pvmTransition != null) {
-                        PvmNodeInfo pvmNodeInfoDefault = new PvmNodeInfo();
-                        pvmNodeInfoDefault.setCurrActivity(pvmTransition.getDestination());
-                        pvmNodeInfoDefault.setParent(pvmNodeInfo);
-                        pvmNodeInfo.getChildren().add(pvmNodeInfoDefault);
+                        PvmActivity nextTempActivity = pvmTransition.getDestination();
+                        Boolean ifGateWay = ifGageway(nextTempActivity);
+                        if(ifGateWay){
+                            pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
+                        }else{
+                            PvmNodeInfo pvmNodeInfoDefault = new PvmNodeInfo();
+                            pvmNodeInfoDefault.setCurrActivity(pvmTransition.getDestination());
+                            pvmNodeInfoDefault.setParent(pvmNodeInfo);
+                            pvmNodeInfo.getChildren().add(pvmNodeInfoDefault);
+                        }
                     }
                 }
             }
