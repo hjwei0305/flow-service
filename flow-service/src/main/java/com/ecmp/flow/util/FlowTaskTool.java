@@ -38,6 +38,7 @@ import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -2761,6 +2762,19 @@ public class FlowTaskTool {
                 }
             } catch (Exception e) {
             }
+        }
+
+        //隐藏发起人跳过的流程历史
+        String hideStartUserSkipNode = Constants.HIDE_START_USER_SKIP_NODE;
+        Boolean hideNode = false;
+        if (StringUtils.isNotEmpty(hideStartUserSkipNode) && "true".equalsIgnoreCase(hideStartUserSkipNode)) {
+            hideNode = true;
+        }
+        if(hideNode){
+           String  startUserId = flowHistory.getFlowInstance().getCreatorId();
+           if(startUserId.equals(flowHistory.getExecutorId()) && flowHistory.getDepict().contains("【自动执行】")){
+               flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
+           }
         }
 
         if (variables != null && variables.get("disagreeReasonCode") != null) {
