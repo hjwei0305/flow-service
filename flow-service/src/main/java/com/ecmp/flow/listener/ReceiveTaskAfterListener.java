@@ -82,11 +82,19 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                 flowTask = flowTaskList.get(0);
                 flowTaskDao.delete(flowTask);
             }
+
+            String userName = ContextUtil.getUserName();
+            String userAccount = ContextUtil.getUserAccount();
+
             if (flowTask != null) {
                 BeanUtils.copyProperties(flowTask, flowHistory);
                 flowHistory.setId(null);
                 flowHistory.setOldTaskId(flowTask.getId());
                 flowHistory.setActStartTime(flowTask.getActDueDate());
+                flowHistory.setOwnerName(userName);
+                flowHistory.setOwnerAccount(userAccount);
+                flowHistory.setExecutorName(userName);
+                flowHistory.setExecutorAccount(userAccount);
             } else {
                 flowTask = new FlowTask();
                 flowHistory.setTaskJsonDef(currentNode.toString());
@@ -94,16 +102,16 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
                 flowHistory.setFlowTaskName(flowTaskName);
                 FlowInstance flowInstance = flowInstanceDao.findByActInstanceId(actProcessInstanceId);
                 flowHistory.setFlowInstance(flowInstance);
-                String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
-                AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
-                if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
-                    ownerName = appModule.getName();
-                }
-                flowHistory.setOwnerAccount(Constants.ADMIN);
-                flowHistory.setOwnerName(ownerName);
-                flowHistory.setExecutorAccount(Constants.ADMIN);
+//                String ownerName = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getName();
+//                AppModule appModule = flowDefVersion.getFlowDefination().getFlowType().getBusinessModel().getAppModule();
+//                if (appModule != null && StringUtils.isNotEmpty(appModule.getName())) {
+//                    ownerName = appModule.getName();
+//                }
+                flowHistory.setOwnerAccount(userAccount);
+                flowHistory.setOwnerName(userName);
+                flowHistory.setExecutorAccount(userAccount);
                 flowHistory.setExecutorId("");
-                flowHistory.setExecutorName(ownerName);
+                flowHistory.setExecutorName(userName);
                 flowHistory.setCandidateAccount("");
                 flowHistory.setActStartTime(new Date());
                 flowHistory.setActHistoryId(null);

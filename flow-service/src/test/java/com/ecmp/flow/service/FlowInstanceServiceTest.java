@@ -92,7 +92,7 @@ public class FlowInstanceServiceTest extends BaseContextTestCase {
     @Test
     public void signalByBusinessId() {
         Map<String, Object> variables = new HashMap<>();
-        OperateResult operateResult = service.signalByBusinessId("5ADAB785-5EEF-11EB-A837-0242C0A84413", "ReceiveTask_179", variables);
+        OperateResult operateResult = service.signalByBusinessId("34B60A95-9058-11EC-B0E7-0242C0A84609", "ReceiveTask_133", variables);
         System.out.println(JsonUtils.toJson(operateResult));
     }
 
