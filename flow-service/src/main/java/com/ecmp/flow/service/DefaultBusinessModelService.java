@@ -319,26 +319,13 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ResponseData<List<Executor>> getPersonToExecutorConfig(FlowInvokeParams flowInvokeParams) {
-        String businessId = flowInvokeParams.getId();
         List<Executor> executors = new ArrayList<>();
-        if (StringUtils.isNotEmpty(businessId)) {
-            DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
-            if (defaultBusinessModel != null) {
-                String orgid = defaultBusinessModel.getOrgId();
-                List<String> idList = new ArrayList<>();
-                //获取执行人
-                if (CollectionUtils.isEmpty(idList)) {
-                    //AK
-                    idList.add("7A406B37-823D-11EB-8686-0242C0A8461F");
-                    //AK001
-                    idList.add("64BA6CFD-2FE8-11EC-A6FB-0242C0A8460C");
-                    //AK002
-                    idList.add("DD8EDFE3-2FEF-11EC-A6FB-0242C0A8460C");
-                }
-                //根据用户的id列表获取执行人
-                executors = flowCommonUtil.getBasicUserExecutors(idList);
-            }
-        }
+        Executor ak = flowCommonUtil.getBasicUserExecutor("7A406B37-823D-11EB-8686-0242C0A8461F");
+        executors.add(ak);
+        Executor ak001 = flowCommonUtil.getBasicUserExecutor("64BA6CFD-2FE8-11EC-A6FB-0242C0A8460C");
+        executors.add(ak001);
+        Executor ak002 = flowCommonUtil.getBasicUserExecutor("DD8EDFE3-2FEF-11EC-A6FB-0242C0A8460C");
+        executors.add(ak002);
         return ResponseData.operationSuccessWithData(executors);
     }
 
