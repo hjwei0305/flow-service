@@ -325,16 +325,15 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
             DefaultBusinessModel defaultBusinessModel = defaultBusinessModelDao.findOne(businessId);
             if (defaultBusinessModel != null) {
                 String orgid = defaultBusinessModel.getOrgId();
-                //根据组织机构ID获取员工集合
-//                List<Employee> employeeList = flowCommonUtil.getEmployeesByOrgId(orgid);
                 List<String> idList = new ArrayList<>();
-//                for (Employee e : employeeList) {
-//                    idList.add(e.getId());
-//                }
                 //获取执行人
                 if (CollectionUtils.isEmpty(idList)) {
-                    //管理员
-                    idList.add("B54E8964-D14D-11E8-A64B-0242C0A8441B");
+                    //AK
+                    idList.add("7A406B37-823D-11EB-8686-0242C0A8461F");
+                    //AK001
+                    idList.add("64BA6CFD-2FE8-11EC-A6FB-0242C0A8460C");
+                    //AK002
+                    idList.add("DD8EDFE3-2FEF-11EC-A6FB-0242C0A8460C");
                 }
                 //根据用户的id列表获取执行人
                 executors = flowCommonUtil.getBasicUserExecutors(idList);
