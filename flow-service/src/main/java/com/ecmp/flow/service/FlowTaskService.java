@@ -1153,6 +1153,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
             return OperateResult.operationFailure("10210");
         }
+        if (flowTask.getTrustState() != null) {
+            if (flowTask.getTrustState() == 1) {
+                //当前任务已委托出去，等待委托方处理后才能处理！
+                return OperateResult.operationFailure("10199");
+            } else if (flowTask.getTrustState() == 2) {
+                return OperateResult.operationFailure("10200","进行驳回");
+            }
+        }
         flowTask.setDepict(opinion);
         try {
             if (flowTask != null && StringUtils.isNotEmpty(flowTask.getPreId())) {
