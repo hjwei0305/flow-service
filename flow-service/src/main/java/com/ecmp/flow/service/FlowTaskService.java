@@ -650,7 +650,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (flowTask.getTrustState() == 1) {
                     return OperateResultWithData.operationFailure("10199");
                 } else if (flowTask.getTrustState() == 2) {
-                    return OperateResultWithData.operationFailure("10200");
+                    return OperateResultWithData.operationFailure("10200","提交到下一步");
                 }
             }
             if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
@@ -2908,6 +2908,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (flowTask != null) {
                 if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
                     return OperateResult.operationFailure("10230");
+                }
+                Integer trustState = flowTask.getTrustState();
+                if(trustState != null){
+                    if(trustState == 1){//发起委托的任务
+                        return OperateResult.operationFailure("10199");
+                    }else if(trustState == 2){ //委托的任务
+                        return OperateResult.operationFailure("10200","进行转办");
+                    }
                 }
 
                 String defJson = flowTask.getTaskJsonDef();
