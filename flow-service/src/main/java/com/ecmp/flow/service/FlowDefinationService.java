@@ -1354,12 +1354,8 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                     throw new FlowException(ContextUtil.getMessage("10387", nodeName, responseData.getMessage()));
                 }
 
-                Set<Executor> setExecutors = (Set<Executor>) responseData.getData();
-                List<Executor> executors = null;
-                if (setExecutors != null) {
-                    executors = new ArrayList<>(setExecutors);
-                }
-                if (executors != null && executors.size() != 0) {
+                List<Executor> executors = (List<Executor>) responseData.getData();
+                if (!CollectionUtils.isEmpty(executors)) {
                     if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
                         SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
                         bean.setActTaskDefKey(id);

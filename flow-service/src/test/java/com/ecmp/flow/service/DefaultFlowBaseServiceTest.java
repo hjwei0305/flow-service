@@ -55,7 +55,7 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     @Test
     public void solidifyCheckAndSetAndStart() {
         SolidifyStartFlowVo bean = new SolidifyStartFlowVo();
-        bean.setBusinessId("CDEBF14B-BC66-11EB-B633-0242C0A8462A");
+        bean.setBusinessId("DAB21775-90A9-11EC-B627-0242C0A84609");
         bean.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
         bean.setFlowDefinationId("31719D16-5EA7-11EA-B07D-0242C0A8460D");
         try {

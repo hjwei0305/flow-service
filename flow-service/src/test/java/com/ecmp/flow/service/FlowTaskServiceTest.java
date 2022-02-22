@@ -4,6 +4,7 @@ import com.ecmp.config.util.ApiJsonUtils;
 import com.ecmp.core.search.PageInfo;
 import com.ecmp.core.search.Search;
 import com.ecmp.core.search.SearchFilter;
+import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.dto.UserFlowTaskQueryParam;
@@ -31,6 +32,36 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     private FlowTaskService service;
     @Autowired
     private FlowDefinationService flowDefinationService;
+
+
+    @Test
+    public void getExecutorsByExecutorsVos(){
+        FindExecutorsVo findExecutorsVo = new FindExecutorsVo();
+        findExecutorsVo.setBusinessId("A23F2FB3-90AB-11EC-B627-0242C0A84609");
+        findExecutorsVo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
+        findExecutorsVo.setRequestExecutorsVos("[{\"userType\":\"SelfDefinition\",\"ids\":\"6F74C16D-5E87-11EA-AEE3-0242C0A8460D\"}]");
+        ResponseData result = service.getExecutorsByExecutorsVos(findExecutorsVo);
+        System.out.println(ApiJsonUtils.toJson(result));
+    }
+
+    public static void main(String[] args) {
+        List<String> list  = new ArrayList<>();
+        list.add("b");
+        list.add("a");
+        list.add("c");
+        System.out.println(list.toString());
+        Set<String> sets = new HashSet<>();
+        sets.addAll(list);
+        System.out.println(sets.toString());
+
+        Set<String> newsets = new TreeSet<>();
+        newsets.add(list.get(0));
+        newsets.add(list.get(1));
+        newsets.add(list.get(2));
+        System.out.println(newsets.toString());
+
+    }
+
 
     @Test
     public void listFlowTaskHeader() {

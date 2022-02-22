@@ -257,11 +257,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     LogUtil.error("固化启动检查【{}】节点请求执行人失败：{}", nodeName, responseData.getMessage());
                     throw new FlowException(ContextUtil.getMessage("10387", nodeName, responseData.getMessage()));
                 }
-                Set<Executor> setExecutors = (Set<Executor>) responseData.getData();
-                List<Executor> executors = null;
-                if (setExecutors != null) {
-                    executors = new ArrayList<>(setExecutors);
-                }
+                List<Executor> executors = (List<Executor>) responseData.getData();
                 if (!CollectionUtils.isEmpty(executors)) {
                     if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
                         SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();

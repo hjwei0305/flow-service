@@ -526,11 +526,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
                     variables.put("approveResult", null);
                     //执行任务
-                    try{
+                    try {
                         result = complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         throw e;
-                    }finally {
+                    } finally {
                         if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
                             for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
                                 PvmTransition pvmTransition = entry.getKey();
@@ -583,12 +583,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             ((ProcessElementImpl) pvmTransition).setProperty("conditionText", uelText);
                         }
                     }
-                    try{
+                    try {
                         //执行任务
                         result = complete(taskId, flowTaskCompleteVO.getOpinion(), variables);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         throw e;
-                    }finally {
+                    } finally {
                         if (!CollectionUtils.isEmpty(oriPvmTransitionMap)) {
                             for (Map.Entry<PvmTransition, String> entry : oriPvmTransitionMap.entrySet()) {
                                 PvmTransition pvmTransition = entry.getKey();
@@ -1134,8 +1134,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     }
 
     @Override
-    public ResponseData taskRejectToHis(RejectParam rejectParam) throws Exception{
-        return this.taskReject(rejectParam.getId(),rejectParam.getOpinion(),null);
+    public ResponseData taskRejectToHis(RejectParam rejectParam) throws Exception {
+        return this.taskReject(rejectParam.getId(), rejectParam.getOpinion(), null);
     }
 
     /**
@@ -2907,13 +2907,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             FlowTask flowTask = flowTaskDao.findOne(taskId);
             if (flowTask != null) {
                 if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
-                    return  OperateResult.operationFailure("10230");
+                    return OperateResult.operationFailure("10230");
                 }
 
                 String defJson = flowTask.getTaskJsonDef();
                 JSONObject defObj = JSONObject.fromObject(defJson);
-                if(defObj.getString("nodeType").equalsIgnoreCase("PoolTask")){
-                   return  OperateResult.operationFailure("10425");
+                if (defObj.getString("nodeType").equalsIgnoreCase("PoolTask")) {
+                    return OperateResult.operationFailure("10425");
                 }
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
                 //根据用户的id获取执行人
@@ -3926,7 +3926,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (CollectionUtils.isEmpty(requestExecutorsVos) || StringUtils.isEmpty(businessId) || StringUtils.isEmpty(orgId)) {
             return ResponseData.operationFailure("10006");
         }
-        List<Executor> executors = null;
+        List<Executor> executors = new ArrayList<>();
         if (requestExecutorsVos.size() == 1) { //流程发起人、指定岗位、指定岗位类别、自定义执行人、任意执行人
             String userType = requestExecutorsVos.get(0).getUserType();
             if ("StartUser".equalsIgnoreCase(userType)) { //流程发起人
@@ -4008,10 +4008,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
         }
-        Set<Executor> setExecutors = new HashSet<>();
-        setExecutors.addAll(executors);
 
-        return ResponseData.operationSuccessWithData(setExecutors);
+        return ResponseData.operationSuccessWithData(executors);
     }
 
 
