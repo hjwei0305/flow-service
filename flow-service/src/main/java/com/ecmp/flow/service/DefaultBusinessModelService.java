@@ -60,6 +60,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         map.put("count", "数量");
         map.put("customeInt", "额外属性");
         map.put("name", "名称");
+        map.put("noAppearPro","接口不会返回的属性");
         if (all) {
             map.put("orgId", "组织机构ID");
         }
@@ -109,6 +110,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         map.put("count", 0);
         map.put("customeInt", true);
         map.put("name", "中文字符串");
+        map.put("noAppearPro","接口不会返回的属性");
         return ResponseData.operationSuccessWithData(map);
     }
 
