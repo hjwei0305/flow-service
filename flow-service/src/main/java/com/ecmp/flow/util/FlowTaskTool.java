@@ -863,9 +863,9 @@ public class FlowTaskTool {
                     if (pvmTransition != null) {
                         PvmActivity nextTempActivity = pvmTransition.getDestination();
                         Boolean ifGateWay = ifGageway(nextTempActivity);
-                        if(ifGateWay){
+                        if (ifGateWay) {
                             pvmNodeInfo = pvmNodeInfoGateWayInit(ifGateWay, pvmNodeInfo, nextTempActivity, v);
-                        }else{
+                        } else {
                             PvmNodeInfo pvmNodeInfoDefault = new PvmNodeInfo();
                             pvmNodeInfoDefault.setCurrActivity(pvmTransition.getDestination());
                             pvmNodeInfoDefault.setParent(pvmNodeInfo);
@@ -1622,17 +1622,16 @@ public class FlowTaskTool {
         }
 
         //金风需求：如果回到历史节点，那么标记为紧急
-        int priority =  flowTask.getPriority();
-        if(priority==0){
-            List<FlowHistory>  flowHistoryList = flowHistoryDao.findByInstanceId(flowTask.getFlowInstance().getId());
-            if(!CollectionUtils.isEmpty(flowHistoryList)){
-                FlowHistory flowHistory =   flowHistoryList.stream().filter(a->(a.getActTaskDefKey().equalsIgnoreCase(flowTask.getActTaskDefKey()) && a.getExecutorId().equals(flowTask.getExecutorId()))).findFirst().orElse(null);
-                if(flowHistory!=null){
+        int priority = flowTask.getPriority();
+        if (priority == 0) {
+            List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(flowTask.getFlowInstance().getId());
+            if (!CollectionUtils.isEmpty(flowHistoryList)) {
+                FlowHistory flowHistory = flowHistoryList.stream().filter(a -> (a.getActTaskDefKey().equalsIgnoreCase(flowTask.getActTaskDefKey()) && a.getExecutorId().equals(flowTask.getExecutorId()))).findFirst().orElse(null);
+                if (flowHistory != null) {
                     flowTask.setPriority(3);
                 }
             }
         }
-
 
 
         String nodeType = (String) currentNode.get("nodeType");
@@ -2776,11 +2775,11 @@ public class FlowTaskTool {
         if (StringUtils.isNotEmpty(hideStartUserSkipNode) && "true".equalsIgnoreCase(hideStartUserSkipNode)) {
             hideNode = true;
         }
-        if(hideNode){
-           String  startUserId = flowHistory.getFlowInstance().getCreatorId();
-           if(startUserId.equals(flowHistory.getExecutorId()) && flowHistory.getDepict().contains("【自动执行】")){
-               flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
-           }
+        if (hideNode) {
+            String startUserId = flowHistory.getFlowInstance().getCreatorId();
+            if (startUserId.equals(flowHistory.getExecutorId()) && StringUtils.isNotEmpty(flowHistory.getDepict()) && flowHistory.getDepict().contains("【自动执行】")) {
+                flowHistory.setFlowExecuteStatus(FlowExecuteStatus.AUTO.getCode());
+            }
         }
 
         if (variables != null && variables.get("disagreeReasonCode") != null) {
