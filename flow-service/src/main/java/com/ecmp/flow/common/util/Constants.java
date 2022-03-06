@@ -83,6 +83,9 @@ public class Constants extends ConfigurableContants {
             LogUtil.error("获取API基地址参数[" + key + "]失败！");
             throw new FlowException(ContextUtil.getMessage("10370",key));
         }
+        if(org.apache.commons.lang3.StringUtils.startsWith(value, "http")){
+            return value;
+        }
         return  PageUrlUtil.buildUrl(getBaseApi(),value);
     }
 
@@ -99,6 +102,9 @@ public class Constants extends ConfigurableContants {
         if (value == null) {
             LogUtil.error("获取WEB基地址参数[" + key + "]失败！");
             throw new FlowException(ContextUtil.getMessage("10371",key));
+        }
+        if(org.apache.commons.lang3.StringUtils.startsWith(value, "http")){
+            return value;
         }
         return getBaseWeb() +  value;
     }
