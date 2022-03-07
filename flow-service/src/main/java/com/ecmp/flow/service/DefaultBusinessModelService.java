@@ -17,6 +17,7 @@ import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.vo.FlowInvokeParams;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.log.util.LogUtil;
+import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.OperateResultWithData;
 import com.ecmp.vo.ResponseData;
@@ -181,7 +182,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     public ResponseData changeCreateDepictNew(FlowInvokeParams flowInvokeParams) {
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用的事前事件接口！");
+            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用的事前事件接口！flowInvokeParams="+ JsonUtils.toJson(flowInvokeParams));
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
@@ -195,7 +196,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
     public ResponseData changeCompletedDepictNew(FlowInvokeParams flowInvokeParams) {
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
-            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用了事后事件接口！");
+            entity.setWorkCaption(entity.getWorkCaption() + "：后台调用了事后事件接口！flowInvokeParams="+ JsonUtils.toJson(flowInvokeParams));
             defaultBusinessModelDao.save(entity);
         } catch (Exception e) {
             return ResponseData.operationFailure(e.getMessage());
