@@ -143,14 +143,14 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     @Test
     public void complete() {
         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
-        completeTaskVo.setApproved("true");
-        completeTaskVo.setBusinessId("BD9ACB90-7839-11EC-BB08-0242C0A84609");
+        completeTaskVo.setApproved(null);
+        completeTaskVo.setBusinessId("10D201B1-99ED-11EC-A351-0242C0A84609");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
-        completeTaskVo.setManualSelected(false);
+        completeTaskVo.setManualSelected(true);
         completeTaskVo.setOpinion("1111");
-        completeTaskVo.setTaskId("67A46D76-783D-11EC-BB08-0242C0A84609");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_118\",\"flowTaskType\":\"common\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_118_Normal\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setTaskId("A346AFDE-9A07-11EC-A351-0242C0A84609");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"ServiceTask_145\",\"flowTaskType\":\"serviceTask\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"ServiceTask_145_ServiceTask\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.completeTask(completeTaskVo);

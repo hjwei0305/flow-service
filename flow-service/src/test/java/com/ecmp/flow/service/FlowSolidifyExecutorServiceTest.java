@@ -16,7 +16,7 @@ public class FlowSolidifyExecutorServiceTest extends BaseContextTestCase{
 
     @Test
     public void getExecuteInfoByBusinessId() {
-        String businessId ="04483B02-1F18-11EA-91AC-0242C0A84503";
+        String businessId ="DBA4009B-9DE6-11EC-A2CE-0242C0A84609";
         service.selfMotionExecuteTask(businessId);
     }
 

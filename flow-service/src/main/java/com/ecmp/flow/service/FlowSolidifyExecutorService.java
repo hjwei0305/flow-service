@@ -298,7 +298,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                 List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", businessId);
                 if (!CollectionUtils.isEmpty(solidifylist)) {
                     //检查固化需要跳过的待办
-                    ResponseData solidifyResult = this.checkAutomaticToDoSolidifyTask(solidifylist, checkList);
+                    ResponseData solidifyResult = this.checkAutomaticToDoSolidifyTask(solidifylist, checkList, true);
                     if (solidifyResult.successful()) {
                         List<FlowTask> needLsit = (List<FlowTask>) solidifyResult.getData();
                         if (!CollectionUtils.isEmpty(needLsit)) {
@@ -330,9 +330,10 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      *
      * @param solidifylist 固化配置信息
      * @param taskList     全部待办信息
+     * @param boo          是否要修改数据
      * @return 需要自动执行的待办
      */
-    public ResponseData<List<FlowTask>> checkAutomaticToDoSolidifyTask(List<FlowSolidifyExecutor> solidifylist, List<FlowTask> taskList) {
+    public ResponseData<List<FlowTask>> checkAutomaticToDoSolidifyTask(List<FlowSolidifyExecutor> solidifylist, List<FlowTask> taskList, Boolean boo) {
         List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
         if (!CollectionUtils.isEmpty(taskList)) {
             for (FlowTask flowTask : taskList) {
@@ -380,15 +381,17 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                             }
                         }
                     } else {//该节点已经执行过(执行过的节点，回到该节点，无论前后都不自动执行)
-                        List<FlowSolidifyExecutor> updateList = solidifylist.stream().
-                                filter(a -> a.getTaskOrder() >= bean.getTaskOrder()).collect(Collectors.toList());
-                        if (!CollectionUtils.isEmpty(updateList)) {
-                            updateList.forEach(a -> {
-                                a.setTrueExecutorIds(null);
-                                a.setTaskOrder(0);
-                                flowSolidifyExecutorDao.save(a);
-                            });
-                            return ResponseData.operationSuccessWithData(needLsit);
+                        if (boo) {
+                            List<FlowSolidifyExecutor> updateList = solidifylist.stream().
+                                    filter(a -> a.getTaskOrder() >= bean.getTaskOrder()).collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(updateList)) {
+                                updateList.forEach(a -> {
+                                    a.setTrueExecutorIds(null);
+                                    a.setTaskOrder(0);
+                                    flowSolidifyExecutorDao.save(a);
+                                });
+                                return ResponseData.operationSuccessWithData(needLsit);
+                            }
                         }
                     }
                 }

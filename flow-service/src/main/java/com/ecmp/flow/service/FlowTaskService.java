@@ -255,7 +255,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
             if (!CollectionUtils.isEmpty(solidifylist)) {
                 //检查固化需要跳过的待办
-                ResponseData solidifyResult = flowSolidifyExecutorService.checkAutomaticToDoSolidifyTask(solidifylist, checkList);
+                ResponseData solidifyResult = flowSolidifyExecutorService.checkAutomaticToDoSolidifyTask(solidifylist, checkList, false);
                 if (solidifyResult.successful()) {
                     List<FlowTask> needLsit = (List<FlowTask>) solidifyResult.getData();
                     if (!CollectionUtils.isEmpty(needLsit)) {
@@ -650,7 +650,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (flowTask.getTrustState() == 1) {
                     return OperateResultWithData.operationFailure("10199");
                 } else if (flowTask.getTrustState() == 2) {
-                    return OperateResultWithData.operationFailure("10200","提交到下一步");
+                    return OperateResultWithData.operationFailure("10200", "提交到下一步");
                 }
             }
             if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) { //虚拟任务
@@ -1158,7 +1158,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 //当前任务已委托出去，等待委托方处理后才能处理！
                 return OperateResult.operationFailure("10199");
             } else if (flowTask.getTrustState() == 2) {
-                return OperateResult.operationFailure("10200","进行驳回");
+                return OperateResult.operationFailure("10200", "进行驳回");
             }
         }
         flowTask.setDepict(opinion);
@@ -2918,11 +2918,11 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     return OperateResult.operationFailure("10230");
                 }
                 Integer trustState = flowTask.getTrustState();
-                if(trustState != null){
-                    if(trustState == 1){//发起委托的任务
+                if (trustState != null) {
+                    if (trustState == 1) {//发起委托的任务
                         return OperateResult.operationFailure("10199");
-                    }else if(trustState == 2){ //委托的任务
-                        return OperateResult.operationFailure("10200","进行转办");
+                    } else if (trustState == 2) { //委托的任务
+                        return OperateResult.operationFailure("10200", "进行转办");
                     }
                 }
 
