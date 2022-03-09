@@ -158,7 +158,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void taskReject() throws Exception {
-        service.taskReject("2DE719E8-6519-11EB-9C0E-0242C0A84620", "111", null);
+        service.taskReject("CD6BB170-9F80-11EC-9985-0242C0A84609", "111", null);
     }
 
 

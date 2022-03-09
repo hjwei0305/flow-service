@@ -1247,6 +1247,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             try {
                 //完成任务
                 variables.put("reject", 1);
+                variables.put("approved",null);
                 this.complete(currentTask.getId(), currentTask.getDepict(), variables);
             } catch (Exception e) {
                 throw e;
@@ -5160,6 +5161,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         try {
             variables.put("return", 1); //退回
             variables.put("allowJumpBack", allowJumpBack); //是否处理后返回我审批
+            variables.put("approved", null); //清空审批参数
             //完成任务
             this.complete(flowTask.getId(), opinion, variables);
         } catch (Exception e) {
