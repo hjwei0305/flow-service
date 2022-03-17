@@ -15,6 +15,11 @@ allprojects {
             classpath("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}")
             classpath("gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:2.1.0")
         }
+
+        configurations {
+            //在整个构建过程中排除
+            all*.exclude group: 'org.apache.logging.log4j'
+        }
     }
 
     apply plugin: 'java'
@@ -38,5 +43,8 @@ allprojects {
 
 //        mavenCentral()
     }
+
+    // 自定义springboot 依赖的logback版本
+    ext['logback.version'] = "1.2.10"
 
 }
