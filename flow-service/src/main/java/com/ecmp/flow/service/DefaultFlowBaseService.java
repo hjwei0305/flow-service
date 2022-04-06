@@ -221,14 +221,18 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             noHumanIntervention = false;
         }
 
-
-        nodeObj.keySet().forEach(obj -> {
-            JSONObject positionObj = JSONObject.fromObject(nodeObj.get(obj));
+        Object[] nodeObject = nodeObj.keySet().toArray();
+        for (int k = 0; k < nodeObj.size(); k++) {
+            JSONObject positionObj = JSONObject.fromObject(nodeObj.get(nodeObject[k]));
             String id = (String) positionObj.get("id");
             String nodeType = (String) positionObj.get("nodeType");
             String nodeName = (String) positionObj.get("name");
-            if (id.contains("UserTask")) {
+            String type = (String) positionObj.get("type");
+            if (id.contains("UserTask") || type.contains("EndEvent")) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
+                if (!nodeConfigObj.has("normal") || !nodeConfigObj.has("executor")) {
+                    continue;
+                }
                 List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
                 List<RequestExecutorsVo> requestExecutorsList = new ArrayList<>();
                 executorList.forEach(list -> {
@@ -271,7 +275,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                             if ("SingleSign".equalsIgnoreCase(nodeType)
                                     || "CounterSign".equalsIgnoreCase(nodeType)
                                     || "ParallelTask".equalsIgnoreCase(nodeType)
-                                    || "SerialTask".equalsIgnoreCase(nodeType)) {
+                                    || "SerialTask".equalsIgnoreCase(nodeType)
+                                    || type.contains("EndEvent")) {
                                 String userIds = "";
                                 for (int i = 0; i < executors.size(); i++) {
                                     if (i == 0) {
@@ -321,7 +326,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     }
                 }
             }
-        });
+        }
         return map;
     }
 
