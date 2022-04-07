@@ -1324,58 +1324,60 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             if (id.contains("UserTask") || id.contains("EndEvent")) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
                 List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
-                List<RequestExecutorsVo> requestExecutorsList = new ArrayList<>();
-                executorList.forEach(list -> {
-                    RequestExecutorsVo bean = new RequestExecutorsVo();
-                    String userType = list.get("userType");
-                    bean.setUserType(userType);
-                    if (!"AnyOne".equals(userType)) {
-                        String ids;
-                        if (userType.contains("SelfDefinition")) {
-                            ids = (list.get("selfDefId") != null ? list.get("selfDefId") : list.get("selfDefOfOrgAndSelId"));
-                        } else {
-                            ids = list.get("ids");
-                        }
-                        bean.setIds(ids);
-                    }
-                    requestExecutorsList.add(bean);
-                });
-
-                //如果报错前面启动固化检查的时候报过
-                ResponseData responseData;
-                try {
-                    responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
-                } catch (Exception e) {
-                    LogUtil.error("【{}】节点请求执行人失败：{}", nodeName, e.getMessage(), e);
-                    throw new FlowException(ContextUtil.getMessage("10387", nodeName, e.getMessage()));
-                }
-                if (!responseData.getSuccess()) {
-                    LogUtil.error("【{}】节点请求执行人失败：{}", nodeName, responseData.getMessage());
-                    throw new FlowException(ContextUtil.getMessage("10387", nodeName, responseData.getMessage()));
-                }
-
-                List<Executor> executors = (List<Executor>) responseData.getData();
-                if (!CollectionUtils.isEmpty(executors)) {
-                    if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
-                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
-                        bean.setActTaskDefKey(id);
-                        bean.setExecutorIds(executors.get(0).getId());
-                        bean.setNodeType(nodeType);
-                        map.put(id, bean);
-                    } else if (executors.size() > 1 && ("SingleSign".equalsIgnoreCase(nodeType) || id.contains("EndEvent"))) { //单签、会签任务默认全选
-                        String userIds = "";
-                        for (int i = 0; i < executors.size(); i++) {
-                            if (i == 0) {
-                                userIds += executors.get(i).getId();
+                if (executorList != null) {
+                    List<RequestExecutorsVo> requestExecutorsList = new ArrayList<>();
+                    executorList.forEach(list -> {
+                        RequestExecutorsVo bean = new RequestExecutorsVo();
+                        String userType = list.get("userType");
+                        bean.setUserType(userType);
+                        if (!"AnyOne".equals(userType)) {
+                            String ids;
+                            if (userType.contains("SelfDefinition")) {
+                                ids = (list.get("selfDefId") != null ? list.get("selfDefId") : list.get("selfDefOfOrgAndSelId"));
                             } else {
-                                userIds += "," + executors.get(i).getId();
+                                ids = list.get("ids");
                             }
+                            bean.setIds(ids);
                         }
-                        SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
-                        bean.setActTaskDefKey(id);
-                        bean.setExecutorIds(userIds);
-                        bean.setNodeType(nodeType);
-                        map.put(id, bean);
+                        requestExecutorsList.add(bean);
+                    });
+
+                    //如果报错前面启动固化检查的时候报过
+                    ResponseData responseData;
+                    try {
+                        responseData = flowTaskService.getExecutorsByRequestExecutorsVoAndOrg(requestExecutorsList, businessId, orgId);
+                    } catch (Exception e) {
+                        LogUtil.error("【{}】节点请求执行人失败：{}", nodeName, e.getMessage(), e);
+                        throw new FlowException(ContextUtil.getMessage("10387", nodeName, e.getMessage()));
+                    }
+                    if (!responseData.getSuccess()) {
+                        LogUtil.error("【{}】节点请求执行人失败：{}", nodeName, responseData.getMessage());
+                        throw new FlowException(ContextUtil.getMessage("10387", nodeName, responseData.getMessage()));
+                    }
+
+                    List<Executor> executors = (List<Executor>) responseData.getData();
+                    if (!CollectionUtils.isEmpty(executors)) {
+                        if (executors.size() == 1) { //固化选人的时候，只有单个人才进行默认设置
+                            SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                            bean.setActTaskDefKey(id);
+                            bean.setExecutorIds(executors.get(0).getId());
+                            bean.setNodeType(nodeType);
+                            map.put(id, bean);
+                        } else if (executors.size() > 1 && ("SingleSign".equalsIgnoreCase(nodeType) || id.contains("EndEvent"))) { //单签、会签任务默认全选
+                            String userIds = "";
+                            for (int i = 0; i < executors.size(); i++) {
+                                if (i == 0) {
+                                    userIds += executors.get(i).getId();
+                                } else {
+                                    userIds += "," + executors.get(i).getId();
+                                }
+                            }
+                            SolidifyStartExecutorVo bean = new SolidifyStartExecutorVo();
+                            bean.setActTaskDefKey(id);
+                            bean.setExecutorIds(userIds);
+                            bean.setNodeType(nodeType);
+                            map.put(id, bean);
+                        }
                     }
                 }
             }

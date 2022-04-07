@@ -28,10 +28,10 @@ public class FlowDesignServiceTest extends BaseContextTestCase {
 
     @Test
     public void getEntity() {
-        String id = "98307F87-5150-11EA-BBE4-0242C0A84421";
+        String id = "31719D16-5EA7-11EA-B07D-0242C0A8460D";
         Integer versionCode = -1;
         String businessModelCode = "com.ecmp.flow.entity.DefaultBusinessModel";
-        String businessId = "2AA0E332-5A03-11EA-A372-0242C0A84421";
+        String businessId = "2F497C37-B587-11EC-8926-0242C0A84609";
         ResponseData res = service.getEntity(id, versionCode, businessModelCode, businessId);
         System.out.println(JsonUtils.toJson(res));
     }
