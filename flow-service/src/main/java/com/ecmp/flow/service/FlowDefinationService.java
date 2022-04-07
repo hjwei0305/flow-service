@@ -1321,7 +1321,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
             String id = (String) positionObj.get("id");
             String nodeType = (String) positionObj.get("nodeType");
             String nodeName = (String) positionObj.get("name");
-            if (id.contains("UserTask")) {
+            if (id.contains("UserTask") || id.contains("EndEvent")) {
                 JSONObject nodeConfigObj = JSONObject.fromObject(positionObj.get("nodeConfig"));
                 List<Map<String, String>> executorList = (List<Map<String, String>>) nodeConfigObj.get("executor");
                 List<RequestExecutorsVo> requestExecutorsList = new ArrayList<>();
@@ -1362,7 +1362,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                         bean.setExecutorIds(executors.get(0).getId());
                         bean.setNodeType(nodeType);
                         map.put(id, bean);
-                    } else if (executors.size() > 1 && "SingleSign".equalsIgnoreCase(nodeType)) { //单签、会签任务默认全选
+                    } else if (executors.size() > 1 && ("SingleSign".equalsIgnoreCase(nodeType) || id.contains("EndEvent"))) { //单签、会签任务默认全选
                         String userIds = "";
                         for (int i = 0; i < executors.size(); i++) {
                             if (i == 0) {
