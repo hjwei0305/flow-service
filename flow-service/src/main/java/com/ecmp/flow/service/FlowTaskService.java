@@ -1247,7 +1247,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             try {
                 //完成任务
                 variables.put("reject", 1);
-                variables.put("approved",null);
+                variables.put("approved", null);
                 this.complete(currentTask.getId(), currentTask.getDepict(), variables);
             } catch (Exception e) {
                 throw e;
@@ -4304,6 +4304,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         List<FlowTask> needLsit = new ArrayList<>();//需要自动跳过的任务
         if (!CollectionUtils.isEmpty(taskList)) {
             for (FlowTask flowTask : taskList) {
+
+                FlowInstance flowInstance = flowTask.getFlowInstance();
+                if (flowTask.getExecutorId().equals(flowInstance.getCreatorId())) { //执行人是发起人
+                    if (flowSolidifyExecutorService.checkPage(flowTask)) {
+                        needLsit.add(flowTask);
+                        continue;
+                    }
+                }
+
                 if (StringUtils.isNotEmpty(flowTask.getPreId())) {
                     //上一节点信息
                     FlowHistory flowHistory = flowHistoryService.findOne(flowTask.getPreId());
