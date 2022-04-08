@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,13 +21,16 @@ public interface FlowTaskDao extends BaseEntityDao<FlowTask>, CustomFlowTaskDao 
      * @param idExclude 排除的ID,一般是指当前进行任务签收的任务
      * @return
      */
+    @Transactional
     @Modifying
     @Query("delete from FlowTask fv where (fv.actTaskId = :actTaskId) and (fv.id <> :idExclude) ")
     Integer deleteNotClaimTask(@Param("actTaskId") String actTaskId, @Param("idExclude") String idExclude);
 
 
+    @Transactional
     long deleteByActTaskId(String actTaskId);
 
+    @Transactional
     long deleteByFlowInstanceId(String flowInstanceId);
 
     List<FlowTask> findByActTaskId(String actTaskId);

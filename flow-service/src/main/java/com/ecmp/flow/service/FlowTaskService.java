@@ -950,6 +950,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         needDelList.addAll(DelList);
                     }
                     flowTaskDao.deleteByActTaskId(actTaskId);
+//                    flowTaskDao.deleteNotClaimTask(actTaskId,flowTask.getId());
                 } else {
                     flowTaskDao.delete(flowTask);
                 }
