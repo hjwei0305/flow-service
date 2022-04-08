@@ -1136,7 +1136,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData taskRejectToHis(RejectParam rejectParam) throws Exception {
-        return this.taskReject(rejectParam.getId(), rejectParam.getOpinion(), null);
+        String opinion = StringUtils.isNotEmpty(rejectParam.getRemark()) ? rejectParam.getRemark() : rejectParam.getOpinion();
+        return this.taskReject(rejectParam.getId(), opinion, null);
     }
 
     /**

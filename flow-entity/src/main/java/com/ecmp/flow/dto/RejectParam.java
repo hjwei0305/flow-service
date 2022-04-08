@@ -10,9 +10,14 @@ public class RejectParam implements Serializable {
     private String id;
 
     /**
-     *  驳回意见
+     * 驳回意见3.0
      */
     private String opinion;
+
+    /**
+     * 驳回意见6.0
+     */
+    private String remark;
 
 
     public String getId() {
@@ -29,5 +34,13 @@ public class RejectParam implements Serializable {
 
     public void setOpinion(String opinion) {
         this.opinion = opinion;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }
