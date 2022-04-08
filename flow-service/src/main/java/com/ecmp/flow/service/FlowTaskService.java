@@ -4374,10 +4374,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
     public void automaticToDoTask(List<FlowTask> taskList) {
         for (int i = 0; i < taskList.size(); i++) {
             FlowTask task = taskList.get(i);
+            String taskJsonDef = task.getTaskJsonDef();
+            JSONObject taskJsonDefObj = JSONObject.fromObject(taskJsonDef);
+            String nodeType = taskJsonDefObj.get("nodeType") + "";
+            String approved = null; //是否同意
+            String opinion = "【自动执行】";
+            if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType)) { //跳过处理默认同意
+                approved = "true";
+                opinion = "同意【自动执行】";
+            }
             ResponseData responseData = ResponseData.operationFailure("10254");
             try {
                 //模拟请求下一步数据
-                responseData = this.simulationGetNodesInfo(task.getId(), "true");
+                responseData = this.simulationGetNodesInfo(task.getId(), approved);
             } catch (Exception e) {
                 LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(), e);
             }
@@ -4393,7 +4402,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     endEventId = "true";
                 } else {
                     List<NodeInfo> nodeInfoList = (List<NodeInfo>) responseData.getData();
-                    List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<FlowTaskCompleteWebVO>();
+                    List<FlowTaskCompleteWebVO> flowTaskCompleteList = new ArrayList<>();
                     for (NodeInfo nodeInfo : nodeInfoList) {
                         FlowTaskCompleteWebVO taskWebVO = new FlowTaskCompleteWebVO();
                         taskWebVO.setNodeId(nodeInfo.getId());
@@ -4427,10 +4436,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         } else if (flowTaskType.equalsIgnoreCase("common")
                                 || flowTaskType.equalsIgnoreCase("approve")) { //普通任务、审批任务
                             Set<Executor> set = nodeInfo.getExecutorSet();
-                            if (!CollectionUtils.isEmpty(set) && set.size() == 1) {
+                            if (!CollectionUtils.isEmpty(set)) {
                                 taskWebVO.setUserIds(set.iterator().next().getId());
-                            } else {
-                                return;
                             }
                         }
                         taskWebVO.setSolidifyFlow(false); //固化
@@ -4446,8 +4453,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     TimeUnit.SECONDS.sleep(3);
                     //自动执行待办
                     defaultFlowBaseService.completeTask(task.getId(), task.getFlowInstance().getBusinessId(),
-                            "同意【自动执行】", taskListString,
-                            endEventId, null, false, "true", null);
+                            opinion, taskListString,
+                            endEventId, null, false, approved, null);
                 } catch (Exception e) {
                     LogUtil.error("自动执行报错：" + e.getMessage(), e);
                 }
