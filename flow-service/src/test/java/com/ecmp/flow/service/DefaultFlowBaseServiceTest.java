@@ -20,9 +20,9 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     @Test
     public void startFlowByBusinessAndType() {
         StartFlowBusinessAndTypeVo vo = new StartFlowBusinessAndTypeVo();
-        vo.setBusinessKey("526F49F9-483E-11EC-8BD7-0242C0A84611");
+        vo.setBusinessKey("2E6FC6D6-B942-11EC-863E-0242C0A84609");
         vo.setBusinessModelCode("com.ecmp.flow.entity.DefaultBusinessModel");
-        vo.setFlowTypeCode("FLOW_TEST");
+        vo.setFlowTypeCode("FLOW_AK");
         try {
             ResponseData responseData = defaultFlowBaseService.startFlowByBusinessAndType(vo);
             System.out.println(JsonUtils.toJson(responseData));
