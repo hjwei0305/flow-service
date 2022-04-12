@@ -368,7 +368,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (CollectionUtils.isEmpty(flowStartResultVO.getNodeInfoList())) {
             return ResponseData.operationFailure("10074");
         }
-        if(BooleanUtils.isTrue(flowStartResultVO.getCheckStartResult())){ //启动指定执行人
+        if(BooleanUtils.isTrue(flowStartResultVO.getSolidifyFlow()) && BooleanUtils.isTrue(flowStartResultVO.getCheckStartResult())){ //启动指定执行人
             SolidifyStartFlowVo vo = new SolidifyStartFlowVo();
             vo.setBusinessId(startParam.getBusinessKey());
             vo.setBusinessModelCode(startParam.getBusinessModelCode());
