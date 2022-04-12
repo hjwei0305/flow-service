@@ -1762,7 +1762,7 @@ public class FlowTaskTool {
             virtualTask.setTaskStatus(TaskStatus.VIRTUAL.toString());//待办状态
             virtualTask.setActType("virtual"); //引擎任务类型
             virtualTask.setActTaskId(null);//流程引擎ID（直接用虚拟单词代替）
-            virtualTask.setTaskName(currentNode.get("name") + "(虚拟)"); //任务名称
+            virtualTask.setTaskName(currentNode.get("name") + "(通知)"); //任务名称
             virtualTask.setActTaskDefKey(actTaskDefKey + "-virtual");//节点代码
             if (StringUtils.isNotEmpty(content)) {
                 virtualTask.setDepict(content); //描述（通知里面写的内容）
