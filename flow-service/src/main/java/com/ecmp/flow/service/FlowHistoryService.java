@@ -598,4 +598,25 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     }
 
 
+    @Override
+    public ResponseData getLookUrlByOldTaskId(String taskId) {
+        if(StringUtils.isEmpty(taskId)){
+            return  ResponseData.operationFailure("10392");
+        }
+        try{
+            FlowHistory flowHistory = flowHistoryDao.findByProperty("oldTaskId",taskId);
+            if(flowHistory!=null){
+                String lookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                String webBaseAddress = Constants.getFlowPropertiesByKey(webBaseAddressConfig);
+                String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress,lookUrl);
+                return ResponseData.operationSuccessWithData(lookUrlXiangDui);
+            }else{
+                return ResponseData.operationFailure("10427");
+            }
+        }catch (Exception e){
+            LogUtil.error("获取已处理待办的单据查看地址出错:{}", e.getMessage(),e);
+            return ResponseData.operationFailure("10426",e.getMessage());
+        }
+    }
 }

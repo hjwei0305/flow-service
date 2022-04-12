@@ -20,6 +20,12 @@ public class FlowHistoryServiceTest extends BaseContextTestCase {
 
 
     @Test
+    public void getLookUrlByOldTaskId(){
+        ResponseData responseData =  flowHistoryService.getLookUrlByOldTaskId("6A63A631-BC6B-11EB-87A2-0242C0A8462A");
+        System.out.println(JsonUtils.toJson(responseData));
+    }
+
+    @Test
     public void listValidFlowHistoryHeader(){
         ResponseData responseData =  flowHistoryService.listValidFlowHistoryHeader();
         System.out.println(JsonUtils.toJson(responseData));
