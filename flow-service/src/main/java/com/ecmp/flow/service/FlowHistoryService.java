@@ -9,12 +9,10 @@ import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.dao.BusinessModelDao;
 import com.ecmp.flow.dao.FlowDefinationDao;
 import com.ecmp.flow.dao.FlowHistoryDao;
+import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.dao.util.PageUrlUtil;
 import com.ecmp.flow.dto.UserFlowHistoryQueryParam;
-import com.ecmp.flow.entity.BusinessModel;
-import com.ecmp.flow.entity.FlowDefination;
-import com.ecmp.flow.entity.FlowHistory;
-import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.FlowTaskTool;
 import com.ecmp.flow.vo.TodoBusinessSummaryVO;
 import com.ecmp.flow.vo.phone.FlowHistoryPhoneVo;
@@ -55,6 +53,9 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
     @Autowired
     private BusinessModelDao businessModelDao;
+
+    @Autowired
+    private FlowTaskDao flowTaskDao;
 
     @Autowired
     private FlowInstanceService flowInstanceService;
@@ -256,7 +257,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         List<TodoBusinessSummaryVO> voList = new ArrayList<>();
         String userID = ContextUtil.getUserId();
 
-        List   groupResultList = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
+        List groupResultList = flowHistoryDao.findHisByExecutorIdGroupValid(userID);
         Map<BusinessModel, Integer> businessModelCountMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(groupResultList)) {
             Iterator it = groupResultList.iterator();
@@ -600,23 +601,32 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
 
     @Override
     public ResponseData getLookUrlByOldTaskId(String taskId) {
-        if(StringUtils.isEmpty(taskId)){
-            return  ResponseData.operationFailure("10392");
+        if (StringUtils.isEmpty(taskId)) {
+            return ResponseData.operationFailure("10392");
         }
-        try{
-            FlowHistory flowHistory = flowHistoryDao.findByProperty("oldTaskId",taskId);
-            if(flowHistory!=null){
-                String lookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
-                String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+        try {
+            FlowTask flowTask = flowTaskDao.findOne(taskId);
+            if (flowTask != null) {
+                String lookUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                 String webBaseAddress = Constants.getFlowPropertiesByKey(webBaseAddressConfig);
-                String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress,lookUrl);
+                String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress, lookUrl);
                 return ResponseData.operationSuccessWithData(lookUrlXiangDui);
-            }else{
-                return ResponseData.operationFailure("10427");
+            } else {
+                FlowHistory flowHistory = flowHistoryDao.findByProperty("oldTaskId", taskId);
+                if (flowHistory != null) {
+                    String lookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
+                    String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
+                    String webBaseAddress = Constants.getFlowPropertiesByKey(webBaseAddressConfig);
+                    String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress, lookUrl);
+                    return ResponseData.operationSuccessWithData(lookUrlXiangDui);
+                } else {
+                    return ResponseData.operationFailure("10427");
+                }
             }
-        }catch (Exception e){
-            LogUtil.error("获取已处理待办的单据查看地址出错:{}", e.getMessage(),e);
-            return ResponseData.operationFailure("10426",e.getMessage());
+        } catch (Exception e) {
+            LogUtil.error("获取单据查看地址出错:{}", e.getMessage(), e);
+            return ResponseData.operationFailure("10426", e.getMessage());
         }
     }
 }
