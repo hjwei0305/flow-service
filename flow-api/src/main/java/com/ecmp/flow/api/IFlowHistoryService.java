@@ -252,8 +252,7 @@ public interface IFlowHistoryService extends IBaseService<FlowHistory, String> {
 
     @GET
     @Path("getLookUrlByOldTaskId")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过已处理待办ID获取查看单据地址", notes = "通过已处理待办ID获取查看单据地址")
-    ResponseData   getLookUrlByOldTaskId(String taskId);
+    ResponseData   getLookUrlByOldTaskId(@QueryParam("taskId") String taskId);
+
 }
