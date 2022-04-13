@@ -614,6 +614,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
                     if (f.getUserIds() == null) {
                         selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
+                        selectedNodesMap.put(f.getNodeId(), f.getNodeId());
                     } else {
                         String userIds = f.getUserIds();
                         selectedNodesMap.put(f.getNodeId(), f.getNodeId());

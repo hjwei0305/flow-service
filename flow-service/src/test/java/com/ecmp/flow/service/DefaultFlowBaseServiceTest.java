@@ -144,13 +144,14 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     public void complete() {
         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
         completeTaskVo.setApproved(null);
-        completeTaskVo.setBusinessId("10D201B1-99ED-11EC-A351-0242C0A84609");
+        completeTaskVo.setBusinessId("2E6FC6D6-B942-11EC-863E-0242C0A84609");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
         completeTaskVo.setManualSelected(true);
         completeTaskVo.setOpinion("1111");
-        completeTaskVo.setTaskId("A346AFDE-9A07-11EC-A351-0242C0A84609");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"ServiceTask_145\",\"flowTaskType\":\"serviceTask\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"ServiceTask_145_ServiceTask\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setTaskId("3FA522B7-BAFA-11EC-B81D-0242C0A84609");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"PoolTask_17\",\"flowTaskType\":\"poolTask\",\"userIds\":null,\"userVarName\":null,\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.completeTask(completeTaskVo);
