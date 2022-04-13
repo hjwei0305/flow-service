@@ -296,7 +296,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                                 throw new FlowException(ContextUtil.getMessage("10387", nodeName, "单执行人节点返回了多执行人为" + userNames.toString() + "！"));
                             }
                         } else {
-                            if ("SingleSign".equalsIgnoreCase(nodeType)) {//单签任务默认全选
+                            if ("SingleSign".equalsIgnoreCase(nodeType) || type.contains("EndEvent")) {//单签任务和结束抄送默认全选
                                 String userIds = "";
                                 for (int i = 0; i < executors.size(); i++) {
                                     if (i == 0) {
