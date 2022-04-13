@@ -610,7 +610,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                 String lookUrl = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
                 String webBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                 String webBaseAddress = Constants.getFlowPropertiesByKey(webBaseAddressConfig);
-                String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress, lookUrl);
+                String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress, lookUrl) + "?id=" + flowTask.getFlowInstance().getBusinessId();
                 return ResponseData.operationSuccessWithData(lookUrlXiangDui);
             } else {
                 FlowHistory flowHistory = flowHistoryDao.findByProperty("oldTaskId", taskId);
@@ -618,7 +618,7 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
                     String lookUrl = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getLookUrl();
                     String webBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getWebBaseAddress();
                     String webBaseAddress = Constants.getFlowPropertiesByKey(webBaseAddressConfig);
-                    String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress, lookUrl);
+                    String lookUrlXiangDui = PageUrlUtil.buildUrl(webBaseAddress, lookUrl) + "?id=" + flowHistory.getFlowInstance().getBusinessId();
                     return ResponseData.operationSuccessWithData(lookUrlXiangDui);
                 } else {
                     return ResponseData.operationFailure("10427");
