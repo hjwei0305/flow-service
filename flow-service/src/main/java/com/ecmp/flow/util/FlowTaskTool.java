@@ -1694,6 +1694,7 @@ public class FlowTaskTool {
         if (!CollectionUtils.isEmpty(taskList)) {
             Definition definition = flowCommonUtil.flowDefinition(flowInstance.getFlowDefVersion());
             String flowName = definition.getProcess().getName();
+            List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
             for (Task task : taskList) {
                 String actTaskDefKey = task.getTaskDefinitionKey();
                 JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(actTaskDefKey);
@@ -1736,10 +1737,23 @@ public class FlowTaskTool {
                         flowTask.setPriority(0);
                         flowTask.setFlowInstance(flowInstance);
                         taskPropertityInit(flowTask, null, currentNode, null);
+                        needAddList.add(flowTask);
                         flowTaskDao.save(flowTask);
                     }
                 }
             }
+
+            //是否推送信息到baisc
+            Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+            if (pushBasic) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        flowTaskService.pushToBasic(needAddList, null, null, null);
+                    }
+                }).start();
+            }
+
         }
 
     }
