@@ -613,6 +613,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     }
 
                     if (f.getUserIds() == null) {
+                        LogUtil.bizLog("单据的ID="+businessId+",待办ID="+taskId+",选择了工作池任务:"+f.getNodeId());
                         selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
                         selectedNodesMap.put(f.getNodeId(), f.getNodeId());
                     } else {
