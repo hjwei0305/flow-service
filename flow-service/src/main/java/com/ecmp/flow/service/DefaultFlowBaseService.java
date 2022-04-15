@@ -9,7 +9,9 @@ import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.*;
+import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
 import com.ecmp.vo.OperateResult;
@@ -20,6 +22,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,19 +30,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能：
- * 流程的默认服务类（原FlowBaseController的方法）
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2018/11/30            何灿坤                      新建
- * <p/>
- * *************************************************************************************************
- */
+
 
 @Service
 public class DefaultFlowBaseService implements IDefaultFlowBaseService {
@@ -62,6 +53,10 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private FlowDefVersionDao flowDefVersionDao;
     @Autowired
     private BusinessModelDao businessModelDao;
+    @Autowired
+    private WorkPageUrlDao workPageUrlDao;
+    @Autowired
+    private FlowTaskDao flowTaskDao;
 
 
     /**
@@ -368,14 +363,14 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         if (CollectionUtils.isEmpty(flowStartResultVO.getNodeInfoList())) {
             return ResponseData.operationFailure("10074");
         }
-        if(BooleanUtils.isTrue(flowStartResultVO.getSolidifyFlow()) && BooleanUtils.isTrue(flowStartResultVO.getCheckStartResult())){ //启动指定执行人
+        if (BooleanUtils.isTrue(flowStartResultVO.getSolidifyFlow()) && BooleanUtils.isTrue(flowStartResultVO.getCheckStartResult())) { //启动指定执行人
             SolidifyStartFlowVo vo = new SolidifyStartFlowVo();
             vo.setBusinessId(startParam.getBusinessKey());
             vo.setBusinessModelCode(startParam.getBusinessModelCode());
             vo.setFlowDefinationId(flowStartResultVO.getFlowDefinationId());
-            try{
-               return   this.solidifyCheckAndSetAndStart(vo);
-            }catch (Exception e){
+            try {
+                return this.solidifyCheckAndSetAndStart(vo);
+            } catch (Exception e) {
                 return ResponseData.operationFailure("10068", e.getMessage());
             }
         }
@@ -613,7 +608,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
                     }
 
                     if (f.getUserIds() == null) {
-                        LogUtil.bizLog("单据的ID="+businessId+",待办ID="+taskId+",选择了工作池任务:"+f.getNodeId());
+                        LogUtil.bizLog("单据的ID=" + businessId + ",待办ID=" + taskId + ",选择了工作池任务:" + f.getNodeId());
                         selectedNodesUserMap.put(f.getNodeId(), new ArrayList<>());
                         selectedNodesMap.put(f.getNodeId(), f.getNodeId());
                     } else {
@@ -891,4 +886,148 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
         return ResponseData.operationFailure("10081");
     }
+
+
+    /**
+     * 检查流程结束后是否应该抄送
+     */
+    public void checkEndAndCopy(FlowInstance flowInstance, String endCode) {
+        String businessId = flowInstance.getBusinessId();
+        String businessCode = flowInstance.getBusinessCode();
+        try {
+            ResponseData res = flowSolidifyExecutorService.getExecuteInfoByBusinessId(businessId);
+            if (res.getSuccess()) {
+                List<NodeAndExecutes> list = (List<NodeAndExecutes>) res.getData();
+                NodeAndExecutes nodeAndExecutes = list.stream().filter(a -> a.getFlowNode().getId().equals(endCode)).findFirst().orElse(null);
+                if (nodeAndExecutes != null) { //固化启动的时候配置了抄送人
+                    FlowNodeVO flowNodeVO = nodeAndExecutes.getFlowNode();
+                    FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+                    String flowDefJson = flowDefVersion.getDefJson();
+                    JSONObject defObj = JSONObject.fromObject(flowDefJson);
+                    Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                    JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(flowNodeVO.getId());
+                    JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.NORMAL);
+
+                    JSONObject pushUEL = normal.getJSONObject("pushUEL");
+                    BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+
+                    if (pushUEL != null && !pushUEL.isEmpty()) {
+                        String groovyUel = pushUEL.getString("groovyUel");
+                        String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
+                                groovyUel.lastIndexOf("}"));
+                        Boolean boo = ExpressionUtil.result(businessModel, businessId, conditonFinal);
+                        if (BooleanUtils.isNotTrue(boo)) {
+                            if (boo == null) {
+                                LogUtil.error("结束并抄送验证表达式失败！表达式：【" + conditonFinal + "】【单据ID=" + businessId + ",单据CODE=" + businessCode + "】");
+                            }
+                            return;
+                        }
+                    }
+
+                    List<Executor> executorList = nodeAndExecutes.getExecutorList();
+                    //虚拟待办形式
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pushToTask(flowInstance, executorList, endCode);
+                        }
+                    }).start();
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error("结束并抄送失败:" + e.getMessage() + "【单据ID=" + businessId + ",单据CODE=" + businessCode + "】", e);
+        }
+    }
+
+
+    /**
+     * 抄送待办
+     *
+     * @param flowInstance 流程实例
+     * @param pushUserList 需要推送的人员集合
+     */
+    private void pushToTask(FlowInstance flowInstance, List<Executor> pushUserList, String endCode) {
+        FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+        String flowDefJson = flowDefVersion.getDefJson();
+        JSONObject defObj = JSONObject.fromObject(flowDefJson);
+        Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+        net.sf.json.JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(endCode);
+
+        FlowTask virtualTask = new FlowTask();
+        virtualTask.setTaskStatus(TaskStatus.VIRTUAL.toString());//抄送
+        virtualTask.setActType("virtual"); //引擎任务类型
+        virtualTask.setActTaskId(null);//流程引擎ID（直接用虚拟单词代替）
+        virtualTask.setTaskName(currentNode.getString("name")+"(抄送)"); //结束节点名称
+        virtualTask.setActTaskDefKey(endCode + "-virtual");//节点代码
+        virtualTask.setDepict("待办抄送"); //描述
+        virtualTask.setTaskJsonDef(currentNode.toString());//当前节点json信息
+        JSONObject normalInfo = currentNode.getJSONObject("nodeConfig").getJSONObject("normal");
+        String workPageUrlId = (String) normalInfo.get("id");
+        WorkPageUrl workPageUrl = workPageUrlDao.findOne(workPageUrlId);
+        if (workPageUrl == null) {
+            String errorName = normalInfo.get("name") != null ? (String) normalInfo.get("name") : "";
+            String workPageName = normalInfo.get("workPageName") != null ? (String) normalInfo.get("workPageName") : "";
+            LogUtil.error("结束后抄送失败：节点【" + errorName + "】配置的抄送界面【" + workPageName + "】不存在！");
+        }
+        virtualTask.setWorkPageUrl(workPageUrl); //抄送的表单页面
+        virtualTask.setFlowInstance(flowInstance);
+        virtualTask.setFlowName(flowInstance.getFlowName()); //流程名称
+        virtualTask.setVersion(0);
+        virtualTask.setProxyStatus(null);//代理状态
+        virtualTask.setFlowDefinitionId(flowDefVersion.getFlowDefination().getId());//流程定义ID
+        virtualTask.setActClaimTime(null);//签收时间
+        virtualTask.setPriority(0);//优先级
+        virtualTask.setActDueDate(null);//流程引擎的实际触发时间
+        virtualTask.setActTaskKey(null);//流程引擎的实际任务定义KEY
+        virtualTask.setPreId(null);//记录上一个流程历史任务的id
+        virtualTask.setCanReject(false);//是否允许驳回
+        virtualTask.setCanSuspension(false);//是否允许流程终止
+        virtualTask.setExecuteTime(null);//额定工时
+        virtualTask.setCanBatchApproval(false);//是否批量
+        virtualTask.setCanMobile(false);//能否移动端
+        virtualTask.setTrustState(null);//转办委托状态
+        virtualTask.setTrustOwnerTaskId(null);//被委托任务的ID
+        virtualTask.setAllowAddSign(false);//允许加签
+        virtualTask.setAllowSubtractSign(false);//允许减签
+        virtualTask.setTenantCode(ContextUtil.getTenantCode());//租户
+        virtualTask.setTiming(0.00);//任务额定工时
+        List<FlowTask> needAddList = new ArrayList<>(); //需要新增的待办
+        //是否推送信息到baisc
+        Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+        for (Executor executor : pushUserList) {
+            FlowTask bean = new FlowTask();
+            BeanUtils.copyProperties(virtualTask, bean);
+            bean.setExecutorId(executor.getId());
+            bean.setExecutorAccount(executor.getCode());
+            bean.setExecutorName(executor.getName());
+            bean.setExecutorOrgId(executor.getOrganizationId());
+            bean.setExecutorOrgCode(executor.getOrganizationCode());
+            bean.setExecutorOrgName(executor.getOrganizationName());
+            bean.setOwnerId(executor.getId());
+            bean.setOwnerAccount(executor.getCode());
+            bean.setOwnerName(executor.getName());
+            bean.setOwnerOrgId(executor.getOrganizationId());
+            bean.setOwnerOrgCode(executor.getOrganizationCode());
+            bean.setOwnerOrgName(executor.getOrganizationName());
+            flowTaskDao.save(bean);
+            if (pushBasic) {
+                needAddList.add(bean);
+            }
+        }
+        //需要异步推送待办到baisc
+        if (pushBasic && !CollectionUtils.isEmpty(needAddList)) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    flowTaskService.pushToBasic(needAddList, null, null, null);
+                }
+            }).start();
+        }
+    }
+
+
+
+
+
+
 }

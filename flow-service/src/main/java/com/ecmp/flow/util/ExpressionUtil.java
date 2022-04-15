@@ -269,11 +269,10 @@ public class ExpressionUtil {
      * @param businessId    业务ID
      * @return
      */
-    public static boolean result(BusinessModel businessModel, String businessId, String expression) {
+    public static Boolean result(BusinessModel businessModel, String businessId, String expression) {
         //获取条件属性值
         Map<String, Object> pvs = getPropertiesValuesMap(businessModel, businessId, true);
-        boolean result = ConditionUtil.groovyTest(expression, pvs);
-        return result;
+        return ConditionUtil.groovyTest(expression, pvs);
     }
 
 

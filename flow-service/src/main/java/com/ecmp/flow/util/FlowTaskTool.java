@@ -1781,7 +1781,7 @@ public class FlowTaskTool {
             if (StringUtils.isNotEmpty(content)) {
                 virtualTask.setDepict(content); //描述（通知里面写的内容）
             } else {
-                virtualTask.setDepict("虚拟待办通知"); //描述（通知里面写的内容）
+                virtualTask.setDepict("待办通知"); //描述（通知里面写的内容）
             }
             virtualTask.setTaskJsonDef(currentNode.toString());//当前节点json信息
 

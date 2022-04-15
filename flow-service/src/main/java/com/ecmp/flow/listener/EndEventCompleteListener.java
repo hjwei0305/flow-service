@@ -6,6 +6,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.service.DefaultFlowBaseService;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
@@ -25,18 +26,7 @@ import java.util.Date;
 import java.util.Map;
 
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能： 启动完成监听器
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/5/24 13:40      谭军(tanjun)                    新建
- * <p/>
- * *************************************************************************************************
- */
+
 public class EndEventCompleteListener implements ExecutionListener {
 
     public EndEventCompleteListener() {
@@ -52,6 +42,9 @@ public class EndEventCompleteListener implements ExecutionListener {
 
     @Autowired
     private FlowListenerTool flowListenerTool;
+
+    @Autowired
+    private DefaultFlowBaseService defaultFlowBaseService;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void notify(DelegateExecution delegateTask) {
@@ -76,6 +69,7 @@ public class EndEventCompleteListener implements ExecutionListener {
             throw new FlowException(ContextUtil.getMessage("10002"));//流程实例不存在
         } else {
             if (processInstance.isEnded()) {//针对启动时只有服务任务这种情况（即启动就结束）
+                Boolean solidifyFlow = flowInstance.getFlowDefVersion().getSolidifyFlow();
                 BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
                 FlowOperateResult callBeforeEndResult = flowListenerTool.callBeforeEnd(processInstance.getBusinessKey(), flowInstance.getFlowDefVersion(), endSign, variables);
                 if (callBeforeEndResult != null && !callBeforeEndResult.isSuccess()) {
@@ -116,6 +110,11 @@ public class EndEventCompleteListener implements ExecutionListener {
                     //轮询修改状态为：流程中
                     ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
                     throw new FlowException(callEndResult.getMessage());
+                }else{
+                    //固化流程的结束并抄送
+                    if (solidifyFlow) {
+                        defaultFlowBaseService.checkEndAndCopy(flowInstance, endCode);
+                    }
                 }
             }
         }
