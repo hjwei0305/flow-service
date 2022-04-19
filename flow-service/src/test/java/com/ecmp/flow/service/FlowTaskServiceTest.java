@@ -254,9 +254,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void getSelectedNodesInfo() {
-        String taskId = "ED917B85-90A9-11EC-B627-0242C0A84609";
-//        String taskId = "A38336AF-90AD-11EC-B627-0242C0A84609";
-
+        String taskId = "C325ABCA-BC89-11EC-B9FB-0242C0A84609";
         String apprvod = null;
         try {
             OperateResultWithData res = service.getSelectedNodesInfo(taskId, apprvod, null, false);

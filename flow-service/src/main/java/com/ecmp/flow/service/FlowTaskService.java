@@ -1368,8 +1368,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
                     UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
                     if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
-                        nodeInfo.setType("EndEvent");
-                        continue;
+                        //非固化流程配置了结束抄送
+                        if(solidifyFlow || CollectionUtils.isEmpty(executor)){
+                            nodeInfo.setType("EndEvent");
+                            continue;
+                        }else{
+                            nodeInfo.setType("EndEvent");
+                            nodeInfo.setUserVarName(userTaskTemp.getId() + "_end");
+                            nodeInfo.setUiType("checkbox");
+                        }
                     }
                     if (StringUtils.isEmpty(nodeInfo.getUserVarName())) {
                         if ("Normal".equalsIgnoreCase(userTaskTemp.getNodeType())) {
@@ -2598,6 +2605,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
         if (!CollectionUtils.isEmpty(nodeInfoList)) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
+                //非固化流程配置了结束抄送
+               if(!solidifyFlow && nodeInfoList.get(0).getExecutorSet()!=null){
+                   return OperateResultWithData.operationSuccessWithData(nodeInfoList);
+               }
                 return OperateResultWithData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 return OperateResultWithData.operationSuccessWithData("CounterSignNotEnd");
