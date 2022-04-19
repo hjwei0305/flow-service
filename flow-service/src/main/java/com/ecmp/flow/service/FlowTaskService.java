@@ -1369,10 +1369,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
                     if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
                         //非固化流程配置了结束抄送
-                        if(solidifyFlow || CollectionUtils.isEmpty(executor)){
+                        if (solidifyFlow || CollectionUtils.isEmpty(executor)) {
                             nodeInfo.setType("EndEvent");
                             continue;
-                        }else{
+                        } else {
                             nodeInfo.setType("EndEvent");
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_end");
                             nodeInfo.setUiType("checkbox");
@@ -2606,9 +2606,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (!CollectionUtils.isEmpty(nodeInfoList)) {
             if (nodeInfoList.size() == 1 && "EndEvent".equalsIgnoreCase(nodeInfoList.get(0).getType())) {//只存在结束节点
                 //非固化流程配置了结束抄送
-               if(!solidifyFlow && nodeInfoList.get(0).getExecutorSet()!=null){
-                   return OperateResultWithData.operationSuccessWithData(nodeInfoList);
-               }
+                if (!solidifyFlow && (nodeInfoList.get(0).getExecutorSet() != null || "AnyOne".equals(nodeInfoList.get(0).getUiUserType()))) {
+                    return OperateResultWithData.operationSuccessWithData(nodeInfoList);
+                }
                 return OperateResultWithData.operationSuccessWithData("EndEvent");
             } else if (nodeInfoList.size() == 1 && "CounterSignNotEnd".equalsIgnoreCase(nodeInfoList.get(0).getType())) {
                 return OperateResultWithData.operationSuccessWithData("CounterSignNotEnd");
