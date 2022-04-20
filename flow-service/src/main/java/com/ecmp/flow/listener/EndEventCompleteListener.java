@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.Map;
 
 
-
 public class EndEventCompleteListener implements ExecutionListener {
 
     public EndEventCompleteListener() {
@@ -96,6 +95,7 @@ public class EndEventCompleteListener implements ExecutionListener {
                     }
                 }
 
+
                 String businessId = delegateTask.getProcessBusinessKey();
                 FlowOperateResult callEndResult;
                 try {
@@ -110,10 +110,12 @@ public class EndEventCompleteListener implements ExecutionListener {
                     //轮询修改状态为：流程中
                     ExpressionUtil.pollingResetState(businessModel, flowInstance.getBusinessId(), FlowStatus.INPROCESS);
                     throw new FlowException(callEndResult.getMessage());
-                }else{
-                    //固化流程的结束并抄送
+                } else {
+                    //结束并抄送
                     if (solidifyFlow) {
-                        defaultFlowBaseService.checkEndAndCopy(flowInstance, endCode);
+                        defaultFlowBaseService.checkSolidifyEndAndCopy(flowInstance, endCode);
+                    } else {
+                        defaultFlowBaseService.checkNoSolidifyEndAndCopy(flowInstance, endCode, variables);
                     }
                 }
             }

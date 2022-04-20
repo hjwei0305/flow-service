@@ -8,6 +8,7 @@ import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
+import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.*;
@@ -29,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 
 @Service
@@ -57,6 +57,8 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
     private WorkPageUrlDao workPageUrlDao;
     @Autowired
     private FlowTaskDao flowTaskDao;
+    @Autowired
+    private FlowCommonUtil flowCommonUtil;
 
 
     /**
@@ -889,9 +891,9 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
 
 
     /**
-     * 检查流程结束后是否应该抄送
+     * 检查固化流程结束后是否应该抄送
      */
-    public void checkEndAndCopy(FlowInstance flowInstance, String endCode) {
+    public void checkSolidifyEndAndCopy(FlowInstance flowInstance, String endCode) {
         String businessId = flowInstance.getBusinessId();
         String businessCode = flowInstance.getBusinessCode();
         try {
@@ -939,6 +941,50 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         }
     }
 
+    //检查非固化结束抄送
+    public void checkNoSolidifyEndAndCopy(FlowInstance flowInstance, String endCode, Map<String, Object> variables) {
+        String businessId = flowInstance.getBusinessId();
+        String businessCode = flowInstance.getBusinessCode();
+        try {
+            String nodeStr = endCode + "_end";
+            if (variables.get(nodeStr) != null) {
+                String userIds = (String) variables.get(nodeStr);
+                String[] idArray = userIds.split(",");
+                List<String> userList = Arrays.asList(idArray);
+                List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
+                FlowDefVersion flowDefVersion = flowInstance.getFlowDefVersion();
+                String flowDefJson = flowDefVersion.getDefJson();
+                JSONObject defObj = JSONObject.fromObject(flowDefJson);
+                Definition definition = (Definition) JSONObject.toBean(defObj, Definition.class);
+                JSONObject currentNode = definition.getProcess().getNodes().getJSONObject(endCode);
+                JSONObject normal = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.NORMAL);
+                JSONObject pushUEL = normal.getJSONObject("pushUEL");
+                BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+                if (pushUEL != null && !pushUEL.isEmpty()) {
+                    String groovyUel = pushUEL.getString("groovyUel");
+                    String conditonFinal = groovyUel.substring(groovyUel.indexOf("#{") + 2,
+                            groovyUel.lastIndexOf("}"));
+                    Boolean boo = ExpressionUtil.result(businessModel, businessId, conditonFinal);
+                    if (BooleanUtils.isNotTrue(boo)) {
+                        if (boo == null) {
+                            LogUtil.error("结束抄送验证表达式失败！表达式：【" + conditonFinal + "】【单据ID=" + businessId + ",单据CODE=" + businessCode + "】");
+                        }
+                        return;
+                    }
+                }
+                //虚拟待办形式
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pushToTask(flowInstance, executorList, endCode);
+                    }
+                }).start();
+            }
+        } catch (Exception e) {
+            LogUtil.error("结束抄送失败:" + e.getMessage() + "【单据ID=" + businessId + ",单据CODE=" + businessCode + "】", e);
+        }
+    }
+
 
     /**
      * 抄送待办
@@ -957,7 +1003,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
         virtualTask.setTaskStatus(TaskStatus.VIRTUAL.toString());//抄送
         virtualTask.setActType("virtual"); //引擎任务类型
         virtualTask.setActTaskId(null);//流程引擎ID（直接用虚拟单词代替）
-        virtualTask.setTaskName(currentNode.getString("name")+"(抄送)"); //结束节点名称
+        virtualTask.setTaskName(currentNode.getString("name") + "(抄送)"); //结束节点名称
         virtualTask.setActTaskDefKey(endCode + "-virtual");//节点代码
         virtualTask.setDepict("待办抄送"); //描述
         virtualTask.setTaskJsonDef(currentNode.toString());//当前节点json信息
@@ -1024,10 +1070,6 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             }).start();
         }
     }
-
-
-
-
 
 
 }

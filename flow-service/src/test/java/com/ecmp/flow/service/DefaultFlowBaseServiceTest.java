@@ -119,13 +119,13 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     public void complete111() {
         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
         completeTaskVo.setApproved("true");
-        completeTaskVo.setBusinessId("1218371E-B6E7-11EC-A771-0242C0A84609");
+        completeTaskVo.setBusinessId("9D30A32B-BFBC-11EC-81DE-0242C0A84609");
         completeTaskVo.setEndEventId("false");
         completeTaskVo.setLoadOverTime(null);
         completeTaskVo.setManualSelected(false);
         completeTaskVo.setOpinion("1111");
-        completeTaskVo.setTaskId("EB4C53BB-B705-11EC-A771-0242C0A84609");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"UserTask_4\",\"flowTaskType\":\"common\",\"userIds\":\"B54E8964-D14D-11E8-A64B-0242C0A8441B\",\"userVarName\":\"UserTask_4_Normal\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setTaskId("AC797337-BFBC-11EC-81DE-0242C0A84609");
+        completeTaskVo.setTaskList("[{\"nodeId\":\"EndEvent_4\",\"flowTaskType\":\"common\",\"userIds\":\"7A406B37-823D-11EB-8686-0242C0A8461F,64BA6CFD-2FE8-11EC-A6FB-0242C0A8460C\",\"userVarName\":\"EndEvent_4_end\",\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
         ResponseData res = null;
         try {
             res = defaultFlowBaseService.completeTask(completeTaskVo);
@@ -143,14 +143,14 @@ public class DefaultFlowBaseServiceTest extends BaseContextTestCase {
     @Test
     public void complete() {
         CompleteTaskVo completeTaskVo = new CompleteTaskVo();
-        completeTaskVo.setApproved(null);
-        completeTaskVo.setBusinessId("2E6FC6D6-B942-11EC-863E-0242C0A84609");
-        completeTaskVo.setEndEventId("false");
+        completeTaskVo.setApproved("true");
+        completeTaskVo.setBusinessId("0B925DC9-C054-11EC-81DE-0242C0A84609");
+        completeTaskVo.setEndEventId("EndEvent_161");
         completeTaskVo.setLoadOverTime(null);
         completeTaskVo.setManualSelected(true);
         completeTaskVo.setOpinion("1111");
-        completeTaskVo.setTaskId("3FA522B7-BAFA-11EC-B81D-0242C0A84609");
-        completeTaskVo.setTaskList("[{\"nodeId\":\"PoolTask_17\",\"flowTaskType\":\"poolTask\",\"userIds\":null,\"userVarName\":null,\"callActivityPath\":null,\"instancyStatus\":false,\"solidifyFlow\":false}]");
+        completeTaskVo.setTaskId("20D68BE5-C054-11EC-81DE-0242C0A84609");
+        completeTaskVo.setTaskList("[]");
 
         ResponseData res = null;
         try {

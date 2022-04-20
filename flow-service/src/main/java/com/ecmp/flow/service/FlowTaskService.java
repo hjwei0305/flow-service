@@ -1376,7 +1376,9 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             nodeInfo.setType("EndEvent");
                             nodeInfo.setUserVarName(userTaskTemp.getId() + "_end");
                             nodeInfo.setUiType("checkbox");
+                            //兼容组件逻辑
                             nodeInfo.setFlowTaskType("common");
+                            nodeInfo.setAllowChooseInstancy(false);
                         }
                     }
                     if (StringUtils.isEmpty(nodeInfo.getUserVarName())) {
