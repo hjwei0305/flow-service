@@ -1809,7 +1809,13 @@ public class FlowTaskTool {
             virtualTask.setCanSuspension(false);//是否允许流程终止
             virtualTask.setExecuteTime(null);//额定工时
             virtualTask.setCanBatchApproval(false);//是否批量
-            virtualTask.setCanMobile(false);//能否移动端
+            //能否移动端
+            Boolean mustCommit = workPageUrl.getMustCommit();
+            if (mustCommit == null || !mustCommit) {
+                virtualTask.setCanMobile(true);
+            }else{
+                virtualTask.setCanMobile(false);
+            }
             virtualTask.setTrustState(null);//转办委托状态
             virtualTask.setTrustOwnerTaskId(null);//被委托任务的ID
             virtualTask.setAllowAddSign(false);//允许加签
