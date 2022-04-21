@@ -17,6 +17,7 @@ import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowCommonUtil;
 import com.ecmp.flow.util.FlowTaskTool;
+import com.ecmp.flow.util.TaskStatus;
 import com.ecmp.flow.vo.ConditionVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.util.JsonUtils;
@@ -271,6 +272,9 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                     }
                 }
 
+                if (TaskStatus.VIRTUAL.toString().equals(flowTask.getTaskStatus())) {  //通知或者抄送
+                    carbonCopyOrReport = true;
+                }
 
                 //节点是否配置了【处理后返回我审批】
                 if (normalInfo.has("allowJumpBack") && BooleanUtils.isTrue(normalInfo.getBoolean("allowJumpBack"))) {
