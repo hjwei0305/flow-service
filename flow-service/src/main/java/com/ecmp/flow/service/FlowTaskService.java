@@ -1367,7 +1367,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     }
 
                     UserTask userTaskTemp = (UserTask) JSONObject.toBean(currentNode, UserTask.class);
-                    if ("EndEvent".equalsIgnoreCase(userTaskTemp.getType())) {
+                    if (userTaskTemp.getType() != null && userTaskTemp.getType().contains("EndEvent")) {
                         //非固化流程配置了结束抄送
                         if (solidifyFlow || CollectionUtils.isEmpty(executor)) {
                             nodeInfo.setType("EndEvent");
