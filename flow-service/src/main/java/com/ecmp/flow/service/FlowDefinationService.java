@@ -124,9 +124,17 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Override
     public ResponseData listAllOrgs() {
-        List<Organization> result = flowCommonUtil.getBasicAllOrgs();
+        String tenantCode = ContextUtil.getTenantCode();
+        Object obj = redisTemplate.opsForValue().get(Constants.REDIS_KEY_PREFIX  + "getBasicAllOrgs:" + tenantCode);
+        List<Organization> result;
+        if (obj == null) {
+            result = flowCommonUtil.getBasicAllOrgs();
+        } else {
+            result = (List<Organization>) obj;
+        }
         return ResponseData.operationSuccessWithData(result);
     }
+
 
     @Override
     public ResponseData listAllOrgByPower() {
