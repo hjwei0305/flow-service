@@ -138,10 +138,25 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
 
     @Override
     public ResponseData listAllOrgByPower() {
-        List<Organization> result = flowCommonUtil.getBasicAllOrgByPower();
+        String tenantCode = ContextUtil.getTenantCode();
+        Object obj = redisTemplate.opsForValue().get(Constants.REDIS_KEY_PREFIX  + "getBasicAllOrgByPower:" + tenantCode);
+        List<Organization> result;
+        if(obj == null){
+            result = flowCommonUtil.getBasicAllOrgByPower();
+        }else{
+            result = (List<Organization>) obj;
+        }
         return ResponseData.operationSuccessWithData(result);
     }
 
+    @Override
+    public ResponseData refreshOrg() {
+        //刷新全部组织机构
+        flowCommonUtil.getBasicAllOrgs();
+        //刷新有权限的组织机构
+        List<Organization> result = flowCommonUtil.getBasicAllOrgByPower();
+        return ResponseData.operationSuccessWithData(result);
+    }
 
     @Override
     public ResponseData listAllUser(String organizationId) {

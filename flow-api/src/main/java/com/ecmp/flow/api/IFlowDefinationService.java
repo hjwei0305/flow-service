@@ -331,6 +331,13 @@ public interface IFlowDefinationService extends IBaseService<FlowDefination, Str
     ResponseData listAllOrgByPower();
 
 
+    @POST
+    @Path("refreshOrg")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "刷新组织机构缓存", notes = "刷新组织机构缓存")
+    ResponseData refreshOrg();
+
     /**
      * 根据组织机构的id获取员工(不包含冻结)
      *

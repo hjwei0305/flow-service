@@ -356,7 +356,7 @@ public class FlowCommonUtil implements Serializable {
                 try {
                     redisTemplate.opsForValue().set(Constants.REDIS_KEY_PREFIX + "getBasicAllOrgs:" + tenantCode, result.getData(), 60 * 60, TimeUnit.SECONDS);
                 } catch (Exception e) {
-                    LogUtil.error("保存组织机构到缓存失败：", e.getMessage(), e);
+                    LogUtil.error("保存全部组织机构列表到缓存失败：", e.getMessage(), e);
                 }
                 return result.getData();
             } else {
@@ -387,6 +387,12 @@ public class FlowCommonUtil implements Serializable {
             result = ApiClient.getEntityViaProxy(url, new GenericType<ResponseData<List<Organization>>>() {
             }, null);
             if (result.successful()) {
+                String tenantCode = ContextUtil.getTenantCode();
+                try {
+                    redisTemplate.opsForValue().set(Constants.REDIS_KEY_PREFIX + "getBasicAllOrgByPower:" + tenantCode, result.getData(), 60 * 60, TimeUnit.SECONDS);
+                } catch (Exception e) {
+                    LogUtil.error("保存有权限的组织机构列表到缓存失败：", e.getMessage(), e);
+                }
                 return result.getData();
             } else {
                 LogUtil.error("开始调用【获取所有有权限的组织机构树】，接口返回错误信息:{}，接口url={}，参数为空", result.getMessage(), url);
