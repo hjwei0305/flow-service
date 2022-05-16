@@ -132,10 +132,15 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
      * @param entity
      */
     public void setCommonInfo(TaskMakeOverPower entity) {
-        //设置授权人信息
-        entity.setUserId(ContextUtil.getUserId());
-        entity.setUserAccount(ContextUtil.getUserAccount());
-        entity.setUserName(ContextUtil.getUserName());
+
+        //管理员可以直接选择授权人
+        if(StringUtils.isEmpty(entity.getUserId())){
+            //设置授权人信息
+            entity.setUserId(ContextUtil.getUserId());
+            entity.setUserAccount(ContextUtil.getUserAccount());
+            entity.setUserName(ContextUtil.getUserName());
+        }
+
         //控制前台传空字符串的情况
         if (StringUtils.isEmpty(entity.getFlowTypeId())) {
             entity.setFlowTypeId(null);
