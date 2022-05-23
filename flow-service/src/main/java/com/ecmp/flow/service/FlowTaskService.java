@@ -1777,6 +1777,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             result.setAllowJumpBack(false);
         }
 
+        //节点是否配置了【允许任意退回】
+        if (normalInfo.has("allowReturn")) {
+            result.setAllowReturn(normalInfo.getBoolean("allowReturn"));
+        } else {
+            result.setAllowReturn(false);
+        }
+
         //如果节点配置了默认意见，就在请求头中返回
         if (normalInfo.has("defaultOpinion")) {
             result.setCurrentNodeDefaultOpinion(normalInfo.getString("defaultOpinion"));

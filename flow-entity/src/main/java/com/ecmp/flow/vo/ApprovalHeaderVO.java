@@ -131,6 +131,11 @@ public class ApprovalHeaderVO implements Serializable{
     private Boolean allowJumpBack;
 
     /**
+     * 当前节点是否配置了【允许任意退回】
+     */
+    private Boolean allowReturn;
+
+    /**
      * 流程名称
      */
     private String flowName;
@@ -376,5 +381,13 @@ public class ApprovalHeaderVO implements Serializable{
 
     public void setAllowJumpBack(Boolean allowJumpBack) {
         this.allowJumpBack = allowJumpBack;
+    }
+
+    public Boolean getAllowReturn() {
+        return allowReturn;
+    }
+
+    public void setAllowReturn(Boolean allowReturn) {
+        this.allowReturn = allowReturn;
     }
 }
