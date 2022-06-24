@@ -9,10 +9,7 @@ import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowTaskService;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.ServiceCallUtil;
-import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -55,6 +52,9 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
+
+    @Autowired
+    private FlowTaskTool flowTaskTool;
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
@@ -106,10 +106,8 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                     flowTask.setCanSuspension(canSuspension);
 
 
-                    //选择下一步执行人，默认选择第一个，会签、串、并行选择全部
-                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-                    FlowTaskService flowTaskService = (FlowTaskService) applicationContext.getBean("flowTaskService");
-                    List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+                    //选择下一步可能的执行子流程路径
+                    List<NodeInfo> nodeInfoList = flowTaskTool.findNextNodesWithCondition(flowTask, null, null);
                     List<String> paths = new ArrayList<>();
                     if (!CollectionUtils.isEmpty(nodeInfoList)) {
                         for (NodeInfo nodeInfo : nodeInfoList) {
@@ -131,6 +129,8 @@ public class ReceiveTaskBeforeListener implements org.activiti.engine.delegate.J
                         callMessage = e.getMessage();
                     }
                     if (flowOperateResult == null || !flowOperateResult.isSuccess()) {
+                        ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+                        FlowTaskService flowTaskService = (FlowTaskService) applicationContext.getBean("flowTaskService");
                         List<FlowTask> flowTaskList = flowTaskService.findByInstanceIdNoVirtual(flowInstance.getId());
                         List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 

@@ -8,10 +8,7 @@ import com.ecmp.flow.dao.FlowHistoryDao;
 import com.ecmp.flow.dao.FlowInstanceDao;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.service.FlowTaskService;
-import com.ecmp.flow.util.ExpressionUtil;
-import com.ecmp.flow.util.FlowException;
-import com.ecmp.flow.util.ServiceCallUtil;
-import com.ecmp.flow.util.TaskStatus;
+import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.FlowOperateResult;
 import com.ecmp.flow.vo.NodeInfo;
 import com.ecmp.flow.vo.bpmn.Definition;
@@ -51,6 +48,9 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
 
     @Autowired
     private RuntimeService runtimeService;
+
+    @Autowired
+    private FlowTaskTool flowTaskTool;
 
     @Override
     public void execute(DelegateExecution delegateTask) throws Exception {
@@ -101,9 +101,7 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 flowTask.setTaskStatus(TaskStatus.INIT.toString());
 
                 //选择下一步可能的执行子流程路径
-                ApplicationContext applicationContext = ContextUtil.getApplicationContext();
-                FlowTaskService flowTaskService = (FlowTaskService) applicationContext.getBean("flowTaskService");
-                List<NodeInfo> nodeInfoList = flowTaskService.findNexNodesWithUserSet(flowTask);
+                List<NodeInfo> nodeInfoList = flowTaskTool.findNextNodesWithCondition(flowTask, null, null);
                 List<String> paths = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(nodeInfoList)) {
                     for (NodeInfo nodeInfo : nodeInfoList) {
@@ -129,6 +127,8 @@ public class PoolTaskBeforeListener implements org.activiti.engine.delegate.Java
                 }
 
                 if (flowOperateResult == null || !flowOperateResult.isSuccess()) {
+                    ApplicationContext applicationContext = ContextUtil.getApplicationContext();
+                    FlowTaskService flowTaskService = (FlowTaskService) applicationContext.getBean("flowTaskService");
                     List<FlowTask> flowTaskList = flowTaskService.findByInstanceIdNoVirtual(flowInstance.getId());
                     List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceIdNoVirtual(flowInstance.getId());
 
