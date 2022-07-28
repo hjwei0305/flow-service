@@ -91,10 +91,10 @@ public class FlowIntegrateService implements IFlowIntegrateService {
             selectedNodesUserMap.put(nodeInfo.getId(), new ArrayList<>());
         } else {
             // 使用默认执行人
-            Set<Executor> executors = nodeInfo.getExecutorSet();
+            List<Executor> executors = nodeInfo.getExecutorSet();
             if (!CollectionUtils.isEmpty(executors)) {
                 String  uiType  =  nodeInfo.getUiType();
-                List<String> userList = new ArrayList<String>();
+                List<String> userList = new ArrayList<>();
                 if(uiType.equalsIgnoreCase("checkbox")){
                     for(Executor  executor:executors){
                         userList.add(executor.getId());

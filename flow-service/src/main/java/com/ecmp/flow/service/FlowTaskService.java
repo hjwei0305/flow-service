@@ -1313,7 +1313,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         executor.setName("系统自动");
                         executor.setCode(Constants.ADMIN);
                         executor.setOrganizationName("系统自动执行的任务");
-                        Set<Executor> employeeSet = new HashSet<>();
+                        List<Executor> employeeSet = new ArrayList<>();
                         employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
@@ -1327,7 +1327,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         executor.setName("系统触发");
                         executor.setCode(Constants.ADMIN);
                         executor.setOrganizationName("等待系统触发后执行");
-                        Set<Executor> employeeSet = new HashSet<>();
+                        List<Executor> employeeSet = new ArrayList<>();
                         employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
@@ -1336,7 +1336,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoListSons = flowTaskTool.getCallActivityNodeInfo(flowTask, nodeInfo.getId(), nodeInfoListSons);
                     nodeInfoSonMap.put(nodeInfo, nodeInfoListSons);
                 } else {
-                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    List<Executor> executorSet = nodeInfo.getExecutorSet();
                     if (!CollectionUtils.isEmpty(executorSet)) {
                         continue;
                     }
@@ -1394,7 +1394,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 FlowHistory flowHistory = flowHistoryDao.findOne(flowTask.getPreId());
                                 String executorId = flowHistory.getExecutorId();
                                 Executor exe = flowCommonUtil.getBasicUserExecutor(executorId);
-                                Set<Executor> employeeSet = new HashSet<>();
+                                List<Executor> employeeSet = new ArrayList<>();
                                 employeeSet.add(exe);
                                 nodeInfo.setExecutorSet(employeeSet);
                                 return nodeInfoList;
@@ -1458,8 +1458,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                             if (!CollectionUtils.isEmpty(employees)) {
-                                Set<Executor> employeeSet = new HashSet<>(employees);
-                                nodeInfo.setExecutorSet(employeeSet);
+                                nodeInfo.setExecutorSet(employees);
                             }
                         } else if (!CollectionUtils.isEmpty(executorList) && executorList.size() > 1) {
                             List<Executor> employees;
@@ -1529,8 +1528,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                             if (!CollectionUtils.isEmpty(employees)) {
-                                Set<Executor> employeeSet = new HashSet<>(employees);
-                                nodeInfo.setExecutorSet(employeeSet);
+                                nodeInfo.setExecutorSet(employees);
                             }
                         }
                     } else {
@@ -1591,7 +1589,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     //通过用户id获取用户信息
                     Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
                     if (executor != null) {//服务任务默认选择当前操作人
-                        Set<Executor> employeeSet = new HashSet<Executor>();
+                        List<Executor> employeeSet = new ArrayList<>();
                         employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
@@ -1603,7 +1601,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     //通过用户id获取用户信息
                     Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
                     if (executor != null) {//接收任务默认选择当前操作人
-                        Set<Executor> employeeSet = new HashSet<Executor>();
+                        List<Executor> employeeSet = new ArrayList<>();
                         employeeSet.add(executor);
                         nodeInfo.setExecutorSet(employeeSet);
                     }
@@ -1612,7 +1610,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     nodeInfoListSons = flowTaskTool.getCallActivityNodeInfo(flowTask, nodeInfo.getId(), nodeInfoListSons);
                     nodeInfoSonMap.put(nodeInfo, nodeInfoListSons);
                 } else {
-                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    List<Executor> executorSet = nodeInfo.getExecutorSet();
                     if (!CollectionUtils.isEmpty(executorSet)) {
                         continue;
                     }
@@ -1645,7 +1643,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         String userId = ContextUtil.getSessionUser().getUserId();
                         Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
                         if (executor != null) {
-                            Set<Executor> employeeSet = new HashSet<Executor>();
+                            List<Executor> employeeSet = new ArrayList<>();
                             employeeSet.add(executor);
                             nodeInfo.setExecutorSet(employeeSet);
                         }
@@ -1661,8 +1659,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             List<String> idList = Arrays.asList(idArray);
                             List<Executor> list = flowCommonUtil.getBasicUserExecutors(idList);
                             if (!CollectionUtils.isEmpty(list)) {
-                                Set result = new HashSet(list);
-                                nodeInfo.setExecutorSet(result);
+                                nodeInfo.setExecutorSet(list);
                             }
                         }
                     }
@@ -2677,7 +2674,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     if (nodeInfoList.size() == 1) {
                         NodeInfo nodeInfo = nodeInfoList.get(0);
                         String flowDefVersionId = nodeInfo.getFlowDefVersionId();
-                        Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                        List<Executor> executorSet = nodeInfo.getExecutorSet();
                         List<NodeGroupInfo> tempNodeGroupInfoList;
                         String mapKey;
                         if (!CollectionUtils.isEmpty(executorSet)) {
@@ -2711,7 +2708,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             if (StringUtils.isEmpty(mapKey)) {
                                 mapKey = flowDefVersionId;
                             }
-                            Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                            List<Executor> executorSet = nodeInfo.getExecutorSet();
                             if (!CollectionUtils.isEmpty(executorSet)) {
                                 mapKey += nodeInfo.getId() + executorSet.size() + executorSet.iterator().next().getId();
                             } else {
@@ -4442,7 +4439,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 || flowTaskType.equalsIgnoreCase("CounterSign")
                                 || flowTaskType.equalsIgnoreCase("ParallelTask")
                                 || flowTaskType.equalsIgnoreCase("SerialTask")) { //单签、会签、并行、串行
-                            Set<Executor> set = nodeInfo.getExecutorSet();
+                            List<Executor> set = nodeInfo.getExecutorSet();
                             String userIds = "";
                             if (!CollectionUtils.isEmpty(set)) {
                                 for (Executor executor : set) {
@@ -4458,7 +4455,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         } else if (flowTaskType.equalsIgnoreCase("common")
                                 || flowTaskType.equalsIgnoreCase("approve")) { //普通任务、审批任务
-                            Set<Executor> set = nodeInfo.getExecutorSet();
+                            List<Executor> set = nodeInfo.getExecutorSet();
                             if (!CollectionUtils.isEmpty(set)) {
                                 taskWebVO.setUserIds(set.iterator().next().getId());
                             }
@@ -4937,7 +4934,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 if (solidi) {
                                     taskWebVO.setUserIds("");
                                 } else {
-                                    Set<Executor> set = nodeInfo.getExecutorSet();
+                                    List<Executor> set = nodeInfo.getExecutorSet();
                                     String userIds = "";
                                     for (Executor executor : set) {
                                         if (StringUtils.isEmpty(userIds)) {

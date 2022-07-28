@@ -75,7 +75,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         String[] idArray = userIds.split(",");
                         List<String> userList = Arrays.asList(idArray);
                         List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
-                        nodeInfo.setExecutorSet(new HashSet<>(executorList));
+                        nodeInfo.setExecutorSet(executorList);
                     }
                 });
             }

@@ -31,7 +31,7 @@ public class NodeGroupInfo implements Serializable{
     private String uiType;//radiobox\checkbox\readOnly
     private String flowTaskType;//自定义任务类型,common(普通),单签(singleSign),审批任务(approve),会签(CounterSign),(网关)gateWay，服务任务（ServiceTask）
 	private String uiUserType;//流程设计器定义的用户选择类型，StartUser、Position、PositionType、SelfDefinition、AnyOne、PositionAndOrg、PositionAndOrgAndSelfDefinition、PositionTypeAndOrg
-	private Set<Executor> executorSet;//记录流程设计阶段所选择的执行人
+	private List<Executor> executorSet;//记录流程设计阶段所选择的执行人
 	private String userVarName;//流程节点用户变量名称
     private String currentTaskType;//当前任务节点类型，自定义任务类型,common(普通),单签(singleSign),审批任务(approve),会签(CounterSign)
 	private Boolean counterSignLastTask;//是否是最后一个会签/并、串子任务执行人;
@@ -99,15 +99,14 @@ public class NodeGroupInfo implements Serializable{
 		this.userVarName = userVarName;
 	}
 
-	public Set<Executor> getExecutorSet() {
+	public List<Executor> getExecutorSet() {
 		return executorSet;
 	}
 
-	public void setExecutorSet(Set<Executor> executorSet) {
+	public void setExecutorSet(List<Executor> executorSet) {
 		this.executorSet = executorSet;
 	}
-
-	//	public MultiInstanceConfig getMultiInstanceConfig() {
+//	public MultiInstanceConfig getMultiInstanceConfig() {
 //		return multiInstanceConfig;
 //	}
 //

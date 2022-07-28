@@ -392,7 +392,7 @@ public class DefaultFlowBaseService implements IDefaultFlowBaseService {
             userMap.put("anonymous", "anonymous");
             selectedNodesUserMap.put(nodeInfo.getId(), new ArrayList<>());
         } else {
-            Set<Executor> executors = nodeInfo.getExecutorSet();
+            List<Executor> executors = nodeInfo.getExecutorSet();
             if (!CollectionUtils.isEmpty(executors)) {
                 String uiType = nodeInfo.getUiType();
                 List<String> userList = new ArrayList<>();

@@ -828,9 +828,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees.get(0).setName("系统自动");
                 employees.get(0).setCode(Constants.ADMIN);
                 employees.get(0).setOrganizationName("系统自动执行的任务");
-                Set<Executor> employeeSet = new HashSet<>();
-                employeeSet.addAll(employees);
-                nodeInfo.setExecutorSet(employeeSet);
+                nodeInfo.setExecutorSet(employees);
             }
         } else if ("ReceiveTask".equalsIgnoreCase(userTaskTemp.getNodeType())) {//接收任务
             ReceiveTask receiveTaskTemp = (ReceiveTask) JSONObject.toBean(currentNode, ReceiveTask.class);
@@ -845,9 +843,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees.get(0).setName("系统触发");
                 employees.get(0).setCode(Constants.ADMIN);
                 employees.get(0).setOrganizationName("等待系统触发后执行");
-                Set<Executor> employeeSet = new HashSet<>();
-                employeeSet.addAll(employees);
-                nodeInfo.setExecutorSet(employeeSet);
+                nodeInfo.setExecutorSet(employees);
             }
         } else {
             nodeInfo.setUserVarName(userTaskTemp.getId() + "_Normal");
@@ -902,11 +898,9 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
             if (!CollectionUtils.isEmpty(employees)) {
-                employeeSet.addAll(employees);
-                nodeInfo.setExecutorSet(employeeSet);
+                nodeInfo.setExecutorSet(employees);
             }
         } else if (!CollectionUtils.isEmpty(executorList)) {
-            Set<Executor> employeeSet = new HashSet<>();
             List<Executor> employees;
             String selfDefId = null;
             List<String> orgDimensionCodes = null;//组织维度代码集合
@@ -971,8 +965,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 }
             }
             if (!CollectionUtils.isEmpty(employees)) {
-                employeeSet.addAll(employees);
-                nodeInfo.setExecutorSet(employeeSet);
+                nodeInfo.setExecutorSet(employees);
             }
         }
         result.add(nodeInfo);
@@ -1178,9 +1171,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees.get(0).setName("系统自动");
                 employees.get(0).setCode(Constants.ADMIN);
                 employees.get(0).setOrganizationName("系统自动执行的任务");
-                Set<Executor> employeeSet = new HashSet<>();
-                employeeSet.addAll(employees);
-                nodeInfo.setExecutorSet(employeeSet);
+                nodeInfo.setExecutorSet(employees);
             }
             result.add(nodeInfo);
         } else if ("ReceiveTask".equalsIgnoreCase(type)) {//接收任务
@@ -1199,9 +1190,7 @@ public class FlowDefinationService extends BaseEntityService<FlowDefination> imp
                 employees.get(0).setName("系统触发");
                 employees.get(0).setCode(Constants.ADMIN);
                 employees.get(0).setOrganizationName("等待系统触发后执行");
-                Set<Executor> employeeSet = new HashSet<>();
-                employeeSet.addAll(employees);
-                nodeInfo.setExecutorSet(employeeSet);
+                nodeInfo.setExecutorSet(employees);
             }
             result.add(nodeInfo);
         } else if ("startEvent".equalsIgnoreCase(type)) {//开始节点向下遍历

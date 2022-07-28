@@ -144,10 +144,15 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
     @Test
     public void rollBackToHis() {
         RollBackParam param = new RollBackParam();
-        param.setId("7CD8A7AE-5EBF-11EB-8EFB-0242C0A84413");
+        param.setId("26782F7A-F060-11EC-B9A2-0242C0A84642");
         param.setOpinion("测试");
-        ResponseData responseData = service.rollBackToHis(param);
-        System.out.println(ApiJsonUtils.toJson(responseData));
+        try{
+            ResponseData responseData = service.rollBackToHis(param);
+            System.out.println(ApiJsonUtils.toJson(responseData));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
     }
 
     @Test

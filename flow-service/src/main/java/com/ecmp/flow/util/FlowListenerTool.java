@@ -155,12 +155,12 @@ public class FlowListenerTool {
                 if ("AnyOne".equalsIgnoreCase(uiUserType)) {//任意执行人默认规则为当前执行人
                     String currentUserId = ContextUtil.getUserId();
                     Executor executor = flowCommonUtil.getBasicUserExecutor(currentUserId);
-                    Set<Executor> employeeSet = new HashSet<Executor>();
+                    List<Executor> employeeSet = new ArrayList<>();
                     employeeSet.add(executor);
                     nodeInfo.setExecutorSet(employeeSet);
                 }
                 if ("SingleSign".equalsIgnoreCase(taskType) || "CounterSign".equalsIgnoreCase(taskType) || "ParallelTask".equalsIgnoreCase(taskType) || "SerialTask".equalsIgnoreCase(taskType)) {
-                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    List<Executor> executorSet = nodeInfo.getExecutorSet();
                     if (executorSet != null && !executorSet.isEmpty()) {
                         List<String> userIdArray = new ArrayList<String>();
                         for (Executor executor : executorSet) {
@@ -173,7 +173,7 @@ public class FlowListenerTool {
                         }
                     }
                 } else {
-                    Set<Executor> executorSet = nodeInfo.getExecutorSet();
+                    List<Executor> executorSet = nodeInfo.getExecutorSet();
                     if (executorSet != null && !executorSet.isEmpty()) {
                         String userId = ((Executor) executorSet.toArray()[0]).getId();
                         if (StringUtils.isNotEmpty(callActivityPath)) {

@@ -2364,7 +2364,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 executor.setName("系统自动");
                 executor.setCode(Constants.ADMIN);
                 executor.setOrganizationName("系统自动执行的任务");
-                Set<Executor> employeeSet = new HashSet<>();
+                List<Executor> employeeSet = new ArrayList<>();
                 employeeSet.add(executor);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -2378,7 +2378,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                 executor.setName("系统触发");
                 executor.setCode(Constants.ADMIN);
                 executor.setOrganizationName("等待系统触发后执行");
-                Set<Executor> employeeSet = new HashSet<>();
+                List<Executor> employeeSet = new ArrayList<>();
                 employeeSet.add(executor);
                 nodeInfo.setExecutorSet(employeeSet);
             }
@@ -2476,8 +2476,7 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         }
                     }
                     if (employees != null && !employees.isEmpty()) {
-                        Set<Executor> employeeSet = new HashSet<>(employees);
-                        nodeInfo.setExecutorSet(employeeSet);
+                        nodeInfo.setExecutorSet(employees);
                     }
                 } else if (executorList != null && executorList.size() > 1) {
                     List<Executor> employees;
@@ -2547,15 +2546,13 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         }
                     }
                     if (employees != null && !employees.isEmpty()) {
-                        Set<Executor> employeeSet = new HashSet<>(employees);
-                        nodeInfo.setExecutorSet(employeeSet);
+                        nodeInfo.setExecutorSet(employees);
                     }
                 }
             } else {
                 if (!CollectionUtils.isEmpty(executor)) {
                     String userType = (String) executor.get("userType");
                     nodeInfo.setUiUserType(userType);
-
 
                     List<NodeInfo> nodeInfoList = new ArrayList<>();
                     nodeInfoList.add(nodeInfo);
