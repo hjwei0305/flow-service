@@ -2476,7 +2476,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         }
                     }
                     if (employees != null && !employees.isEmpty()) {
-                        nodeInfo.setExecutorSet(employees);
+                        List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(employees);
+                        nodeInfo.setExecutorSet(returnExecutors);
                     }
                 } else if (executorList != null && executorList.size() > 1) {
                     List<Executor> employees;
@@ -2546,7 +2547,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
                         }
                     }
                     if (employees != null && !employees.isEmpty()) {
-                        nodeInfo.setExecutorSet(employees);
+                        List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(employees);
+                        nodeInfo.setExecutorSet(returnExecutors);
                     }
                 }
             } else {

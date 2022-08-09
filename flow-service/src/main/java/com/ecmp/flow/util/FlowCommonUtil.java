@@ -62,6 +62,52 @@ public class FlowCommonUtil implements Serializable {
     }
 
 
+
+    /**
+     * 人员去重（保留并合并岗位信息）
+     *
+     * @param oldExecutorList
+     * @return
+     */
+    public List<Executor> setListExecutor(List<Executor> oldExecutorList) {
+        if (!CollectionUtils.isEmpty(oldExecutorList)) {
+            int i = oldExecutorList.size();
+            long j = oldExecutorList.stream().distinct().count();
+            if (i != j) {
+                List<Executor> newExecutorList = new ArrayList<>();
+                for (Executor oldExecutor : oldExecutorList) {
+                    if (CollectionUtils.isEmpty(newExecutorList)) {
+                        newExecutorList.add(oldExecutor);
+                    } else {
+                        Executor executor = newExecutorList.stream().filter(e -> e.getId().equals(oldExecutor.getId())).findFirst().orElse(null);
+                        if (executor == null) {
+                            newExecutorList.add(oldExecutor);
+                        } else {
+                            if (StringUtils.isEmpty(executor.getPositionName()) && StringUtils.isNotEmpty(oldExecutor.getPositionName())) {
+                                executor.setPositionId(oldExecutor.getPositionId());
+                                executor.setPositionCode(oldExecutor.getPositionCode());
+                                executor.setPositionName(oldExecutor.getPositionName());
+                            } else {
+                                if (StringUtils.isNotEmpty(executor.getPositionName())
+                                        && StringUtils.isNotEmpty(oldExecutor.getPositionName())
+                                        && !executor.getPositionName().contains(oldExecutor.getPositionName())) {
+                                    executor.setPositionId(executor.getPositionId() + "," + oldExecutor.getPositionId());
+                                    executor.setPositionCode(executor.getPositionCode() + "," + oldExecutor.getPositionCode());
+                                    executor.setPositionName(executor.getPositionName() + "," + oldExecutor.getPositionName());
+                                }
+                            }
+                        }
+                    }
+                }
+                return newExecutorList;
+            } else {
+                return oldExecutorList;
+            }
+        }
+        return oldExecutorList;
+    }
+
+
     //------------------------------------------------获取执行人--------------------------------//
 
     /**

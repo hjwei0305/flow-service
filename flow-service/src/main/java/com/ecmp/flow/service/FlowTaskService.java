@@ -1458,7 +1458,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                             if (!CollectionUtils.isEmpty(employees)) {
-                                nodeInfo.setExecutorSet(employees);
+                                List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(employees);
+                                nodeInfo.setExecutorSet(returnExecutors);
                             }
                         } else if (!CollectionUtils.isEmpty(executorList) && executorList.size() > 1) {
                             List<Executor> employees;
@@ -1528,7 +1529,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                             if (!CollectionUtils.isEmpty(employees)) {
-                                nodeInfo.setExecutorSet(employees);
+                                List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(employees);
+                                nodeInfo.setExecutorSet(returnExecutors);
                             }
                         }
                     } else {
@@ -1659,7 +1661,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             List<String> idList = Arrays.asList(idArray);
                             List<Executor> list = flowCommonUtil.getBasicUserExecutors(idList);
                             if (!CollectionUtils.isEmpty(list)) {
-                                nodeInfo.setExecutorSet(list);
+                                List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(list);
+                                nodeInfo.setExecutorSet(returnExecutors);
                             }
                         }
                     }
@@ -4045,8 +4048,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
         }
-
-        return ResponseData.operationSuccessWithData(executors);
+        List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(executors);
+        return ResponseData.operationSuccessWithData(returnExecutors);
     }
 
 
