@@ -2918,8 +2918,34 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return result;
     }
 
-    public OperateResult taskTurnToDo(String taskId, String userId) {
 
+    @Override
+    public ResponseData taskTurnToEmployee(TaskTurnInfoVo taskTurnInfoVo) {
+
+        if (taskTurnInfoVo == null) {
+            return OperateResult.operationFailure("10435");
+        }
+        String taskId = taskTurnInfoVo.getTaskId();
+        if (StringUtils.isEmpty(taskId)) {
+            return OperateResult.operationFailure("10436");
+        }
+        String userId = taskTurnInfoVo.getUserId();
+        if (StringUtils.isEmpty(userId)) {
+            return OperateResult.operationFailure("10437");
+        }
+        return taskTurnToDo(taskId, userId, taskTurnInfoVo.getOpinion());
+    }
+
+
+    @Override
+    public OperateResult taskTurnToDo(String taskId, String userId) {
+        return taskTurnToDo(taskId, userId, "");
+    }
+
+    public OperateResult taskTurnToDo(String taskId, String userId , String opinion) {
+        if (StringUtils.isEmpty(opinion) || "null".equals(opinion)) {
+            opinion = "";
+        }
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTurn_" + taskId, taskId);
         if (!setValue) {
             Long remainingTime = redisTemplate.getExpire("taskTurn_" + taskId, TimeUnit.SECONDS);
@@ -2964,7 +2990,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null);//转办后先允许撤回
                     //如果是转授权转办模式（获取转授权记录信息）
                     String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
-                    flowHistory.setDepict(overPowerStr + "【被转办给：“" + executor.getName() + "”】");
+                    flowHistory.setDepict(overPowerStr + "【被转办给：“" + executor.getName() + "”】" + opinion);
                     flowHistory.setFlowExecuteStatus(FlowExecuteStatus.TURNTODO.getCode());//转办
                     newFlowTask.setId(null);
                     //判断待办转授权模式(如果是转办模式，需要返回转授权信息，其余情况返回null)
@@ -3070,6 +3096,12 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (CollectionUtils.isEmpty(userIds)) {
             return ResponseData.operationFailure("10386");
         }
+        String opinion = taskTrustInfoVo.getOpinion();
+        if (StringUtils.isEmpty(opinion) || "null".equals(opinion)) {
+            opinion = "";
+        }
+
+
         Boolean setValue = redisTemplate.opsForValue().setIfAbsent("taskTrust_" + taskId, taskId);
         if (!setValue) {
             Long remainingTime = redisTemplate.getExpire("taskTrust_" + taskId, TimeUnit.SECONDS);
@@ -3169,7 +3201,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 //如果是转授权转办模式（获取转授权记录信息）
                 String overPowerStr = taskMakeOverPowerService.getOverPowerStrByDepict(flowHistory.getDepict());
-                flowHistory.setDepict(overPowerStr + "【委托给：" + employeeNameStr + "】");
+                flowHistory.setDepict(overPowerStr + "【委托给：" + employeeNameStr + "】" + opinion);
                 flowHistory.setFlowExecuteStatus(FlowExecuteStatus.ENTRUST.getCode());//委托
                 flowHistoryDao.save(flowHistory);
 

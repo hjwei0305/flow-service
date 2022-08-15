@@ -1,28 +1,26 @@
 package com.ecmp.flow.vo;
 
-
 import java.io.Serializable;
-import java.util.List;
 
-public class TaskTrustInfoVo implements Serializable {
-
+public class TaskTurnInfoVo  implements Serializable {
 
     /**
-     * 被委托的任务ID
+     * 被转办的任务ID
      */
     private String taskId;
 
 
     /**
-     * 选择的用户ID集合
+     * 转办人ID
      */
-    private List<String>  userIds;
+    private String userId;
 
 
     /**
-     * 委托时输入的意见
+     * 转办时输入的意见
      */
     private String opinion;
+
 
     public String getTaskId() {
         return taskId;
@@ -32,12 +30,12 @@ public class TaskTrustInfoVo implements Serializable {
         this.taskId = taskId;
     }
 
-    public List<String> getUserIds() {
-        return userIds;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserIds(List<String> userIds) {
-        this.userIds = userIds;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getOpinion() {

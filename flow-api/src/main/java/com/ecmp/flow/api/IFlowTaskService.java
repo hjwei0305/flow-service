@@ -687,6 +687,20 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @ApiOperation(value = "将任务转办给指定用户", notes = "将任务转办给指定用户")
     OperateResult taskTurnToDo(@QueryParam("taskId") String taskId, @QueryParam("userId") String userId);
 
+
+
+    /**
+     * 将任务转办给指定用户
+     */
+    @POST
+    @Path("taskTurnToEmployee")
+    @ApiOperation(value = "将任务委托给其他用户", notes = "将任务委托给其他用户")
+    ResponseData taskTurnToEmployee(TaskTurnInfoVo taskTurnInfoVo);
+
+
+
+
+
     /**
      * 将任务委托给指定用户
      *
@@ -698,6 +712,9 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("taskTrustToDo")
     @ApiOperation(value = "将任务委托给指定用户", notes = "将任务委托给指定用户")
     OperateResult taskTrustToDo(@QueryParam("taskId") String taskId, @QueryParam("userId") String userId) throws Exception;
+
+
+
 
 
     /**
