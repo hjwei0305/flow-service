@@ -201,18 +201,18 @@ public class ExpressionUtil {
                 Boolean boo = (Boolean) result.getData();
                 if (BooleanUtils.isFalse(boo)) {
                     LogUtil.error("调用【重置单据状态】，接口返回失败信息：{}，地址=[{}]，参数=[{}]，返回=[{}]", result.getMessage(), clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
-                    return ResponseData.operationFailure(ContextUtil.getMessage("10283", result.getMessage()));
+                    return ResponseData.operationFailure("10283", result.getMessage());
                 } else {
                     LogUtil.bizLog("调用【重置单据状态】，地址=[{}]，参数=[{}]，返回=[{}]", clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
                     return result;
                 }
             } else {
                 LogUtil.error("调用【重置单据状态】，接口返回错误信息：{}，地址=[{}]，参数=[{}]，返回=[{}]", result.getMessage(), clientApiUrl, JsonUtils.toJson(params), JsonUtils.toJson(result));
-                return ResponseData.operationFailure("调用【重置单据状态】，接口返回错误信息：" + result.getMessage());
+                return ResponseData.operationFailure("10440" , result.getMessage());
             }
         } catch (Exception e) {
             LogUtil.error("调用【重置单据状态】，接口调用异常：{}，地址=[{}]，参数=[{}]", e.getMessage(), clientApiUrl, JsonUtils.toJson(params), e);
-            return ResponseData.operationFailure(ContextUtil.getMessage("10284", e.getMessage()));
+            return ResponseData.operationFailure("10284", e.getMessage());
         }
     }
 

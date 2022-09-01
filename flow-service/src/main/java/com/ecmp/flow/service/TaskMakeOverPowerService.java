@@ -134,7 +134,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
     public void setCommonInfo(TaskMakeOverPower entity) {
 
         //管理员可以直接选择授权人
-        if(StringUtils.isEmpty(entity.getUserId())){
+        if (StringUtils.isEmpty(entity.getUserId())) {
             //设置授权人信息
             entity.setUserId(ContextUtil.getUserId());
             entity.setUserAccount(ContextUtil.getUserAccount());
@@ -347,7 +347,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 Date end = a.getPowerEndDate();
                 if (checkSameTime(startDate, endDate, start, end)) {
                     String mesString = this.getMesString(a);
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权" + mesString + "给您，所以您不能再转授权！");
+                    return ResponseData.operationFailure("10438", dateFormat.format(start), dateFormat.format(end), a.getUserName(), mesString);
                 }
             }
         }
@@ -379,7 +379,7 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
                 Date end = a.getPowerEndDate();
                 if (checkSameTime(startDate, endDate, start, end)) {
                     String mesString = this.getMesString(a);
-                    return ResponseData.operationFailure("【" + dateFormat.format(start) + "】至【" + dateFormat.format(end) + "】,【" + a.getUserName() + "】已经转授权" + mesString + "给【" + a.getPowerUserName() + "】，所以您不能再转授权给他！");
+                    return ResponseData.operationFailure("10439", dateFormat.format(start), dateFormat.format(end), a.getUserName(), mesString, a.getPowerUserName());
                 }
             }
         }
@@ -418,13 +418,13 @@ public class TaskMakeOverPowerService extends BaseEntityService<TaskMakeOverPowe
         String mesString = "";
         //分级授权报错信息拼接
         if (StringUtils.isNotEmpty(a.getAppModuleName())) {
-            mesString +=  ContextUtil.getMessage("10373",a.getAppModuleName());
+            mesString += ContextUtil.getMessage("10373", a.getAppModuleName());
         }
         if (StringUtils.isNotEmpty(a.getBusinessModelName())) {
-            mesString += ContextUtil.getMessage("10374",a.getBusinessModelName());
+            mesString += ContextUtil.getMessage("10374", a.getBusinessModelName());
         }
         if (StringUtils.isNotEmpty(a.getFlowTypeName())) {
-            mesString += ContextUtil.getMessage("10375",a.getFlowTypeName());
+            mesString += ContextUtil.getMessage("10375", a.getFlowTypeName());
         }
         return mesString;
     }

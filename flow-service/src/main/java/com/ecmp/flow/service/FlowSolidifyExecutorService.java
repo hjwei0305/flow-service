@@ -75,7 +75,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         String[] idArray = userIds.split(",");
                         List<String> userList = Arrays.asList(idArray);
                         List<Executor> executorList = flowCommonUtil.getBasicUserExecutors(userList);
-                        List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(executorList);
+                        List<Executor> returnExecutors = flowCommonUtil.setListExecutor(executorList);
                         nodeInfo.setExecutorSet(returnExecutors);
                     }
                 });
@@ -290,7 +290,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      * @return
      */
     @Transactional
-    public void selfMotionExecuteTask(String businessId) {
+    public ResponseData selfMotionExecuteTask(String businessId) {
         if (StringUtils.isNotEmpty(businessId)) {
             //根据业务id查询待办
             ResponseData responseData = flowTaskService.findTasksNoUrlByBusinessId(businessId);
@@ -304,8 +304,12 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         List<FlowTask> needLsit = (List<FlowTask>) solidifyResult.getData();
                         if (!CollectionUtils.isEmpty(needLsit)) {
                             //执行需要自动跳过的任务
-                            this.needSelfMotionTaskList(needLsit, solidifylist);
+                            return this.needSelfMotionTaskList(needLsit, solidifylist);
+                        } else {
+                            return ResponseData.operationFailure("10428");
                         }
+                    } else {
+                        return ResponseData.operationFailure("10431", solidifyResult.getMessage());
                     }
                 } else {
                     //检查非固化需要跳过的待办
@@ -314,15 +318,21 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         List<FlowTask> needLsit = (List<FlowTask>) needTaskResult.getData();
                         if (!CollectionUtils.isEmpty(needLsit)) {
                             //执行需要自动跳过的任务
-                            flowTaskService.automaticToDoTask(needLsit);
+                            return flowTaskService.automaticToDoTask(needLsit);
+                        } else {
+                            return ResponseData.operationFailure("10428");
                         }
+                    } else {
+                        return ResponseData.operationFailure("10431", needTaskResult.getMessage());
                     }
                 }
             } else {
                 LogUtil.error("自动执行待办-查询待办失败！");
+                return ResponseData.operationFailure("10429");
             }
         } else {
             LogUtil.error("自动执行待办-参数为空！");
+            return ResponseData.operationFailure("10430");
         }
     }
 
@@ -409,7 +419,7 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
      * @param solidifylist
      */
     @Transactional
-    public void needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
+    public ResponseData needSelfMotionTaskList(List<FlowTask> taskList, List<FlowSolidifyExecutor> solidifylist) {
         if (!CollectionUtils.isEmpty(taskList) && !CollectionUtils.isEmpty(solidifylist)) {
             for (FlowTask task : taskList) {
                 FlowSolidifyExecutor bean = solidifylist.stream().filter(a -> a.getActTaskDefKey().equalsIgnoreCase(task.getActTaskDefKey())).findFirst().orElse(null);
@@ -420,12 +430,13 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                         approved = "true";
                         opinion = "同意【自动执行】";
                     }
-                    ResponseData responseData = ResponseData.operationFailure("10179");
+                    ResponseData responseData;
                     try {
                         //模拟请求下一步数据
                         responseData = this.simulationGetSelectedNodesInfo(task.getId(), approved);
                     } catch (Exception e) {
-                        LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(), e);
+                        LogUtil.error("自动执行待办-模拟请求下一步数据报错：" + e.getMessage(), e);
+                        return ResponseData.operationFailure("10432", e.getMessage());
                     }
                     //模拟下一不节点信息成功
                     if (responseData.getSuccess()) {
@@ -463,12 +474,17 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
                                     endEventId, null, false, approved, currentTime);
                         } catch (Exception e) {
                             LogUtil.error("自动执行待办报错：" + e.getMessage(), e);
+                            return ResponseData.operationFailure("10379", e.getMessage());
                         }
 
+                    }else{
+                        LogUtil.error("自动执行待办-模拟请求下一步数据报错：" + responseData.getMessage());
+                        return ResponseData.operationFailure("10432", responseData.getMessage());
                     }
                 }
             }
         }
+        return ResponseData.operationSuccess();
     }
 
 

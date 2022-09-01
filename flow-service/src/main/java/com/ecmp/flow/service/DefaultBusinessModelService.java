@@ -167,7 +167,7 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
                 Thread.sleep(1000 * 60 * 5);
             } catch (Exception e) {
             }
-            return ResponseData.operationFailure("测试请求超时！");
+            return ResponseData.operationFailure("10434");
         }else{
             return ResponseData.operationFailure("10042");
         }

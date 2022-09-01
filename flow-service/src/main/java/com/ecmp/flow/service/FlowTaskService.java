@@ -1458,7 +1458,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                             if (!CollectionUtils.isEmpty(employees)) {
-                                List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(employees);
+                                List<Executor> returnExecutors = flowCommonUtil.setListExecutor(employees);
                                 nodeInfo.setExecutorSet(returnExecutors);
                             }
                         } else if (!CollectionUtils.isEmpty(executorList) && executorList.size() > 1) {
@@ -1529,7 +1529,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                             }
                             if (!CollectionUtils.isEmpty(employees)) {
-                                List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(employees);
+                                List<Executor> returnExecutors = flowCommonUtil.setListExecutor(employees);
                                 nodeInfo.setExecutorSet(returnExecutors);
                             }
                         }
@@ -1661,7 +1661,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             List<String> idList = Arrays.asList(idArray);
                             List<Executor> list = flowCommonUtil.getBasicUserExecutors(idList);
                             if (!CollectionUtils.isEmpty(list)) {
-                                List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(list);
+                                List<Executor> returnExecutors = flowCommonUtil.setListExecutor(list);
                                 nodeInfo.setExecutorSet(returnExecutors);
                             }
                         }
@@ -2942,7 +2942,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return taskTurnToDo(taskId, userId, "");
     }
 
-    public OperateResult taskTurnToDo(String taskId, String userId , String opinion) {
+    public OperateResult taskTurnToDo(String taskId, String userId, String opinion) {
         if (StringUtils.isEmpty(opinion) || "null".equals(opinion)) {
             opinion = "";
         }
@@ -4080,7 +4080,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
             }
         }
-        List<Executor>  returnExecutors = flowCommonUtil.setListExecutor(executors);
+        List<Executor> returnExecutors = flowCommonUtil.setListExecutor(executors);
         return ResponseData.operationSuccessWithData(returnExecutors);
     }
 
@@ -4426,7 +4426,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * 需要自动执行人的待办(审批任务)
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void automaticToDoTask(List<FlowTask> taskList) {
+    public ResponseData automaticToDoTask(List<FlowTask> taskList) {
         for (int i = 0; i < taskList.size(); i++) {
             FlowTask task = taskList.get(i);
             String taskJsonDef = task.getTaskJsonDef();
@@ -4438,12 +4438,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 approved = "true";
                 opinion = "同意【自动执行】";
             }
-            ResponseData responseData = ResponseData.operationFailure("10254");
+            ResponseData responseData;
             try {
                 //模拟请求下一步数据
                 responseData = this.simulationGetNodesInfo(task.getId(), approved);
             } catch (Exception e) {
-                LogUtil.error("模拟请求下一步数据报错：" + e.getMessage(), e);
+                LogUtil.error("自动执行待办-模拟请求下一步数据报错：" + e.getMessage(), e);
+                return ResponseData.operationFailure("10432", e.getMessage());
             }
 
             //模拟下一不节点信息成功
@@ -4486,7 +4487,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                                 }
                                 taskWebVO.setUserIds(userIds);
                             } else {
-                                return;
+                                taskWebVO.setUserIds("");
                             }
                         } else if (flowTaskType.equalsIgnoreCase("common")
                                 || flowTaskType.equalsIgnoreCase("approve")) { //普通任务、审批任务
@@ -4511,10 +4512,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             opinion, taskListString,
                             endEventId, null, false, approved, null);
                 } catch (Exception e) {
-                    LogUtil.error("自动执行报错：" + e.getMessage(), e);
+                    LogUtil.error("自动执行待办报错：" + e.getMessage(), e);
+                    return ResponseData.operationFailure("10379", e.getMessage());
                 }
+            } else {
+                LogUtil.error("自动执行待办-模拟请求下一步数据报错：" + responseData.getMessage());
+                return ResponseData.operationFailure("10432", responseData.getMessage());
             }
         }
+        return  ResponseData.operationSuccess();
     }
 
 

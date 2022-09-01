@@ -196,25 +196,25 @@ public class BusinessModelService extends BaseEntityService<BusinessModel> imple
                         businessModelCode = flowType.getBusinessModel().getClassName();
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
-                        return ResponseData.operationFailure("获取业务实体数据失败！");
+                        return ResponseData.operationFailure("10004");
                     }
                     try {
                         String apiBaseAddressConfig = flowType.getBusinessModel().getAppModule().getApiBaseAddress();
                         apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                     } catch (Exception e) {
                         LogUtil.error(e.getMessage(), e);
-                        return ResponseData.operationFailure("获取模块Api基地址失败！");
+                        return ResponseData.operationFailure("10005");
                     }
                     String url = PageUrlUtil.buildUrl(apiBaseAddress, businessDetailServiceUrl);
                     return this.getPropertiesOfModile(url, businessModelCode, flowInstance.getBusinessId());
                 } else {
-                    return ResponseData.operationFailure("找不到对应的流程类型！");
+                    return ResponseData.operationFailure("10015");
                 }
             } else {
-                return ResponseData.operationFailure("找不到对应的流程实例！");
+                return ResponseData.operationFailure("10433");
             }
         } else {
-            return ResponseData.operationFailure("参数：流程历史ID不能为空！");
+            return ResponseData.operationFailure("10022");
         }
     }
 
