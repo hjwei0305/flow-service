@@ -2867,6 +2867,9 @@ public class FlowTaskTool {
             for (Organization organization : organizationsList) {
                 orgCodesList.add(organization.getCode());
             }
+        } else {
+            //条件属性接口返回组织机构ID有误，未获取到该组织机构！
+            throw new FlowException(ContextUtil.getMessage("10449"));
         }
         return orgCodesList;
     }
