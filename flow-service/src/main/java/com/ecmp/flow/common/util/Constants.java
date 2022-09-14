@@ -388,6 +388,11 @@ public class Constants extends ConfigurableContants {
     public final static String REJECT = "reject";
 
     /**
+     * 任意退回
+     */
+    public final static String RETURN = "return";
+
+    /**
      * 接收任务实际定义ID
      */
     public final static String RECEIVE_TASK_ACT_DEF_ID = "receiveTaskActDefId";

@@ -82,10 +82,16 @@ public class ServiceCallUtil {
                                 params.setPoolTaskCode(poolTaskCode);
                             }
                         }
-                        if (jsonObject.has(Constants.REJECT)) {
+                        if (jsonObject.has(Constants.REJECT)) { //是否被驳回
                             int reject = jsonObject.getInt(Constants.REJECT);
                             if (reject == 1) {
-                                params.setReject(true);//是否被驳回
+                                params.setReject(true);
+                            }
+                        }
+                        if (jsonObject.has(Constants.RETURN)) { //是否被任意退回
+                            int returnSo = jsonObject.getInt(Constants.RETURN);
+                            if (returnSo == 1) {
+                                params.setReject(true);
                             }
                         }
                         if (jsonObject.has(Constants.CALL_ACTIVITY_SON_PATHS)) {
