@@ -22,6 +22,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * *************************************************************************************************
@@ -123,7 +124,13 @@ public class ReceiveTaskAfterListener implements org.activiti.engine.delegate.Ja
             }
             flowHistory.setFlowName(definition.getProcess().getName());
             flowHistory.setFlowTaskName(flowTaskName);
-            flowHistory.setDepict(ContextUtil.getMessage("10046"));//接收任务【执行完成】
+            Map<String, Object> tempV = delegateTask.getVariables();
+            String receiveOpinion =   (String)tempV.get("receiveOpinion");
+            if(StringUtils.isNotEmpty(receiveOpinion)){
+                flowHistory.setDepict(receiveOpinion);
+            }else{
+                flowHistory.setDepict(ContextUtil.getMessage("10046"));//接收任务【执行完成】
+            }
             flowHistory.setTaskStatus(TaskStatus.COMPLETED.toString());
             flowHistory.setActEndTime(new Date());
             flowHistory.setFlowDefId(flowDefVersion.getFlowDefination().getId());

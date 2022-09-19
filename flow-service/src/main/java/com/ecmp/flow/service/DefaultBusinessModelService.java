@@ -441,6 +441,9 @@ public class DefaultBusinessModelService extends BaseEntityService<DefaultBusine
         try {
             DefaultBusinessModel entity = defaultBusinessModelDao.findOne(flowInvokeParams.getId());
             if (entity != null) {
+                if(entity.getCount() == 1){
+                    variables.put("receiveOpinion","自定义写入摘要123");
+                }
                 receiveTaskActDefId = flowInvokeParams.getTaskActDefId();
                 List<String> callActivtiySonPaths = flowInvokeParams.getCallActivitySonPaths();
                 if (!CollectionUtils.isEmpty(callActivtiySonPaths)) {
