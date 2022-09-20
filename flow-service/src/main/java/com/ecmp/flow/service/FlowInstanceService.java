@@ -988,11 +988,17 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
         OperateResult result = OperateResult.operationSuccess("10029");
         FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
         if (flowInstance != null && !flowInstance.isEnded()) {
+            //这样在接收任务节点动态修改的参数才能生效
+            BusinessModel businessModel = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel();
+            Map<String, Object> businessV  = ExpressionUtil.getPropertiesValuesMap(businessModel, flowInstance.getBusinessId(), false);
+            if(!CollectionUtils.isEmpty(v)){
+                businessV.putAll(v);
+            }
             String actInstanceId = flowInstance.getActInstanceId();
             HistoricActivityInstance receiveTaskActivityInstance = historyService.createHistoricActivityInstanceQuery().processInstanceId(actInstanceId).activityId(receiveTaskActDefId).unfinished().singleResult();
             if (receiveTaskActivityInstance != null) {
                 String executionId = receiveTaskActivityInstance.getExecutionId();
-                runtimeService.signal(executionId, v);
+                runtimeService.signal(executionId, businessV);
             } else {
                 result = OperateResult.operationFailure("10031");
             }
