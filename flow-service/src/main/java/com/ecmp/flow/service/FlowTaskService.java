@@ -311,6 +311,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<String> idList = new ArrayList<>();
             taskList.forEach(a -> {
                 a.setApproveStatus(null);
+                a.getFlowInstance().getFlowDefVersion().setDefJson(null);
+                a.getFlowInstance().getFlowDefVersion().setDefXml(null);
                 idList.add("【id=" + a.getId() + "】");
             });
             this.initFlowTasks(taskList); //添加待办处理地址等
@@ -341,6 +343,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<String> idList = new ArrayList<>();
             taskList.forEach(a -> {
                 a.setNewTaskAuto(null);
+                a.getFlowInstance().getFlowDefVersion().setDefJson(null);
+                a.getFlowInstance().getFlowDefVersion().setDefXml(null);
                 idList.add("【id=" + a.getId() + "】");
             });
             String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
@@ -371,6 +375,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 a.getFlowInstance().setFlowTasks(null);
                 a.setNewTaskAuto(null);
                 a.setApproveStatus(null);
+                a.getFlowInstance().getFlowDefVersion().setDefJson(null);
+                a.getFlowInstance().getFlowDefVersion().setDefXml(null);
                 idList.add("【id=" + a.getId() + "】");
             });
             String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
@@ -398,6 +404,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (task != null) {
             task.setNewTaskAuto(null);
             task.setApproveStatus(null);
+            task.getFlowInstance().getFlowDefVersion().setDefJson(null);
+            task.getFlowInstance().getFlowDefVersion().setDefXml(null);
             String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
             ResponseData responseData = ResponseData.operationFailure("10196");
             try {
