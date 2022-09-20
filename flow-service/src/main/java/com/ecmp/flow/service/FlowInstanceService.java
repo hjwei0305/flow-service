@@ -647,10 +647,14 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private void initFlowInstance(Map<FlowInstance, ProcessTrackVO> resultMap, FlowInstance flowInstance) {
 
         ProcessTrackVO pv = new ProcessTrackVO();
+        flowInstance.getFlowDefVersion().setDefJson(null);
+        flowInstance.getFlowDefVersion().setDefXml(null);
         pv.setFlowInstance(flowInstance);
         List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
         List<FlowTask> newFlowTaskList = new ArrayList<>();
         for (FlowTask bean : flowTaskList) {
+            bean.getFlowInstance().getFlowDefVersion().setDefJson(null);
+            bean.getFlowInstance().getFlowDefVersion().setDefXml(null);
             if (bean.getTrustState() == null) {
                 newFlowTaskList.add(bean);
             } else {
@@ -1438,6 +1442,8 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     private List<FlowInstance> initUrl(List<FlowInstance> result) {
         if (result != null && !result.isEmpty()) {
             for (FlowInstance flowInstance : result) {
+                flowInstance.getFlowDefVersion().setDefJson(null);
+                flowInstance.getFlowDefVersion().setDefXml(null);
                 String apiBaseAddressConfig = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                 if (StringUtils.isNotEmpty(apiBaseAddress)) {

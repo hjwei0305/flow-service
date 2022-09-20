@@ -2271,6 +2271,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (!userId.equals(bean.getExecutorId())) {
                 bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
             }
+            bean.getFlowInstance().getFlowDefVersion().setDefJson(null);
+            bean.getFlowInstance().getFlowDefVersion().setDefXml(null);
         }
         return flowTaskPageResult;
     }
@@ -4294,6 +4296,8 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 待办任务
      */
     private void initFlowTask(FlowTask flowTask) {
+        flowTask.getFlowInstance().getFlowDefVersion().setDefJson(null);
+        flowTask.getFlowInstance().getFlowDefVersion().setDefXml(null);
         String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
         String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
         if (StringUtils.isNotEmpty(apiBaseAddress)) {

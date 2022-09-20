@@ -530,6 +530,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
     public List<FlowHistory> initFlowTaskAppModule(List<FlowHistory> result) {
         if (!CollectionUtils.isEmpty(result)) {
             for (FlowHistory flowHistory : result) {
+                flowHistory.getFlowInstance().getFlowDefVersion().setDefJson(null);
+                flowHistory.getFlowInstance().getFlowDefVersion().setDefXml(null);
                 String apiBaseAddressConfig = flowHistory.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
                 String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
                 if (StringUtils.isNotEmpty(apiBaseAddress)) {
@@ -580,6 +582,8 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
      * @param flowHistory
      */
     private void setHistoryIfTimeout(FlowHistory flowHistory) {
+        flowHistory.getFlowInstance().getFlowDefVersion().setDefJson(null);
+        flowHistory.getFlowInstance().getFlowDefVersion().setDefXml(null);
         if (flowHistory.getActStartTime() == null || flowHistory.getTiming() == null || flowHistory.getTiming() < 0.000001) {
             if (flowHistory.getTiming() == null) {
                 flowHistory.setTiming(0.00);
