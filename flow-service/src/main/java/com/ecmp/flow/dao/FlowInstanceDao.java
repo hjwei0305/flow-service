@@ -33,7 +33,6 @@ public interface FlowInstanceDao extends BaseEntityDao<FlowInstance> {
     @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     List<FlowInstance> findByParentId(String parentId);
 
-    @QueryHints(@QueryHint(name = "org.hibernate.cacheable", value = "true"))
     @Query("select ft from com.ecmp.flow.entity.FlowInstance ft where ft.businessId = :businessId  order by ft.lastEditedDate desc")
     List<FlowInstance> findByBusinessIdOrder(@Param("businessId") String businessId);
 
