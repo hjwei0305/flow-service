@@ -2778,6 +2778,58 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
 
 
     @Override
+    public ResponseData checkAndSendToUrgedByBusinessId(BusinessUrgedVo urgedInfoVo) {
+        if (urgedInfoVo == null) {
+            //请求参数不能为空！
+            return ResponseData.operationFailure("10006");
+        }
+        String businessId = urgedInfoVo.getBusinessId();
+        if (StringUtils.isEmpty(businessId)) {
+            //业务单据ID不能为空！
+            return ResponseData.operationFailure("10383");
+        }
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if (flowInstance == null) {
+            //该单据未发起过流程！
+            return ResponseData.operationFailure("10120");
+        } else if (flowInstance.isEnded()) {
+            //该单据没有流程中数据！
+            return ResponseData.operationFailure("10121");
+        } else {
+            ResponseData res = checkSendUrged(flowInstance);
+            if (!res.getSuccess()) {
+                return res;
+            }
+        }
+        UrgedInfoVo infoVo = new UrgedInfoVo();
+        infoVo.setFlowInstanceId(flowInstance.getId());
+        infoVo.setUrgedInfo(urgedInfoVo.getUrgedInfo());
+        infoVo.setUrgedTypeList(urgedInfoVo.getUrgedTypeList());
+        return  this.sendToUrgedInfo(infoVo);
+    }
+
+
+    public ResponseData checkSendUrged(FlowInstance flowInstance) {
+        Set<FlowTask> taskSet = flowInstance.getFlowTasks();
+        Iterator<FlowTask> it = taskSet.iterator();
+        Boolean canUrged = false;
+        while (it.hasNext()) {
+            FlowTask flowTask = it.next();
+            String defJson = flowTask.getTaskJsonDef();
+            JSONObject defObj = JSONObject.fromObject(defJson);
+            JSONObject normalInfo = defObj.getJSONObject("nodeConfig").getJSONObject("normal");
+            if (normalInfo.has("allowUrged") && normalInfo.getBoolean("allowUrged")) {
+                canUrged = true;
+            }
+        }
+        if (!canUrged) {
+            return ResponseData.operationFailure("10450");
+        }
+        return ResponseData.operationSuccess();
+    }
+
+
+    @Override
     public ResponseData sendToUrgedInfo(UrgedInfoVo urgedInfoVo) {
         if (urgedInfoVo == null) {
             return ResponseData.operationFailure("10006");
