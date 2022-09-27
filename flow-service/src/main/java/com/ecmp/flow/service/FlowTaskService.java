@@ -28,6 +28,9 @@ import com.ecmp.flow.vo.bpmn.Definition;
 import com.ecmp.flow.vo.bpmn.UserTask;
 import com.ecmp.flow.vo.phone.FlowTaskBatchPhoneVO;
 import com.ecmp.flow.vo.phone.FlowTaskPhoneVo;
+import com.ecmp.flow.vo.push.PushFlowDefVersionVo;
+import com.ecmp.flow.vo.push.PushFlowTaskVo;
+import com.ecmp.flow.vo.push.PushInstanceVo;
 import com.ecmp.log.util.LogUtil;
 import com.ecmp.notify.api.INotifyService;
 import com.ecmp.notity.entity.EcmpMessage;
@@ -300,6 +303,24 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         return boo;
     }
 
+
+    //去掉defJson和defXml大字段
+    public List<PushFlowTaskVo> taskToPushTask(List<FlowTask> taskList) {
+        List<PushFlowTaskVo> list = new ArrayList<>();
+        for (FlowTask flowTask : taskList) {
+            PushFlowTaskVo pushFlowTaskVo = new PushFlowTaskVo();
+            BeanUtils.copyProperties(flowTask, pushFlowTaskVo);
+            PushInstanceVo pushInstanceVo = new PushInstanceVo();
+            BeanUtils.copyProperties(flowTask.getFlowInstance(), pushInstanceVo);
+            PushFlowDefVersionVo pushFlowDefVersionVo = new PushFlowDefVersionVo();
+            BeanUtils.copyProperties(flowTask.getFlowInstance().getFlowDefVersion(), pushFlowDefVersionVo);
+            pushInstanceVo.setFlowDefVersion(pushFlowDefVersionVo);
+            pushFlowTaskVo.setFlowInstance(pushInstanceVo);
+            list.add(pushFlowTaskVo);
+        }
+        return list;
+    }
+
     /**
      * 推送待办到basic模块
      *
@@ -311,19 +332,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<String> idList = new ArrayList<>();
             taskList.forEach(a -> {
                 a.setApproveStatus(null);
-                FlowDefVersion flowDefVersion = new FlowDefVersion();
-                BeanUtils.copyProperties(a.getFlowInstance().getFlowDefVersion(), flowDefVersion);
-                flowDefVersion.setDefJson(null);
-                flowDefVersion.setDefXml(null);
-                a.getFlowInstance().setFlowDefVersion(flowDefVersion);
                 idList.add("【id=" + a.getId() + "】");
             });
             this.initFlowTasks(taskList); //添加待办处理地址等
+            List<PushFlowTaskVo> pushFlowTaskVoList = taskToPushTask(taskList);
             String url = Constants.getBasicPushNewTaskUrl(); //推送待办接口
             ResponseData responseData = ResponseData.operationFailure("10196");
             try {
                 responseData = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
-                }, taskList);
+                }, pushFlowTaskVoList);
             } catch (Exception e) {
                 LogUtil.error("开始调用【推送待办到basic】接口，接口url={},参数值ID集合:{},推送待办异常：{}", url, JsonUtils.toJson(idList), e.getMessage(), e);
             } finally {
@@ -346,18 +363,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             List<String> idList = new ArrayList<>();
             taskList.forEach(a -> {
                 a.setNewTaskAuto(null);
-                FlowDefVersion flowDefVersion = new FlowDefVersion();
-                BeanUtils.copyProperties(a.getFlowInstance().getFlowDefVersion(), flowDefVersion);
-                flowDefVersion.setDefJson(null);
-                flowDefVersion.setDefXml(null);
-                a.getFlowInstance().setFlowDefVersion(flowDefVersion);
                 idList.add("【id=" + a.getId() + "】");
             });
+            List<PushFlowTaskVo> pushFlowTaskVoList = taskToPushTask(taskList);
             String url = Constants.getBasicPushOldTaskUrl(); //推送已办接口
             ResponseData responseData = ResponseData.operationFailure("10196");
             try {
                 responseData = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
-                }, taskList);
+                }, pushFlowTaskVoList);
             } catch (Exception e) {
                 LogUtil.error("开始调用【推送已办到basic】接口，接口url={},参数值ID集合:{},推送已办异常：{}", url, JsonUtils.toJson(idList), e.getMessage(), e);
             } finally {
@@ -381,19 +394,14 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 a.getFlowInstance().setFlowTasks(null);
                 a.setNewTaskAuto(null);
                 a.setApproveStatus(null);
-                FlowDefVersion flowDefVersion = new FlowDefVersion();
-                BeanUtils.copyProperties(a.getFlowInstance().getFlowDefVersion(), flowDefVersion);
-                flowDefVersion.setDefJson(null);
-                flowDefVersion.setDefXml(null);
-                a.getFlowInstance().setFlowDefVersion(flowDefVersion);
-
                 idList.add("【id=" + a.getId() + "】");
             });
+            List<PushFlowTaskVo> pushFlowTaskVoList = taskToPushTask(taskList);
             String url = Constants.getBasicPushDelTaskUrl(); //推送需要删除待办接口
             ResponseData responseData = ResponseData.operationFailure("10196");
             try {
                 responseData = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
-                }, taskList);
+                }, pushFlowTaskVoList);
             } catch (Exception e) {
                 LogUtil.error("开始调用【推送删除待办到basic】接口，接口url={},参数值ID集合:{},推送删除待办异常：{}", url, JsonUtils.toJson(idList), e.getMessage(), e);
             } finally {
@@ -414,22 +422,19 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (task != null) {
             task.setNewTaskAuto(null);
             task.setApproveStatus(null);
-            FlowDefVersion flowDefVersion = new FlowDefVersion();
-            BeanUtils.copyProperties(task.getFlowInstance().getFlowDefVersion(), flowDefVersion);
-            flowDefVersion.setDefJson(null);
-            flowDefVersion.setDefXml(null);
-            task.getFlowInstance().setFlowDefVersion(flowDefVersion);
+            List<FlowTask> taskList = new ArrayList<>();
+            taskList.add(task);
+            List<PushFlowTaskVo> pushFlowTaskVoList = taskToPushTask(taskList);
+            PushFlowTaskVo pushFlowTaskVo = pushFlowTaskVoList.get(0);
             String url = Constants.getBasicPushEndTaskUrl(); //推送需要归档（终止）的任务到basic模块接口
             ResponseData responseData = ResponseData.operationFailure("10196");
             try {
                 responseData = ApiClient.postViaProxyReturnResult(url, new GenericType<ResponseData>() {
-                }, task);
+                }, pushFlowTaskVo);
             } catch (Exception e) {
                 LogUtil.error("开始调用【推送归档任务到basic】接口，接口url={},参数值ID集合:{},推送归档任务异常：{}", url, task.getId(), e.getMessage(), e);
 
             } finally {
-                List<FlowTask> taskList = new ArrayList<>();
-                taskList.add(task);
                 this.savePushAndControlInfo(Constants.TYPE_BASIC, Constants.STATUS_BASIC_END, url, responseData.getSuccess(), taskList);
             }
             return responseData.getSuccess();
@@ -2292,8 +2297,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (!userId.equals(bean.getExecutorId())) {
                 bean.getFlowInstance().setBusinessModelRemark("【" + bean.getExecutorName() + "-转授权】" + bean.getFlowInstance().getBusinessModelRemark());
             }
-//            bean.getFlowInstance().getFlowDefVersion().setDefJson(null);
-//            bean.getFlowInstance().getFlowDefVersion().setDefXml(null);
         }
         return flowTaskPageResult;
     }
@@ -4317,8 +4320,6 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
      * @return 待办任务
      */
     private void initFlowTask(FlowTask flowTask) {
-//        flowTask.getFlowInstance().getFlowDefVersion().setDefJson(null);
-//        flowTask.getFlowInstance().getFlowDefVersion().setDefXml(null);
         String apiBaseAddressConfig = flowTask.getFlowInstance().getFlowDefVersion().getFlowDefination().getFlowType().getBusinessModel().getAppModule().getApiBaseAddress();
         String apiBaseAddress = Constants.getConfigValueByApi(apiBaseAddressConfig);
         if (StringUtils.isNotEmpty(apiBaseAddress)) {
