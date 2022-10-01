@@ -4,8 +4,10 @@ import com.ecmp.core.dao.BaseEntityDao;
 import com.ecmp.core.service.BaseEntityService;
 import com.ecmp.flow.api.IWorkPageUrlService;
 import com.ecmp.flow.dao.BusinessWorkPageUrlDao;
+import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.dao.WorkPageUrlDao;
 import com.ecmp.flow.entity.BusinessWorkPageUrl;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.entity.WorkPageUrl;
 import com.ecmp.vo.OperateResult;
 import com.ecmp.vo.ResponseData;
@@ -16,18 +18,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
-/**
- * *************************************************************************************************
- * <p/>
- * 实现功能：工作界面配置管理
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/3/23 22:39      谭军(tanjun)               新建
- * <p/>
- * *************************************************************************************************
- */
+
 @Service
 public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implements IWorkPageUrlService {
 
@@ -36,6 +27,10 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
 
     @Autowired
     private BusinessWorkPageUrlDao businessWorkPageUrlDao;
+
+    @Autowired
+    private FlowTaskDao flowTaskDao;
+
 
     protected BaseEntityDao<WorkPageUrl> getDao() {
         return this.workPageUrlDao;
@@ -98,6 +93,10 @@ public class WorkPageUrlService extends BaseEntityService<WorkPageUrl> implement
         List<BusinessWorkPageUrl> list = businessWorkPageUrlDao.findListByProperty("workPageUrlId", id);
         if (!CollectionUtils.isEmpty(list)) {
             return OperateResult.operationFailure("10276");
+        }
+        List<FlowTask> taskList = flowTaskDao.findListByProperty("workPageUrl.id",id);
+        if (!CollectionUtils.isEmpty(taskList)) {
+            return OperateResult.operationFailure("10441");
         }
         return super.delete(id);
     }
