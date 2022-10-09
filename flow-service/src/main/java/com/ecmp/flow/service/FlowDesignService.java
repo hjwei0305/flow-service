@@ -98,15 +98,15 @@ public class FlowDesignService implements IFlowDesignService {
             if (checkRes.getSuccess()) {
                 String startKey = (String) checkRes.getData();
                 //检查节点连接并设置定位信息（方便退回选择节点）
-                try{
+                try {
                     chackAndSetNodePosition(nodesObj, startKey, "0");
                     processObj.put("nodes", nodesObj);
                     defObj.put("process", processObj);
                     return ResponseData.operationSuccessWithData(defObj.toString());
-                }catch (Exception e){
-                    if(e.getClass() != FlowException.class){
-                        LogUtil.error("验证流程图合规性报错：{}",e.getMessage(),e);
-                        return ResponseData.operationFailure("10398",e.getMessage());
+                } catch (Exception e) {
+                    if (e.getClass() != FlowException.class) {
+                        LogUtil.error("验证流程图合规性报错：{}", e.getMessage(), e);
+                        return ResponseData.operationFailure("10398", e.getMessage());
                     }
                     return ResponseData.operationFailure(e.getMessage());
                 }
@@ -130,15 +130,15 @@ public class FlowDesignService implements IFlowDesignService {
             if (node.has("flowNewPosition")) {
                 String oldPosition = (String) node.get("flowNewPosition");
                 if (StringUtils.isNotEmpty(oldPosition) && !oldPosition.equalsIgnoreCase(position)) {
-                      throw new  FlowException(ContextUtil.getMessage("10401", nodeName));
-                }else{
-                      return;
+                    throw new FlowException(ContextUtil.getMessage("10401", nodeName));
+                } else {
+                    return;
                 }
             }
-            node.put("flowNewPosition", position);
-            nodesObj.put(checkKey, node);
             JSONArray targetNodes = node.getJSONArray("target");
-            if (targetNodes != null) { //结束节点没有分支
+            if (targetNodes.size() != 0) { //结束节点没有分支(结束和终止结束节点没有限制)
+                node.put("flowNewPosition", position);
+                nodesObj.put(checkKey, node);
                 for (int i = 0; i < targetNodes.size(); i++) {
                     JSONObject jsonObject = targetNodes.getJSONObject(i);
                     String targetId = jsonObject.getString("targetId");
@@ -147,25 +147,25 @@ public class FlowDesignService implements IFlowDesignService {
             }
         } else {
             JSONArray targetNodes = node.getJSONArray("target");
-            int outNumber =   targetNodes.size();
-            if(outNumber==1){ //聚合
+            int outNumber = targetNodes.size();
+            if (outNumber == 1) { //聚合
                 JSONObject jsonObject = targetNodes.getJSONObject(0);
                 String targetId = jsonObject.getString("targetId");
-                if(position.contains("-")){
+                if (position.contains("-")) {
                     int lastInt = position.lastIndexOf("-");
-                    chackAndSetNodePosition(nodesObj, targetId, position.substring(0,lastInt));
-                }else{
-                    if(nodeId.contains("ParallelGateWay")){
-                        throw new  FlowException(ContextUtil.getMessage("10402",nodeName));
-                    }else{
-                        throw new  FlowException(ContextUtil.getMessage("10403",nodeName));
+                    chackAndSetNodePosition(nodesObj, targetId, position.substring(0, lastInt));
+                } else {
+                    if (nodeId.contains("ParallelGateWay")) {
+                        throw new FlowException(ContextUtil.getMessage("10402", nodeName));
+                    } else {
+                        throw new FlowException(ContextUtil.getMessage("10403", nodeName));
                     }
                 }
-            }else{ //分散
+            } else { //分散
                 for (int i = 0; i < targetNodes.size(); i++) {
                     JSONObject jsonObject = targetNodes.getJSONObject(i);
                     String targetId = jsonObject.getString("targetId");
-                    chackAndSetNodePosition(nodesObj, targetId, position+"-"+i);
+                    chackAndSetNodePosition(nodesObj, targetId, position + "-" + i);
                 }
             }
         }
