@@ -4546,7 +4546,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 return ResponseData.operationFailure("10432", responseData.getMessage());
             }
         }
-        return  ResponseData.operationSuccess();
+        return ResponseData.operationSuccess();
     }
 
 
@@ -4931,7 +4931,28 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     //可以执行单签任务(验证执行人)
                     SessionUser sessionUser = ContextUtil.getSessionUser();
                     String userId = sessionUser.getUserId();
-                    FlowTask task = list.stream().filter(a -> a.getExecutorId().equals(userId)).findFirst().orElse(null);
+                    FlowTask task;
+                    task = list.stream().filter(a -> a.getExecutorId().equals(userId)).findFirst().orElse(null);
+
+                    if (task == null) {  //考虑共同查看模式的转授权
+                        TaskMakeOverPower newPower = null;
+                        //根据被授权人ID查看所有满足的转授权设置信息（共同查看模式）
+                        List<TaskMakeOverPower> overPowerList = taskMakeOverPowerService.findPowerByPowerUser(userId);
+                        if (!CollectionUtils.isEmpty(overPowerList)) {
+                            String flowTypeId = flowInstance.getFlowDefVersion().getFlowDefination().getFlowType().getId();
+                            for (int i = 0; i < overPowerList.size(); i++) {
+                                TaskMakeOverPower bean = overPowerList.get(i);
+                                if (StringUtils.isNotEmpty(bean.getFlowTypeId()) && bean.getFlowTypeId().equals(flowTypeId)) { //流程类型
+                                    newPower = bean;
+                                }
+                            }
+                        }
+                        if (newPower != null) { //表示有共同查看模式的转授权情况
+                            String powerUserId = newPower.getUserId();
+                            task = list.stream().filter(a -> a.getExecutorId().equals(powerUserId)).findFirst().orElse(null);
+                        }
+                    }
+
                     if (task != null) {
                         String defJson = task.getTaskJsonDef();
                         JSONObject defObj = JSONObject.fromObject(defJson);
