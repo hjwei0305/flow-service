@@ -77,10 +77,21 @@ public class CommonUserTaskCreateListener implements ExecutionListener {
                 boolean async = true;//默认为异步
                 if (event.has(Constants.BEFORE_ASYNC)) {
                     Boolean beforeAsync = event.getBoolean(Constants.BEFORE_ASYNC);
-                    if (beforeAsync != true) {
+                    if (!beforeAsync) {
                         async = false;
                     }
                 }
+
+                //重新定义当前节点代码
+                if(currentNode.has(Constants.NODE_CONFIG) && currentNode.getJSONObject(Constants.NODE_CONFIG).has("normal")){
+                    JSONObject  normalInfo = currentNode.getJSONObject(Constants.NODE_CONFIG).getJSONObject(Constants.NORMAL);
+                    if (!normalInfo.isEmpty()) {
+                        if(normalInfo.get("nodeCode") != null){
+                            delegateTask.setVariable("currentNodeCode",normalInfo.get("nodeCode"));
+                        }
+                    }
+                }
+
                 if (!StringUtils.isEmpty(beforeExcuteServiceId) && BooleanUtils.isNotFalse(targetNodeBeforeEvent)) {
                     flowListenerTool.taskEventServiceCall(delegateTask, async, flowTaskName, beforeExcuteServiceId, beforeExcuteService, businessId);
                 }
