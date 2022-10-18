@@ -3050,6 +3050,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setTrustState(null);
                     taskService.setAssignee(flowTask.getActTaskId(), executor.getId());
 
+                    if (flowTask.getFlowInstance() != null && flowTask.getFlowInstance().getAllowEmergency()) {
+                        newFlowTask.setPriority(3);
+                    }
+
                     // 取得当前任务
                     HistoricTaskInstance currTask = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId())
                             .singleResult();
@@ -3219,6 +3223,10 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     newFlowTask.setTrustOwnerTaskId(flowTask.getId());
                     //委托任务去掉退回按钮
                     newFlowTask.setTaskJsonDef(taskJsonDefObj.toString());
+
+                    if (flowTask.getFlowInstance() != null && flowTask.getFlowInstance().getAllowEmergency()) {
+                        newFlowTask.setPriority(3);
+                    }
 
                     flowTaskDao.save(newFlowTask);
                     if (pushBasic) {

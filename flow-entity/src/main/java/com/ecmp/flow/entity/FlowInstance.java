@@ -191,6 +191,22 @@ public class FlowInstance extends com.ecmp.core.entity.BaseAuditableEntity imple
 	private String tenantCode;
 
 
+	/**
+	 * 允许紧急
+	 */
+	@Column(name = "allow_emergency")
+	private Boolean allowEmergency = false;
+
+
+	public Boolean getAllowEmergency() {
+		return allowEmergency;
+	}
+
+	public void setAllowEmergency(Boolean allowEmergency) {
+		this.allowEmergency = allowEmergency;
+	}
+
+
 	@Override
 	public String getTenantCode() {
 		return tenantCode;

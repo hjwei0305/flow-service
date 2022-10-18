@@ -694,7 +694,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
      */
     @POST
     @Path("taskTurnToEmployee")
-    @ApiOperation(value = "将任务委托给其他用户", notes = "将任务委托给其他用户")
+    @ApiOperation(value = "将任务转办给其他用户", notes = "将任务转办给其他用户")
     ResponseData taskTurnToEmployee(TaskTurnInfoVo taskTurnInfoVo);
 
 

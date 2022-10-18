@@ -724,4 +724,12 @@ public interface IFlowInstanceService extends IBaseService<FlowInstance, String>
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "通过单据ID发送催办信息", notes = "通过单据ID发送催办信息")
     ResponseData   checkAndSendToUrgedByBusinessId(BusinessUrgedVo businessUrgedVo);
+
+
+    @GET
+    @Path("allowEmergencyByBusinessId")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "通过单据ID允许整个流程状态为紧急", notes = "通过单据ID允许整个流程状态为紧急")
+    ResponseData allowEmergencyByBusinessId(@QueryParam("businessId") String businessId);
 }

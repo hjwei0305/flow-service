@@ -1633,6 +1633,10 @@ public class FlowTaskTool {
             }
         }
 
+        FlowInstance flowInstance = flowTask.getFlowInstance();
+        if(flowInstance!=null && flowInstance.getAllowEmergency()){
+            flowTask.setPriority(3);
+        }
 
         String nodeType = (String) currentNode.get("nodeType");
         if ("CounterSign".equalsIgnoreCase(nodeType) || "Approve".equalsIgnoreCase(nodeType) || "Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType)

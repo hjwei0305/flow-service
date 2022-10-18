@@ -2916,4 +2916,15 @@ public class FlowInstanceService extends BaseEntityService<FlowInstance> impleme
     }
 
 
+    @Override
+    public ResponseData allowEmergencyByBusinessId(String businessId) {
+        FlowInstance flowInstance = this.findLastInstanceByBusinessId(businessId);
+        if (flowInstance != null && !flowInstance.isEnded()) { //只考虑还在流程中的流程实例
+            flowInstance.setAllowEmergency(true);
+            save(flowInstance);
+            return ResponseData.operationSuccess();
+        }
+        //该单据没有处于流程中的实例数据！
+        return ResponseData.operationFailure("10138");
+    }
 }
