@@ -669,6 +669,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             redisTemplate.expire("complete_" + id, 10 * 60, TimeUnit.SECONDS);
 
             FlowTask flowTask = flowTaskDao.findOne(id);
+            variables.put("flowCurrentTaskId",id);
             if (flowTask == null) {
                 return OperateResultWithData.operationFailure("10033");
             }

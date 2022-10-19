@@ -4,9 +4,12 @@ import com.ecmp.context.ContextUtil;
 import com.ecmp.flow.common.util.Constants;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.FlowInstanceDao;
+import com.ecmp.flow.dao.FlowTaskDao;
 import com.ecmp.flow.entity.BusinessModel;
 import com.ecmp.flow.entity.FlowInstance;
+import com.ecmp.flow.entity.FlowTask;
 import com.ecmp.flow.service.DefaultFlowBaseService;
+import com.ecmp.flow.service.FlowTaskService;
 import com.ecmp.flow.util.ExpressionUtil;
 import com.ecmp.flow.util.FlowException;
 import com.ecmp.flow.util.FlowListenerTool;
@@ -17,12 +20,15 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,6 +44,12 @@ public class EndEventCompleteListener implements ExecutionListener {
 
     @Autowired
     private FlowInstanceDao flowInstanceDao;
+
+    @Autowired
+    private FlowTaskService flowTaskService;
+
+    @Autowired
+    private FlowTaskDao flowTaskDao;
 
     @Autowired
     private FlowListenerTool flowListenerTool;
@@ -116,6 +128,30 @@ public class EndEventCompleteListener implements ExecutionListener {
                         defaultFlowBaseService.checkSolidifyEndAndCopy(flowInstance, endCode);
                     } else {
                         defaultFlowBaseService.checkNoSolidifyEndAndCopy(flowInstance, endCode, variables);
+                    }
+                    //流程到达终止结束节点，其他路径待办应该清除
+                    if (endSign == 3) {
+                        Map<String, Object> tempV = delegateTask.getVariables();
+                        String flowCurrentTaskId = (String) tempV.get("flowCurrentTaskId");
+                        List<FlowTask> needDelList = new ArrayList<>();
+                        if (StringUtils.isNotEmpty(flowCurrentTaskId)) {
+                            List<FlowTask> flowTaskList = flowTaskDao.findByInstanceId(flowInstance.getId());
+                            flowTaskList.forEach(task -> {
+                                if (!flowCurrentTaskId.equals(task.getId())) {
+                                    needDelList.add(task);
+                                    flowTaskDao.delete(task.getId());
+                                }
+                            });
+                        }
+                        //是否推送信息到baisc
+                        Boolean pushBasic = flowTaskService.getBooleanPushTaskToBasic();
+                        if (!CollectionUtils.isEmpty(needDelList) && pushBasic) {
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    flowTaskService.pushToBasic(null, null, needDelList, null);
+                                }
+                            }).start();
+                        }
                     }
                 }
             }
