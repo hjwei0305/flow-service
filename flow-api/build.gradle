@@ -13,8 +13,8 @@ dependencies {
 //            "com.ecmp:core-api:$ecmp_version"
           "org.apache.cxf:cxf-rt-rs-service-description-swagger:3.1.10",
           "org.apache.cxf:cxf-rt-rs-client:3.1.10",
-          "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.6",
-          "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.9.6",
+          "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.10.0",
+          "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.10.0",
           "io.zipkin.brave:brave-instrumentation-jaxrs2:4.19.1",
     )
 }
