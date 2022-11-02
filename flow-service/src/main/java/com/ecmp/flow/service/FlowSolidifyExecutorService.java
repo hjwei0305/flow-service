@@ -284,6 +284,41 @@ public class FlowSolidifyExecutorService extends BaseEntityService<FlowSolidifyE
 
 
     /**
+     * 重置固化执行表顺序
+     *
+     * @param flowInstanceId
+     * @return
+     */
+    @Transactional
+    public void setSolidifyExecutorTaskOrder(String flowInstanceId) {
+        if (StringUtils.isNotEmpty(flowInstanceId)) {
+            FlowInstance flowInstance = flowInstanceService.findOne(flowInstanceId);
+            if (flowInstance != null) {
+                if (flowInstance.getFlowDefVersion().getSolidifyFlow()) {  //只判断固化流程
+                    List<FlowTask> checkList = flowTaskService.findByInstanceId(flowInstance.getId());
+                    if (!CollectionUtils.isEmpty(checkList)) {
+                        List<FlowSolidifyExecutor> solidifylist = flowSolidifyExecutorDao.findListByProperty("businessId", flowInstance.getBusinessId());
+                        if (!CollectionUtils.isEmpty(solidifylist)) {
+                            //检查固化需要跳过的待办
+                            ResponseData solidifyResult = this.checkAutomaticToDoSolidifyTask(solidifylist, checkList, true);
+                            if (!solidifyResult.successful()) {
+                                LogUtil.error("重置固化执行表顺序失败：" + solidifyResult.getMessage());
+                            }
+                        }
+                    } else {
+                        LogUtil.error("重置固化执行表顺序-查询待办失败！实例ID=" + flowInstanceId);
+                    }
+                }
+            } else {
+                LogUtil.error("重置固化执行表顺序-查询流程实例失败！实例ID=" + flowInstanceId);
+            }
+        } else {
+            LogUtil.error("重置固化执行表顺序-参数为空！");
+        }
+    }
+
+
+    /**
      * 固化流程中自动执行待办
      *
      * @param businessId

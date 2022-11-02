@@ -1102,7 +1102,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         if (TaskStatus.VIRTUAL.toString().equals(flowHistory.getTaskStatus())) { //虚拟任务
             return OperateResult.operationFailure("10206");
         }
-        return flowTaskTool.taskRollBack(flowHistory, opinion);
+        String flowInstanceId = flowHistory.getFlowInstance().getId();
+        OperateResult operateResult = flowTaskTool.taskRollBack(flowHistory, opinion);
+        if(operateResult.getSuccess()){
+            new Thread(new Runnable() {//重置固化执行表顺序
+                @Override
+                public void run() {
+                    flowSolidifyExecutorService.setSolidifyExecutorTaskOrder(flowInstanceId);
+                }
+            }).start();
+        }
+        return operateResult;
     }
 
 
@@ -1197,7 +1207,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (preFlowTask == null) {
                     return OperateResult.operationFailure("10211");
                 } else {
-                    return this.activitiReject(flowTask, preFlowTask, variables);
+                    String flowInstanceId = flowTask.getFlowInstance().getId();
+                    OperateResult operateResult = this.activitiReject(flowTask, preFlowTask, variables);
+                    if(operateResult.successful()){
+                        new Thread(new Runnable() {//重置固化执行表顺序
+                            @Override
+                            public void run() {
+                                flowSolidifyExecutorService.setSolidifyExecutorTaskOrder(flowInstanceId);
+                            }
+                        }).start();
+                    }
+                    return  operateResult;
                 }
             } else {
                 return OperateResult.operationFailure("10212");
@@ -5218,7 +5238,17 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
 
         try {
-            return this.returnToNode(taskId, allowJumpBack, opinion, nodeId);
+            ResponseData responseData = this.returnToNode(taskId, allowJumpBack, opinion, nodeId);
+            if (responseData.successful()) {
+                String flowInstanceId = (String) responseData.getData();
+                new Thread(new Runnable() {//重置固化执行表顺序
+                    @Override
+                    public void run() {
+                        flowSolidifyExecutorService.setSolidifyExecutorTaskOrder(flowInstanceId);
+                    }
+                }).start();
+            }
+            return responseData;
         } catch (Exception e) {
             LogUtil.error("退回失败:" + e.getMessage(), e);
             return ResponseData.operationFailure("10396", e.getMessage());
@@ -5310,7 +5340,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             runtimeService.removeVariable(instance.getProcessInstanceId(), "return");//将状态重置
             runtimeService.removeVariable(instance.getProcessInstanceId(), "allowJumpBack");//将状态重置
         }
-        return ResponseData.operationSuccess();
+        return ResponseData.operationSuccessWithData(flowTask.getFlowInstance().getId());
     }
 
 

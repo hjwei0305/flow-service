@@ -182,7 +182,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("taskRejectToHis")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "撤回任务到指定节点", notes = "撤回任务到指定节点")
+    @ApiOperation(value = "驳回任务到指定节点", notes = "驳回任务到指定节点")
     ResponseData taskRejectToHis(RejectParam rejectParam) throws Exception;
 
     /**
