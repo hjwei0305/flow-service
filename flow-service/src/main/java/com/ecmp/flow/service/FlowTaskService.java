@@ -669,7 +669,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             redisTemplate.expire("complete_" + id, 10 * 60, TimeUnit.SECONDS);
 
             FlowTask flowTask = flowTaskDao.findOne(id);
-            variables.put("flowCurrentTaskId",id);
+            variables.put("flowCurrentTaskId", id);
             if (flowTask == null) {
                 return OperateResultWithData.operationFailure("10033");
             }
@@ -1104,7 +1104,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
         }
         String flowInstanceId = flowHistory.getFlowInstance().getId();
         OperateResult operateResult = flowTaskTool.taskRollBack(flowHistory, opinion);
-        if(operateResult.getSuccess()){
+        if (operateResult.getSuccess()) {
             new Thread(new Runnable() {//重置固化执行表顺序
                 @Override
                 public void run() {
@@ -1209,7 +1209,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 } else {
                     String flowInstanceId = flowTask.getFlowInstance().getId();
                     OperateResult operateResult = this.activitiReject(flowTask, preFlowTask, variables);
-                    if(operateResult.successful()){
+                    if (operateResult.successful()) {
                         new Thread(new Runnable() {//重置固化执行表顺序
                             @Override
                             public void run() {
@@ -1217,7 +1217,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }).start();
                     }
-                    return  operateResult;
+                    return operateResult;
                 }
             } else {
                 return OperateResult.operationFailure("10212");
@@ -4934,8 +4934,22 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
             if (flowInstance != null && !flowInstance.isEnded()) {//只考虑还在流程中的流程实例
                 FlowTask autoTask;
                 String nodeType;
-                List<FlowTask> list = this.findByInstanceId(flowInstance.getId());
-                if (list != null && list.size() == 1) {
+                List<FlowTask> allList = this.findByInstanceId(flowInstance.getId());
+                List<FlowTask> list = new ArrayList<>();
+                List<FlowTask> virtualList = new ArrayList<>();
+                if (allList != null && allList.size() > 1) {
+                    allList.forEach(task -> {
+                        if (TaskStatus.VIRTUAL.toString().equals(task.getTaskStatus())) { //虚拟待办
+                            virtualList.add(task);
+                        } else {
+                            list.add(task);
+                        }
+                    });
+                }
+
+                FlowTask virtualTask = virtualList.stream().filter(task -> task.getExecutorId().equals(flowInstance.getCreatorId())).findFirst().orElse(null);
+
+                if (list.size() == 1) {
                     FlowTask flowTask = list.get(0);
                     String defJson = flowTask.getTaskJsonDef();
                     JSONObject defObj = JSONObject.fromObject(defJson);
@@ -5072,10 +5086,18 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                     try {
                         //自动执行待办
                         long currentTime = System.currentTimeMillis();
-                        defaultFlowBaseService.completeTask(autoTask.getId(), businessId,
+                        ResponseData response = defaultFlowBaseService.completeTask(autoTask.getId(), businessId,
                                 opinion, taskListString, endEventId, null, false,
                                 approved, currentTime);
-                        return ResponseData.operationSuccess("10378");
+
+                        if (response.successful()) {
+                            if (virtualTask != null) { //同时执行发起人的通知
+                                haveReadTaskByTaskId(virtualTask.getId());
+                            }
+                            return ResponseData.operationSuccess("10378");
+                        } else {
+                            return ResponseData.operationFailure("10379", response.getMessage());
+                        }
                     } catch (Exception e) {
                         LogUtil.error("批量上传自动执行待办报错：" + e.getMessage(), e);
                         //处理下一步失败，将待办设置为紧急

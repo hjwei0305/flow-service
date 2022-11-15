@@ -87,7 +87,7 @@ public class FlowTaskServiceTest extends BaseContextTestCase {
 
     @Test
     public void automatingTaskByBusinessId() {
-        service.automatingTaskByBusinessId("FD936EF9-524D-11EC-A6A9-0242C0A84611");
+        service.automatingTaskByBusinessId("57FB9A8F-63C4-11ED-8ACE-0242C0A84619");
     }
 
     @Test
