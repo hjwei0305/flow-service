@@ -4937,7 +4937,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 List<FlowTask> allList = this.findByInstanceId(flowInstance.getId());
                 List<FlowTask> list = new ArrayList<>();
                 List<FlowTask> virtualList = new ArrayList<>();
-                if (allList != null && allList.size() > 1) {
+                if (allList != null) {
                     allList.forEach(task -> {
                         if (TaskStatus.VIRTUAL.toString().equals(task.getTaskStatus())) { //虚拟待办
                             virtualList.add(task);
