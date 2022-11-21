@@ -1005,7 +1005,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("automatingTaskByParams")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "退回到指定节点", notes = "退回到指定节点")
+    @ApiOperation(value = "通过参数自动执行单据中的待办", notes = "通过参数自动执行单据中的待办")
     ResponseData automatingTaskByParams(AutoTaskParam autoTaskParam);
 
 
