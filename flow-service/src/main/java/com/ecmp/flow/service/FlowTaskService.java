@@ -17,10 +17,7 @@ import com.ecmp.flow.constant.FlowExecuteStatus;
 import com.ecmp.flow.constant.FlowStatus;
 import com.ecmp.flow.dao.*;
 import com.ecmp.flow.dao.util.PageUrlUtil;
-import com.ecmp.flow.dto.FlowTaskExecutorIdAndCount;
-import com.ecmp.flow.dto.RejectParam;
-import com.ecmp.flow.dto.RollBackParam;
-import com.ecmp.flow.dto.UserFlowTaskQueryParam;
+import com.ecmp.flow.dto.*;
 import com.ecmp.flow.entity.*;
 import com.ecmp.flow.util.*;
 import com.ecmp.flow.vo.*;
@@ -4920,15 +4917,23 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
     @Override
     public ResponseData automatingTaskByBusinessId(String businessId) {
-        return automatingTask(businessId, null);
+        return automatingTask(businessId, null, null);
     }
 
     @Override
     public ResponseData automatingTaskByBusinessIdAndCode(String businessId, String nodeCode) {
-        return automatingTask(businessId, nodeCode);
+        return automatingTask(businessId, nodeCode, null);
     }
 
-    public ResponseData automatingTask(String businessId, String nodeCode) {
+    @Override
+    public ResponseData automatingTaskByParams(AutoTaskParam autoTaskParam) {
+        if (autoTaskParam == null) {
+            return ResponseData.operationFailure("10006");
+        }
+        return automatingTask(autoTaskParam.getBusinessId(), autoTaskParam.getNodeCode(), autoTaskParam.getOpinion());
+    }
+
+    public ResponseData automatingTask(String businessId, String nodeCode, String opinion) {
         if (StringUtils.isNotEmpty(businessId)) {
             FlowInstance flowInstance = flowInstanceService.findLastInstanceByBusinessId(businessId);
             if (flowInstance != null && !flowInstance.isEnded()) {//只考虑还在流程中的流程实例
@@ -5019,11 +5024,21 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
 
 
                 //自动执行这个待办
-                String approved = "true";
-                String opinion = "同意【自动执行】";
+                String approved;
                 if ("Normal".equalsIgnoreCase(nodeType) || "SingleSign".equalsIgnoreCase(nodeType) || "PoolTask".equalsIgnoreCase(nodeType)) {
                     approved = null;
-                    opinion = "【自动执行】";
+                    if (StringUtils.isEmpty(opinion)) {
+                        opinion = "【自动执行】";
+                    } else {
+                        opinion += "【自动执行】";
+                    }
+                } else {
+                    approved = "true";
+                    if (StringUtils.isEmpty(opinion)) {
+                        opinion = "同意【自动执行】";
+                    } else {
+                        opinion += "【自动执行】";
+                    }
                 }
                 //模拟请求下一步，如果需要人为选择的情况，返回false
                 ResponseData responseData;

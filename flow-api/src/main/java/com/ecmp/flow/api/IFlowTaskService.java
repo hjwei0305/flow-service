@@ -6,6 +6,7 @@ import com.ecmp.core.search.Search;
 import com.ecmp.flow.api.common.api.IBaseService;
 import com.ecmp.flow.basic.vo.Executor;
 import com.ecmp.flow.constant.FlowStatus;
+import com.ecmp.flow.dto.AutoTaskParam;
 import com.ecmp.flow.dto.RejectParam;
 import com.ecmp.flow.dto.RollBackParam;
 import com.ecmp.flow.dto.UserFlowTaskQueryParam;
@@ -997,6 +998,16 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
     @Path("automatingTaskByBusinessIdAndCode")
     @ApiOperation(value = "通过业务单据ID和节点代码自动执行单据中的指定待办", notes = "通过业务单据ID和节点代码自动执行单据中的指定待办")
     ResponseData automatingTaskByBusinessIdAndCode(@QueryParam("businessId") String businessId,@QueryParam("nodeCode") String nodeCode);
+
+
+
+    @POST
+    @Path("automatingTaskByParams")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "退回到指定节点", notes = "退回到指定节点")
+    ResponseData automatingTaskByParams(AutoTaskParam autoTaskParam);
+
 
 
     /**
