@@ -335,7 +335,10 @@ public class MessageSendThread implements Runnable {
         message.setReceiverIds(receiverIds); //接收用户ID清单
 
         //设置内容模板或消息内容
-        if (notifyType.equals(NotifyType.EMAIL) || notifyType.equals(NotifyType.SEI_REMIND) || notifyType.equals(NotifyType.MiniApp)) { //邮件、微信小程序、站内信设置消息模板
+        if (notifyType.equals(NotifyType.EMAIL)
+                || notifyType.equals(NotifyType.SEI_REMIND)
+                || notifyType.equals(NotifyType.MiniApp)
+                || notifyType.equals(NotifyType.WorkWeChat)) { //邮件、微信小程序、站内信、企业微信设置消息模板
             if (StringUtils.isEmpty(contentTemplateCode)) {
                 message.setContent(content); //消息内容
             } else {
@@ -344,7 +347,7 @@ public class MessageSendThread implements Runnable {
                 message.setContentTemplateParams(contentTemplateParams); //模板参数
                 message.setContentTemplateCode(contentTemplateCode);//模板代码
             }
-        } else if (notifyType.equals(NotifyType.DingTalk) || notifyType.equals(NotifyType.WorkWeChat) ) { //钉钉和企业微信只设置流程定义的消息框内容
+        } else if (notifyType.equals(NotifyType.DingTalk)) { //钉钉只设置流程定义的消息框内容
             message.setContent(content);
         } else if (notifyType.equals(NotifyType.VirtualToDo)) { //虚拟待办：流程单独建立不用发送notify模块
             try {
