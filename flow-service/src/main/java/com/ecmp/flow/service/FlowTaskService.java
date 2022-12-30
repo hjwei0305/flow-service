@@ -4976,7 +4976,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                         return ResponseData.operationFailure("10380");
                     }
                 } else {
-                    //可以执行单签任务(验证执行人)
+                    //可以执行单签任务和会签任务(验证执行人)
                     SessionUser sessionUser = ContextUtil.getSessionUser();
                     String userId = sessionUser.getUserId();
                     FlowTask task;
@@ -5012,7 +5012,7 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                             }
                         }
                         nodeType = defObj.getString("nodeType");
-                        if ("SingleSign".equalsIgnoreCase(nodeType)) {
+                        if ("SingleSign".equalsIgnoreCase(nodeType) || "CounterSign".equalsIgnoreCase(nodeType)) {
                             autoTask = task;
                         } else {
                             return ResponseData.operationFailure("10380");

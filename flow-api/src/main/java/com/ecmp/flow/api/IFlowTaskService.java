@@ -975,7 +975,7 @@ public interface IFlowTaskService extends IBaseService<FlowTask, String> {
 
     /**
      * 通过业务单据ID自动执行单据中的待办
-     * 注解：（普通、审批、单签、工作池）（执行不成功待办的标注为紧急）
+     * 注解：（普通、审批、单签、会签、工作池）（执行不成功待办的标注为紧急）
      *
      * @param businessId
      * @return
