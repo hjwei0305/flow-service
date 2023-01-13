@@ -3025,6 +3025,13 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 if (defObj.getString("nodeType").equalsIgnoreCase("PoolTask")) {
                     return OperateResult.operationFailure("10425");
                 }
+                //单签任务，先进行签收
+                if (defObj.getString("nodeType").equalsIgnoreCase("SingleSign")) {
+                    OperateResult resultData = this.claim(taskId, ContextUtil.getUserId());
+                    if (!resultData.successful()) {
+                        return resultData;
+                    }
+                }
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
                 //根据用户的id获取执行人
                 Executor executor = flowCommonUtil.getBasicUserExecutor(userId);
@@ -3170,6 +3177,15 @@ public class FlowTaskService extends BaseEntityService<FlowTask> implements IFlo
                 }
                 if (flowTask.getTrustState() != null && flowTask.getTrustState() == 1) {
                     return ResponseData.operationFailure("10232");
+                }
+                String defJson = flowTask.getTaskJsonDef();
+                JSONObject defObj = JSONObject.fromObject(defJson);
+                //单签任务，先进行签收
+                if (defObj.getString("nodeType").equalsIgnoreCase("SingleSign")) {
+                    OperateResult resultData = this.claim(taskId, ContextUtil.getUserId());
+                    if (!resultData.successful()) {
+                        return resultData;
+                    }
                 }
                 HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery().taskId(flowTask.getActTaskId()).singleResult(); // 创建历史任务实例查询
                 FlowHistory flowHistory = flowTaskTool.initFlowHistory(flowTask, historicTaskInstance, true, null); //委托后先允许撤回
