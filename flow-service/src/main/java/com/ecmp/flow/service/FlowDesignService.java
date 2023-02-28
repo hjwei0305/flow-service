@@ -60,6 +60,9 @@ public class FlowDesignService implements IFlowDesignService {
     @Autowired
     private FlowSolidifyExecutorService flowSolidifyExecutorService;
 
+    @Autowired
+    private FlowHistoryService flowHistoryService;
+
 
     @Override
     public ResponseData getEntity(String id, Integer versionCode, String businessModelCode, String businessId) {
@@ -332,14 +335,22 @@ public class FlowDesignService implements IFlowDesignService {
             def = flowDefVersionService.findOne(id);
         }
         data.put("def", def);
+        //获取当前节点
         if (StringUtils.isNotEmpty(instanceId)) {
             Map<String, String> nodeIds = flowInstanceService.currentNodeIds(instanceId);
             data.put("currentNodes", nodeIds);
         } else {
             data.put("currentNodes", "[]");
         }
+        //获取历史节点
+        if (StringUtils.isNotEmpty(instanceId)) {
+            Map<String, String> nodeIds = flowHistoryService.historyNodeIds(instanceId);
+            data.put("historyNodes", nodeIds);
+        } else {
+            data.put("historyNodes", "[]");
+        }
         //如果是固化流程，加载配合执行人信息
-        if (def.getSolidifyFlow() != null && def.getSolidifyFlow() == true && ended == false) {
+        if (def.getSolidifyFlow() != null && def.getSolidifyFlow() && !ended) {
             if (StringUtils.isNotEmpty(businessId)) {
                 try {
                     ResponseData res = flowSolidifyExecutorService.getExecuteInfoByBusinessId(businessId);

@@ -65,6 +65,23 @@ public class FlowHistoryService extends BaseEntityService<FlowHistory> implement
         return this.flowHistoryDao;
     }
 
+
+    /**
+     * 获取流程实例历史节点集合
+     * @param id
+     */
+    public Map<String, String> historyNodeIds(String id) {
+        Map<String, String> nodeIds = new HashMap<>();
+        List<FlowHistory> flowHistoryList = flowHistoryDao.findByInstanceId(id);
+        if (!CollectionUtils.isEmpty(flowHistoryList)) {
+            for (FlowHistory flowHistory : flowHistoryList) {
+                nodeIds.put(flowHistory.getActTaskDefKey(), "");
+            }
+        }
+        return nodeIds;
+    }
+
+
     @Override
     public List<FlowHistory> findByInstanceId(String instanceId) {
         return flowHistoryDao.findByInstanceId(instanceId);
